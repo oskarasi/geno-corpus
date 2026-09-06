@@ -9,6 +9,7 @@ func int_to_binary(n: Int) -> Result[String, String]
     example 5 -> Ok("101")
     example 13 -> Ok("1101")
     example 255 -> Ok("11111111")
+    example 42 -> Ok("101010")
     example -1 -> Err("n must be non-negative")
     if n < 0 then
         return Err("n must be non-negative")
@@ -34,6 +35,7 @@ func binary_to_int(s: String) -> Result[Int, String]
     example "11111111" -> Ok(255)
     example "" -> Err("empty binary string")
     example "102" -> Err("invalid binary digit")
+    example "abc" -> Err("invalid binary digit")
     if length(s) == 0 then
         return Err("empty binary string")
     end if
@@ -53,14 +55,45 @@ func binary_to_int(s: String) -> Result[Int, String]
     return Ok(result)
 end func
 
+/// CLI: `to <n>` | `from <bits>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["to", "13"] -> Ok("1101")
+    example ["from", "1101"] -> Ok("13")
+    example ["to", "0"] -> Ok("0")
+    example ["to", "-1"] -> Err("n must be non-negative")
+    example ["from", "102"] -> Err("invalid binary digit")
+    example [] -> Err("usage: to <n> | from <bits>")
+    example ["to"] -> Err("usage: to <n> | from <bits>")
+    example ["bogus", "1"] -> Err("usage: to <n> | from <bits>")
+    example ["to", "x"] -> Err("n must be an integer")
+    if length(args) != 2 then
+        return Err("usage: to <n> | from <bits>")
+    end if
+    let cmd: String = args[0]
+    let arg: String = args[1]
+    if cmd == "to" then
+        match parse_int(arg) with
+        | None -> return Err("n must be an integer")
+        | Some(n) -> return int_to_binary(n)
+        end match
+    end if
+    if cmd == "from" then
+        match binary_to_int(arg) with
+        | Ok(v) -> return Ok(to_string(v))
+        | Err(e) -> return Err(e)
+        end match
+    end if
+    return Err("usage: to <n> | from <bits>")
+end func
+
 @untested("entry point")
 func main() -> String
-    match int_to_binary(13) with
+    match run(["to", "13"]) with
     | Ok(b) ->
-        match binary_to_int(b) with
-        | Ok(v) -> return "13->" + b + "->" + to_string(v)
-        | Err(e) -> return "decode err: " + e
+        match run(["from", b]) with
+        | Ok(v) -> return "13->" + b + "->" + v
+        | Err(msg) -> return "error: " + msg
         end match
-    | Err(e) -> return "encode err: " + e
+    | Err(msg) -> return "error: " + msg
     end match
 end func

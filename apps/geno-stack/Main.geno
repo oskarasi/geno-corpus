@@ -4,6 +4,7 @@ func push(s: List[Int], x: Int) -> List[Int]
     example [], 1 -> [1]
     example [1], 2 -> [1, 2]
     example [1, 2], 3 -> [1, 2, 3]
+    example [0], -5 -> [0, -5]
     return append(s, x)
 end func
 
@@ -30,19 +31,70 @@ end func
 func is_empty(s: List[Int]) -> Bool
     example [] -> true
     example [1] -> false
+    example [1, 2] -> false
     return length(s) == 0
+end func
+
+func ints_csv(xs: List[Int]) -> String
+    example [1, 2, 3] -> "1,2,3"
+    example [] -> ""
+    example [7] -> "7"
+    var parts: List[String] = []
+    var i: Int = 0
+    while i < length(xs) do
+        parts = append(parts, to_string(xs[i]))
+        i = i + 1
+    end while
+    return join(parts, ",")
+end func
+
+/// CLI: `demo` pushes 10,20 peeks and pops; or `push <ints...>` then peek.
+func run(args: List[String]) -> Result[String, String]
+    example ["demo"] -> Ok("top=20 rest=10")
+    example ["push", "1", "2", "3"] -> Ok("stack=1,2,3 top=3")
+    example ["push", "7"] -> Ok("stack=7 top=7")
+    example [] -> Err("usage: demo | push <ints...>")
+    example ["push"] -> Err("usage: demo | push <ints...>")
+    example ["nope"] -> Err("usage: demo | push <ints...>")
+    example ["push", "x"] -> Err("values must be integers")
+    if length(args) == 1 and args[0] == "demo" then
+        let s1: List[Int] = push([], 10)
+        let s2: List[Int] = push(s1, 20)
+        match peek(s2) with
+        | Err(e) -> return Err(e)
+        | Ok(top) ->
+            match pop(s2) with
+            | Err(e) -> return Err(e)
+            | Ok(rest) -> return Ok("top=" + to_string(top) + " rest=" + ints_csv(rest))
+            end match
+        end match
+    end if
+    if length(args) >= 2 and args[0] == "push" then
+        var s: List[Int] = []
+        var i: Int = 1
+        while i < length(args) do
+            match parse_int(args[i]) with
+            | None -> return Err("values must be integers")
+            | Some(v) -> s = push(s, v)
+            end match
+            i = i + 1
+        end while
+        match peek(s) with
+        | Err(e) -> return Err(e)
+        | Ok(top) -> return Ok("stack=" + ints_csv(s) + " top=" + to_string(top))
+        end match
+    end if
+    return Err("usage: demo | push <ints...>")
 end func
 
 @untested("entry point")
 func main() -> String
-    let s1: List[Int] = push([], 10)
-    let s2: List[Int] = push(s1, 20)
-    match peek(s2) with
-    | Ok(top) ->
-        match pop(s2) with
-        | Ok(rest) -> return "top=" + to_string(top) + " rest_len=" + to_string(length(rest))
-        | Err(e) -> return "pop error: " + e
+    match run(["demo"]) with
+    | Ok(a) ->
+        match run(["push", "1", "2", "3"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
         end match
-    | Err(e) -> return "peek error: " + e
+    | Err(msg) -> return "error: " + msg
     end match
 end func

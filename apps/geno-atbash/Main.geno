@@ -8,6 +8,7 @@ func atbash_char(ch: String) -> String
     example "A" -> "Z"
     example "B" -> "Y"
     example "!" -> "!"
+    example "m" -> "n"
     let lower: String = "abcdefghijklmnopqrstuvwxyz"
     let upper: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     let lo: Int = String.index_of(lower, ch)
@@ -26,6 +27,7 @@ func atbash(text: String) -> String
     example "Svool" -> "Hello"
     example "ABC xyz!" -> "ZYX cba!"
     example "" -> ""
+    example "Geno" -> "Tvml"
     var result: String = ""
     var i: Int = 0
     while i < length(text) do
@@ -35,9 +37,26 @@ func atbash(text: String) -> String
     return result
 end func
 
+/// CLI: joins all args with spaces as the text to transform.
+func run(args: List[String]) -> Result[String, String]
+    example ["Hello"] -> Ok("Svool")
+    example ["Hello,", "Geno!"] -> Ok("Svool, Tvml!")
+    example ["Svool"] -> Ok("Hello")
+    example [] -> Err("usage: <text...>")
+    if length(args) == 0 then
+        return Err("usage: <text...>")
+    end if
+    return Ok(atbash(join(args, " ")))
+end func
+
 @untested("entry point")
 func main() -> String
-    let plain: String = "Hello, Geno!"
-    let cipher: String = atbash(plain)
-    return "plain=" + plain + " atbash=" + cipher + " back=" + atbash(cipher)
+    match run(["Hello,", "Geno!"]) with
+    | Ok(cipher) ->
+        match run([cipher]) with
+        | Ok(back) -> return "plain=Hello, Geno! atbash=" + cipher + " back=" + back
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

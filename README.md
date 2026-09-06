@@ -114,6 +114,11 @@ GitHub Actions runs the corpus weekly and on every push/PR, matrixed by tier (`f
 **Note:** pushing `.github/workflows/*` requires a token with the `workflow` scope.
 If a push is rejected for workflow scope, keep the live workflow local/untracked and use the copies under `ci/conformance.yml` or `docs/conformance.yml.example` / `workflows/conformance.yml.example` — maintainers with workflow scope can install them into `.github/workflows/`.
 
+
+## Changelog
+
+- **2026-09-06** — Vendors refreshed from GitHub `main` (SOURCE.json SHAs) after the flagship-bar batch-2 upgrades (fizzbuzz, palindrome, factorial, fib, gcd, collatz, binary, hex, leap, rot13, atbash, ordinal, perfect, happy, stack), plus flagships and `geno-ref-ledger`. Harness green on geno-lang 0.4.3: flagship 10/10, reference 1/1, corpus 90/90.
+
 ## Related
 
 - [davidiach/geno-lang](https://github.com/davidiach/geno-lang) — language + in-tree `examples/apps/`

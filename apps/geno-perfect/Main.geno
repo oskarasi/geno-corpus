@@ -5,6 +5,7 @@ func divisor_sum(n: Int) -> Int
     example 28 -> 28
     example 12 -> 16
     example 1 -> 0
+    example 496 -> 496
     if n <= 1 then
         return 0
     end if
@@ -31,13 +32,55 @@ func is_perfect(n: Int) -> Bool
     example 1 -> false
     example 0 -> false
     example (-6) -> false
+    example 7 -> false
     if n <= 1 then
         return false
     end if
     return divisor_sum(n) == n
 end func
 
+/// CLI: `check <n>` with n capped for demo.
+func run(args: List[String]) -> Result[String, String]
+    example ["check", "6"] -> Ok("perfect=true")
+    example ["check", "28"] -> Ok("perfect=true")
+    example ["check", "12"] -> Ok("perfect=false")
+    example ["check", "1000001"] -> Err("n too large (max 1000000 for demo)")
+    example [] -> Err("usage: check <n>")
+    example ["check"] -> Err("usage: check <n>")
+    example ["nope", "6"] -> Err("usage: check <n>")
+    example ["check", "x"] -> Err("n must be an integer")
+    if length(args) != 2 then
+        return Err("usage: check <n>")
+    end if
+    if args[0] != "check" then
+        return Err("usage: check <n>")
+    end if
+    match parse_int(args[1]) with
+    | None -> return Err("n must be an integer")
+    | Some(n) ->
+        if n > 1000000 then
+            return Err("n too large (max 1000000 for demo)")
+        end if
+        var flag: String = "false"
+        if is_perfect(n) then
+            flag = "true"
+        end if
+        return Ok("perfect=" + flag)
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    return "6=" + to_string(is_perfect(6)) + " 28=" + to_string(is_perfect(28)) + " 12=" + to_string(is_perfect(12))
+    match run(["check", "6"]) with
+    | Ok(a) ->
+        match run(["check", "28"]) with
+        | Ok(b) ->
+            match run(["check", "12"]) with
+            | Ok(c) -> return a + " | " + b + " | " + c
+            | Err(msg) -> return "error: " + msg
+            end match
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

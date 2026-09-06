@@ -2,12 +2,14 @@
 
 func fib(n: Int) -> Int
     requires n >= 0
+    ensures result >= 0
     example 0 -> 0
     example 1 -> 1
     example 2 -> 1
     example 5 -> 5
     example 10 -> 55
     example 15 -> 610
+    example 20 -> 6765
     if n == 0 then
         return 0
     end if
@@ -26,7 +28,40 @@ func fib(n: Int) -> Int
     return b
 end func
 
+/// CLI: `<n>` with 0 <= n <= 90 for demo.
+func run(args: List[String]) -> Result[String, String]
+    example ["10"] -> Ok("fib=55")
+    example ["0"] -> Ok("fib=0")
+    example ["15"] -> Ok("fib=610")
+    example ["91"] -> Err("n too large (max 90 for demo)")
+    example ["-1"] -> Err("n must be non-negative")
+    example [] -> Err("usage: <n>")
+    example ["1", "2"] -> Err("usage: <n>")
+    example ["x"] -> Err("n must be an integer")
+    if length(args) != 1 then
+        return Err("usage: <n>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("n must be an integer")
+    | Some(n) ->
+        if n < 0 then
+            return Err("n must be non-negative")
+        end if
+        if n > 90 then
+            return Err("n too large (max 90 for demo)")
+        end if
+        return Ok("fib=" + to_string(fib(n)))
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    return "fib(10)=" + to_string(fib(10)) + " fib(15)=" + to_string(fib(15))
+    match run(["10"]) with
+    | Ok(a) ->
+        match run(["15"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

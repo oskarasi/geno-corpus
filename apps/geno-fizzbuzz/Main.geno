@@ -2,11 +2,15 @@
 
 func fizz_buzz(n: Int) -> String
     example 1 -> "1"
+    example 2 -> "2"
     example 3 -> "Fizz"
+    example 4 -> "4"
     example 5 -> "Buzz"
-    example 15 -> "FizzBuzz"
     example 7 -> "7"
+    example 15 -> "FizzBuzz"
     example 30 -> "FizzBuzz"
+    example 0 -> "FizzBuzz"
+    example (-3) -> "Fizz"
     if n % 15 == 0 then
         return "FizzBuzz"
     else if n % 3 == 0 then
@@ -18,13 +22,60 @@ func fizz_buzz(n: Int) -> String
     end if
 end func
 
-@untested("entry point")
-func main() -> String
+func fizz_range(start: Int, stop: Int) -> Result[String, String]
+    example 1, 5 -> Ok("1 2 Fizz 4 Buzz")
+    example 14, 16 -> Ok("14 FizzBuzz 16")
+    example 1, 1 -> Ok("1")
+    example 5, 3 -> Err("start must be <= stop")
+    example 1, 1000 -> Err("range too large (max 100)")
+    if start > stop then
+        return Err("start must be <= stop")
+    end if
+    if stop - start + 1 > 100 then
+        return Err("range too large (max 100)")
+    end if
     var parts: List[String] = []
-    var i: Int = 1
-    while i <= 15 do
+    var i: Int = start
+    while i <= stop do
         parts = append(parts, fizz_buzz(i))
         i = i + 1
     end while
-    return join(parts, " ")
+    return Ok(join(parts, " "))
+end func
+
+/// CLI: `n` | `range <start> <stop>` (range span capped at 100).
+func run(args: List[String]) -> Result[String, String]
+    example ["15"] -> Ok("FizzBuzz")
+    example ["7"] -> Ok("7")
+    example ["range", "1", "15"] -> Ok("1 2 Fizz 4 Buzz Fizz 7 8 Fizz Buzz 11 Fizz 13 14 FizzBuzz")
+    example ["range", "5", "3"] -> Err("start must be <= stop")
+    example [] -> Err("usage: <n> | range <start> <stop>")
+    example ["range", "1"] -> Err("usage: <n> | range <start> <stop>")
+    example ["x"] -> Err("n must be an integer")
+    example ["range", "a", "5"] -> Err("start must be an integer")
+    if length(args) == 1 then
+        match parse_int(args[0]) with
+        | None -> return Err("n must be an integer")
+        | Some(n) -> return Ok(fizz_buzz(n))
+        end match
+    end if
+    if length(args) == 3 and args[0] == "range" then
+        match parse_int(args[1]) with
+        | None -> return Err("start must be an integer")
+        | Some(a) ->
+            match parse_int(args[2]) with
+            | None -> return Err("stop must be an integer")
+            | Some(b) -> return fizz_range(a, b)
+            end match
+        end match
+    end if
+    return Err("usage: <n> | range <start> <stop>")
+end func
+
+@untested("entry point")
+func main() -> String
+    match run(["range", "1", "15"]) with
+    | Ok(line) -> return line
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

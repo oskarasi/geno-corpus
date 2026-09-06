@@ -13,6 +13,7 @@ func ordinal(n: Int) -> String
     example 23 -> "23rd"
     example 111 -> "111th"
     example 0 -> "0th"
+    example 101 -> "101st"
     let mod100: Int = n % 100
     if mod100 >= 11 and mod100 <= 13 then
         return to_string(n) + "th"
@@ -29,7 +30,44 @@ func ordinal(n: Int) -> String
     end if
 end func
 
+/// CLI: `<n>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["1"] -> Ok("1st")
+    example ["22"] -> Ok("22nd")
+    example ["11"] -> Ok("11th")
+    example ["3"] -> Ok("3rd")
+    example [] -> Err("usage: <n>")
+    example ["1", "2"] -> Err("usage: <n>")
+    example ["x"] -> Err("n must be an integer")
+    if length(args) != 1 then
+        return Err("usage: <n>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("n must be an integer")
+    | Some(n) -> return Ok(ordinal(n))
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    return ordinal(1) + " " + ordinal(2) + " " + ordinal(3) + " " + ordinal(11) + " " + ordinal(22)
+    match run(["1"]) with
+    | Ok(a) ->
+        match run(["2"]) with
+        | Ok(b) ->
+            match run(["3"]) with
+            | Ok(c) ->
+                match run(["11"]) with
+                | Ok(d) ->
+                    match run(["22"]) with
+                    | Ok(e) -> return a + " " + b + " " + c + " " + d + " " + e
+                    | Err(msg) -> return "error: " + msg
+                    end match
+                | Err(msg) -> return "error: " + msg
+                end match
+            | Err(msg) -> return "error: " + msg
+            end match
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

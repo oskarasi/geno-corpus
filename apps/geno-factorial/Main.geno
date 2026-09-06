@@ -1,22 +1,57 @@
-/// Factorial for non-negative integers.
+/// Factorial for non-negative integers (demo capped for CLI).
 
 func factorial(n: Int) -> Int
     requires n >= 0
+    ensures result >= 1
     example 0 -> 1
     example 1 -> 1
     example 5 -> 120
     example 6 -> 720
+    example 7 -> 5040
     example 10 -> 3628800
-    var result: Int = 1
+    var acc: Int = 1
     var i: Int = 2
     while i <= n do
-        result = result * i
+        acc = acc * i
         i = i + 1
     end while
-    return result
+    return acc
+end func
+
+/// CLI: `<n>` with 0 <= n <= 20 for demo.
+func run(args: List[String]) -> Result[String, String]
+    example ["5"] -> Ok("factorial=120")
+    example ["0"] -> Ok("factorial=1")
+    example ["10"] -> Ok("factorial=3628800")
+    example ["21"] -> Err("n too large (max 20 for demo)")
+    example ["-1"] -> Err("n must be non-negative")
+    example [] -> Err("usage: <n>")
+    example ["5", "6"] -> Err("usage: <n>")
+    example ["x"] -> Err("n must be an integer")
+    if length(args) != 1 then
+        return Err("usage: <n>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("n must be an integer")
+    | Some(n) ->
+        if n < 0 then
+            return Err("n must be non-negative")
+        end if
+        if n > 20 then
+            return Err("n too large (max 20 for demo)")
+        end if
+        return Ok("factorial=" + to_string(factorial(n)))
+    end match
 end func
 
 @untested("entry point")
 func main() -> String
-    return "5!=" + to_string(factorial(5)) + " 10!=" + to_string(factorial(10))
+    match run(["5"]) with
+    | Ok(a) ->
+        match run(["10"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

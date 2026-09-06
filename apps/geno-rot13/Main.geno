@@ -8,6 +8,7 @@ func rot13_char(ch: String) -> String
     example "A" -> "N"
     example "Z" -> "M"
     example "!" -> "!"
+    example "m" -> "z"
     let lower: String = "abcdefghijklmnopqrstuvwxyz"
     let upper: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     let lo: Int = String.index_of(lower, ch)
@@ -26,6 +27,7 @@ func rot13(text: String) -> String
     example "Uryyb" -> "Hello"
     example "ABC xyz!" -> "NOP klm!"
     example "" -> ""
+    example "Geno" -> "Trab"
     var result: String = ""
     var i: Int = 0
     while i < length(text) do
@@ -35,9 +37,26 @@ func rot13(text: String) -> String
     return result
 end func
 
+/// CLI: joins all args with spaces as the text to transform.
+func run(args: List[String]) -> Result[String, String]
+    example ["Hello"] -> Ok("Uryyb")
+    example ["Hello,", "Geno!"] -> Ok("Uryyb, Trab!")
+    example ["Uryyb"] -> Ok("Hello")
+    example [] -> Err("usage: <text...>")
+    if length(args) == 0 then
+        return Err("usage: <text...>")
+    end if
+    return Ok(rot13(join(args, " ")))
+end func
+
 @untested("entry point")
 func main() -> String
-    let plain: String = "Hello, Geno!"
-    let cipher: String = rot13(plain)
-    return "plain=" + plain + " rot13=" + cipher + " back=" + rot13(cipher)
+    match run(["Hello,", "Geno!"]) with
+    | Ok(cipher) ->
+        match run([cipher]) with
+        | Ok(back) -> return "plain=Hello, Geno! rot13=" + cipher + " back=" + back
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

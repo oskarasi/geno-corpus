@@ -6,6 +6,7 @@ func nibble_to_hex(n: Int) -> String
     example 0 -> "0"
     example 9 -> "9"
     example 10 -> "a"
+    example 11 -> "b"
     example 15 -> "f"
     if n < 10 then
         return to_string(n)
@@ -31,6 +32,7 @@ func hex_nibble(c: String) -> Option[Int]
     example "f" -> Some(15)
     example "A" -> Some(10)
     example "g" -> None
+    example "!" -> None
     let lower: String = to_lower(c)
     if lower >= "0" and lower <= "9" then
         return Some(char_code(lower) - char_code("0"))
@@ -47,6 +49,7 @@ func int_to_hex(n: Int) -> Result[String, String]
     example 255 -> Ok("ff")
     example 4095 -> Ok("fff")
     example 26 -> Ok("1a")
+    example 16 -> Ok("10")
     example -1 -> Err("n must be non-negative")
     if n < 0 then
         return Err("n must be non-negative")
@@ -71,6 +74,7 @@ func hex_to_int(s: String) -> Result[Int, String]
     example "FFF" -> Ok(4095)
     example "" -> Err("empty hex string")
     example "g" -> Err("invalid hex digit")
+    example "zz" -> Err("invalid hex digit")
     if length(s) == 0 then
         return Err("empty hex string")
     end if
@@ -87,14 +91,45 @@ func hex_to_int(s: String) -> Result[Int, String]
     return Ok(result)
 end func
 
+/// CLI: `to <n>` | `from <hex>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["to", "255"] -> Ok("ff")
+    example ["from", "ff"] -> Ok("255")
+    example ["from", "FFF"] -> Ok("4095")
+    example ["to", "-1"] -> Err("n must be non-negative")
+    example ["from", "g"] -> Err("invalid hex digit")
+    example [] -> Err("usage: to <n> | from <hex>")
+    example ["to"] -> Err("usage: to <n> | from <hex>")
+    example ["bogus", "1"] -> Err("usage: to <n> | from <hex>")
+    example ["to", "x"] -> Err("n must be an integer")
+    if length(args) != 2 then
+        return Err("usage: to <n> | from <hex>")
+    end if
+    let cmd: String = args[0]
+    let arg: String = args[1]
+    if cmd == "to" then
+        match parse_int(arg) with
+        | None -> return Err("n must be an integer")
+        | Some(n) -> return int_to_hex(n)
+        end match
+    end if
+    if cmd == "from" then
+        match hex_to_int(arg) with
+        | Ok(v) -> return Ok(to_string(v))
+        | Err(e) -> return Err(e)
+        end match
+    end if
+    return Err("usage: to <n> | from <hex>")
+end func
+
 @untested("entry point")
 func main() -> String
-    match int_to_hex(255) with
+    match run(["to", "255"]) with
     | Ok(h) ->
-        match hex_to_int(h) with
-        | Ok(v) -> return "255->" + h + "->" + to_string(v)
-        | Err(e) -> return "decode err: " + e
+        match run(["from", h]) with
+        | Ok(v) -> return "255->" + h + "->" + v
+        | Err(msg) -> return "error: " + msg
         end match
-    | Err(e) -> return "encode err: " + e
+    | Err(msg) -> return "error: " + msg
     end match
 end func

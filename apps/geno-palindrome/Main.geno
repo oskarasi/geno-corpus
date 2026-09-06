@@ -6,6 +6,8 @@ func normalize(text: String) -> String
     example "Race Car" -> "racecar"
     example "A man a plan a canal Panama" -> "amanaplanacanalpanama"
     example "Hi" -> "hi"
+    example "" -> ""
+    example "  a  " -> "a"
     let lower: String = to_lower(text)
     var result: String = ""
     var i: Int = 0
@@ -26,6 +28,7 @@ func is_palindrome(text: String) -> Bool
     example "A man a plan a canal Panama" -> true
     example "" -> true
     example "a" -> true
+    example "ab" -> false
     let s: String = normalize(text)
     var i: Int = 0
     var j: Int = length(s) - 1
@@ -39,9 +42,43 @@ func is_palindrome(text: String) -> Bool
     return true
 end func
 
+/// CLI: `check <text...>` (joins remaining args with spaces).
+func run(args: List[String]) -> Result[String, String]
+    example ["check", "racecar"] -> Ok("palindrome=true")
+    example ["check", "Race", "Car"] -> Ok("palindrome=true")
+    example ["check", "hello"] -> Ok("palindrome=false")
+    example ["check", "A", "man", "a", "plan", "a", "canal", "Panama"] -> Ok("palindrome=true")
+    example [] -> Err("usage: check <text...>")
+    example ["check"] -> Err("usage: check <text...>")
+    example ["nope", "x"] -> Err("usage: check <text...>")
+    if length(args) < 2 then
+        return Err("usage: check <text...>")
+    end if
+    if args[0] != "check" then
+        return Err("usage: check <text...>")
+    end if
+    var words: List[String] = []
+    var i: Int = 1
+    while i < length(args) do
+        words = append(words, args[i])
+        i = i + 1
+    end while
+    let text: String = join(words, " ")
+    var flag: String = "false"
+    if is_palindrome(text) then
+        flag = "true"
+    end if
+    return Ok("palindrome=" + flag)
+end func
+
 @untested("entry point")
 func main() -> String
-    let a: Bool = is_palindrome("Race Car")
-    let b: Bool = is_palindrome("hello")
-    return "racecar=" + to_string(a) + " hello=" + to_string(b)
+    match run(["check", "Race", "Car"]) with
+    | Ok(a) ->
+        match run(["check", "hello"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func
