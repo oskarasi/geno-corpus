@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-gcd", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-gcd",
+  "commit": "cdbd8ab6d79583c645adeedfd90a2934fcf0e925",
+  "vendored_at": "2026-09-06T17:28:29Z"
+}

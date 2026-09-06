@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-fizzbuzz", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-fizzbuzz",
+  "commit": "fae948f7891d874b6663f5319a9e7d34f0af9581",
+  "vendored_at": "2026-09-06T17:28:27Z"
+}

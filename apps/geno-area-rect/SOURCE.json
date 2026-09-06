@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-area-rect", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-area-rect",
+  "commit": "48fef7183dc6ea6b05fc1078722b165ab0c7231e",
+  "vendored_at": "2026-09-06T17:27:59Z"
+}

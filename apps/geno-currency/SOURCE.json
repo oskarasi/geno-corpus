@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-currency", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-currency",
+  "commit": "3b17a961f6bc297084ce2af34e27fdc310c2d710",
+  "vendored_at": "2026-09-06T17:28:17Z"
+}

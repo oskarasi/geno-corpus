@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-pangram", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-pangram",
+  "commit": "8c3ccd838b27201c1ef6ee50497604af26b67d5c",
+  "vendored_at": "2026-09-06T17:29:01Z"
+}

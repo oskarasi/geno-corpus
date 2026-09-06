@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-credit-mask", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-credit-mask",
+  "commit": "eedeb5cc2513d5121597bdd53af745d8f150a809",
+  "vendored_at": "2026-09-06T17:28:15Z"
+}

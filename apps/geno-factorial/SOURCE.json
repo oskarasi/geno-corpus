@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-factorial", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-factorial",
+  "commit": "11cf321da05535e6cbfe7d9b6767018e09f03002",
+  "vendored_at": "2026-09-06T17:28:24Z"
+}

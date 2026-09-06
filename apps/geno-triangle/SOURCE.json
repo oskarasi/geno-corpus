@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-triangle", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-triangle",
+  "commit": "ac4a3349170b0d1cc5697418a036714db74c159b",
+  "vendored_at": "2026-09-06T17:29:41Z"
+}

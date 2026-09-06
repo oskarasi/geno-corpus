@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-collatz", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-collatz",
+  "commit": "2ac48f2d0ba25d6122f09d78b22bc22d6fac5890",
+  "vendored_at": "2026-09-06T17:28:13Z"
+}

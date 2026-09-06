@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-cipher", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-cipher",
+  "commit": "fced6d7c1aa412f25411828418a59739336ebb48",
+  "vendored_at": "2026-09-06T17:28:08Z"
+}

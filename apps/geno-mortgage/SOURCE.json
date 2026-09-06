@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-mortgage", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-mortgage",
+  "commit": "3cc4b0bfc07fda0666c0728e40194ab2af03877d",
+  "vendored_at": "2026-09-06T17:28:56Z"
+}

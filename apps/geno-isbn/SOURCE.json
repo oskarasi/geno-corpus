@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-isbn", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-isbn",
+  "commit": "324faecd4a510b5945595b9407d3f54ddbb4a7b6",
+  "vendored_at": "2026-09-06T17:28:39Z"
+}

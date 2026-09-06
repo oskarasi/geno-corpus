@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-slugify", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-slugify",
+  "commit": "187b6ae38dcb2cf249129cf36be95bfee8db5642",
+  "vendored_at": "2026-09-06T17:29:30Z"
+}

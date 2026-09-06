@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-units-length", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-units-length",
+  "commit": "f2ba6254f085ece9096d657e30d77155b06bd24d",
+  "vendored_at": "2026-09-06T17:29:43Z"
+}

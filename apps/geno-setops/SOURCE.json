@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-setops", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-setops",
+  "commit": "1f697bf35986bb4ae5c70c8ed1f4043e7de8f87b",
+  "vendored_at": "2026-09-06T17:29:29Z"
+}

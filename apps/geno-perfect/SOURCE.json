@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-perfect", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-perfect",
+  "commit": "d321db099f9b7b8e641c8f22717ae0fd8dac2dc6",
+  "vendored_at": "2026-09-06T17:29:05Z"
+}

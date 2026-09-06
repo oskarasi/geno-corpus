@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-ref-ledger", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-ref-ledger",
+  "commit": "8c854b186fd94d4ff50770a7a988fe2aa015311f",
+  "vendored_at": "2026-09-06T17:29:20Z"
+}

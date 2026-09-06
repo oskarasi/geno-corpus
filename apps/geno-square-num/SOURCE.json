@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-square-num", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-square-num",
+  "commit": "95e948eed9b567fd9a143655d4601456d2537523",
+  "vendored_at": "2026-09-06T17:29:32Z"
+}

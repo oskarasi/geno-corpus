@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-pythagoras", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-pythagoras",
+  "commit": "af645a587429762ab55094f94cf6ba9467a322a2",
+  "vendored_at": "2026-09-06T17:29:14Z"
+}

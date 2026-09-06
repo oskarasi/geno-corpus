@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-palindrome", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-palindrome",
+  "commit": "77d74e93bd40c3afe57243289c4afae0241b3401",
+  "vendored_at": "2026-09-06T17:29:00Z"
+}

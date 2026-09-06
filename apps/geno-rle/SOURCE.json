@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-rle", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-rle",
+  "commit": "9b0e2f53094266b17709856d416c2fc60ffc1e06",
+  "vendored_at": "2026-09-06T17:29:22Z"
+}

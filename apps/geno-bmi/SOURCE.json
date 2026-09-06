@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-bmi", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-bmi",
+  "commit": "6d187ff0a946511945ca7f3a3d1dd96fceb361c1",
+  "vendored_at": "2026-09-06T17:28:06Z"
+}

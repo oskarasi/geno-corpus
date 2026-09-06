@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-volume-box", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-volume-box",
+  "commit": "880f2457869e2b86ad3cfedc1eef794a4fdd48d4",
+  "vendored_at": "2026-09-06T17:29:47Z"
+}

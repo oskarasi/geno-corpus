@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-atbash", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-atbash",
+  "commit": "e8a4b6be2e059f986057930c19eb199f71ee23bc",
+  "vendored_at": "2026-09-06T17:28:01Z"
+}

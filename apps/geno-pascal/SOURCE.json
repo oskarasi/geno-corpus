@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-pascal", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-pascal",
+  "commit": "fc955a8108a984a512735d13eaf8a51c5867b479",
+  "vendored_at": "2026-09-06T17:29:02Z"
+}

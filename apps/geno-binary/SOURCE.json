@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-binary", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-binary",
+  "commit": "28d21ae2e30d852ec3d5868c5a7bb827f3883fb7",
+  "vendored_at": "2026-09-06T17:28:03Z"
+}

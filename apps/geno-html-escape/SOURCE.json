@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-html-escape", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-html-escape",
+  "commit": "caba546b7fb89110b2fd5f1e6bae4e72405d3845",
+  "vendored_at": "2026-09-06T17:28:35Z"
+}

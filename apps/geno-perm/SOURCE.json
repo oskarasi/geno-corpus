@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-perm", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-perm",
+  "commit": "7af3858f84dc56316a50d9a71bf6514607671c70",
+  "vendored_at": "2026-09-06T17:29:06Z"
+}

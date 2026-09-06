@@ -1,0 +1,21 @@
+name: conformance
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'  # weekly
+  workflow_dispatch:
+jobs:
+  corpus:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        tier: [flagship, reference, corpus]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m venv .venv && .venv/bin/pip install -U pip && .venv/bin/pip install "$(python -c 'import json;print(json.load(open("pin.json"))["pip"])')"
+      - run: .venv/bin/python harness/run_corpus.py --tier ${{ matrix.tier }} --geno-bin .venv/bin/geno

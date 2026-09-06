@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-units-speed", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-units-speed",
+  "commit": "b4f9d06e85ab712fe1fc7b2a58d67f0d7e7b4a2f",
+  "vendored_at": "2026-09-06T17:29:44Z"
+}

@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-acronym", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-acronym",
+  "commit": "793e8126839692f7b5df555f307cf5ca222cfc24",
+  "vendored_at": "2026-09-06T17:27:55Z"
+}

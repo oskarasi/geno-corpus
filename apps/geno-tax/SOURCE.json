@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-tax", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-tax",
+  "commit": "5982ded19dd092108d7c1a6c265a90362a514f2b",
+  "vendored_at": "2026-09-06T17:29:34Z"
+}

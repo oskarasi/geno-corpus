@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-hamming", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-hamming",
+  "commit": "103028e1a4de6b254c5799a11f4b70d4271e6711",
+  "vendored_at": "2026-09-06T17:28:30Z"
+}

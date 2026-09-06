@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-anagram-key", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-anagram-key",
+  "commit": "c9e51559de6e5ba5a0642f582908bd78d8efb11b",
+  "vendored_at": "2026-09-06T17:27:58Z"
+}

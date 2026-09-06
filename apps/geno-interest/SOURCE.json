@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-interest", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-interest",
+  "commit": "ea8474df97fe3211244d9269e04e7c134b7bd923",
+  "vendored_at": "2026-09-06T17:28:37Z"
+}

@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-intersect", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-intersect",
+  "commit": "a4614a72706171efab56d98678fa03be03092877",
+  "vendored_at": "2026-09-06T17:28:38Z"
+}

@@ -1,1 +1,5 @@
-{"repo": "https://github.com/oskarasi/geno-linear-eq", "note": "vendored from local workspace"}
+{
+  "repo": "https://github.com/oskarasi/geno-linear-eq",
+  "commit": "4e3c5c4e4b7b69b6fa5014141200b19836a170c8",
+  "vendored_at": "2026-09-06T17:28:47Z"
+}
