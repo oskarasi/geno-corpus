@@ -1,0 +1,52 @@
+/// A pangram contains every letter a-z at least once (case-insensitive).
+
+import String
+
+func is_letter(c: String) -> Bool
+    example "a" -> true
+    example "Z" -> true
+    example "!" -> false
+    let lower: String = to_lower(c)
+    return lower >= "a" and lower <= "z"
+end func
+
+func contains_char(xs: List[String], c: String) -> Bool
+    example ["a"], "a" -> true
+    example ["a"], "b" -> false
+    var i: Int = 0
+    while i < length(xs) do
+        if xs[i] == c then
+            return true
+        end if
+        i = i + 1
+    end while
+    return false
+end func
+
+func is_pangram(text: String) -> Bool
+    example "The quick brown fox jumps over the lazy dog" -> true
+    example "abcdefghijklmnopqrstuvwxyz" -> true
+    example "Hello World" -> false
+    example "" -> false
+    example "Pack my box with five dozen liquor jugs." -> true
+    var seen: List[String] = []
+    var i: Int = 0
+    while i < length(text) do
+        let c: String = char_at(text, i)
+        if is_letter(c) then
+            let lower: String = to_lower(c)
+            if contains_char(seen, lower) == false then
+                seen = append(seen, lower)
+            end if
+        end if
+        i = i + 1
+    end while
+    return length(seen) == 26
+end func
+
+@untested("entry point")
+func main() -> String
+    let a: Bool = is_pangram("The quick brown fox jumps over the lazy dog")
+    let b: Bool = is_pangram("Hello World")
+    return "pangram=" + to_string(a) + " hello=" + to_string(b)
+end func

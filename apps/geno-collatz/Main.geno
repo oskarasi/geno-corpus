@@ -1,0 +1,33 @@
+/// Collatz conjecture: count steps for n to reach 1.
+
+func steps_to_one(n: Int) -> Result[Int, String]
+    example 1 -> Ok(0)
+    example 2 -> Ok(1)
+    example 3 -> Ok(7)
+    example 6 -> Ok(8)
+    example 27 -> Ok(111)
+    example 0 -> Err("n must be positive")
+    example -1 -> Err("n must be positive")
+    if n < 1 then
+        return Err("n must be positive")
+    end if
+    var x: Int = n
+    var steps: Int = 0
+    while x != 1 do
+        if x % 2 == 0 then
+            x = x / 2
+        else
+            x = 3 * x + 1
+        end if
+        steps = steps + 1
+    end while
+    return Ok(steps)
+end func
+
+@untested("entry point")
+func main() -> String
+    match steps_to_one(27) with
+    | Ok(s) -> return "steps_to_one(27)=" + to_string(s)
+    | Err(e) -> return "error: " + e
+    end match
+end func

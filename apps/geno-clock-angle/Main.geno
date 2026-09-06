@@ -1,0 +1,41 @@
+/// Absolute smaller angle between hour and minute hands on a 12-hour clock.
+
+func clock_angle(hour: Int, minute: Int) -> Result[Float, String]
+    example 3, 0 -> Ok(90.0)
+    example 12, 0 -> Ok(0.0)
+    example 12, 30 -> Ok(165.0)
+    example 6, 0 -> Ok(180.0)
+    example 2, 20 -> Ok(50.0)
+    example 24, 0 -> Err("hour must be 0..23")
+    example 3, 60 -> Err("minute must be 0..59")
+    example (-1), 0 -> Err("hour must be 0..23")
+    if hour < 0 or hour > 23 then
+        return Err("hour must be 0..23")
+    end if
+    if minute < 0 or minute > 59 then
+        return Err("minute must be 0..59")
+    end if
+    let h: Int = hour % 12
+    let minute_angle: Float = minute * 1.0 * 6.0
+    let hour_angle: Float = h * 1.0 * 30.0 + minute * 1.0 * 0.5
+    var diff: Float = hour_angle - minute_angle
+    if diff < 0.0 then
+        diff = 0.0 - diff
+    end if
+    if diff > 180.0 then
+        diff = 360.0 - diff
+    end if
+    return Ok(diff)
+end func
+
+@untested("entry point")
+func main() -> String
+    match clock_angle(3, 0) with
+    | Ok(a) ->
+        match clock_angle(2, 20) with
+        | Ok(b) -> return "3:00=" + to_string(a) + " 2:20=" + to_string(b)
+        | Err(m) -> return "error: " + m
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
+end func

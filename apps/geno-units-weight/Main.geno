@@ -1,0 +1,22 @@
+/// Convert between kilograms and pounds (1 kg = 2.20462 lb).
+
+func kg_to_lb(kg: Float) -> Float
+    example 1.0 -> 2.20462
+    example 0.0 -> 0.0
+    example 2.0 -> 4.40924
+    return kg * 2.20462
+end func
+
+func lb_to_kg(lb: Float) -> Float
+    example 2.20462 -> 1.0
+    example 0.0 -> 0.0
+    example 4.40924 -> 2.0
+    return lb / 2.20462
+end func
+
+@untested("entry point")
+func main() -> String
+    let lb: Float = kg_to_lb(1.0)
+    let kg: Float = lb_to_kg(2.20462)
+    return "1kg=" + to_string(lb) + "lb 2.20462lb=" + to_string(kg) + "kg"
+end func

@@ -1,0 +1,100 @@
+/// Hex encode/decode for non-negative integers (lowercase).
+
+import String
+
+func nibble_to_hex(n: Int) -> String
+    example 0 -> "0"
+    example 9 -> "9"
+    example 10 -> "a"
+    example 15 -> "f"
+    if n < 10 then
+        return to_string(n)
+    else if n == 10 then
+        return "a"
+    else if n == 11 then
+        return "b"
+    else if n == 12 then
+        return "c"
+    else if n == 13 then
+        return "d"
+    else if n == 14 then
+        return "e"
+    else
+        return "f"
+    end if
+end func
+
+func hex_nibble(c: String) -> Option[Int]
+    example "0" -> Some(0)
+    example "9" -> Some(9)
+    example "a" -> Some(10)
+    example "f" -> Some(15)
+    example "A" -> Some(10)
+    example "g" -> None
+    let lower: String = to_lower(c)
+    if lower >= "0" and lower <= "9" then
+        return Some(char_code(lower) - char_code("0"))
+    else if lower >= "a" and lower <= "f" then
+        return Some(10 + (char_code(lower) - char_code("a")))
+    else
+        return None
+    end if
+end func
+
+func int_to_hex(n: Int) -> Result[String, String]
+    example 0 -> Ok("0")
+    example 10 -> Ok("a")
+    example 255 -> Ok("ff")
+    example 4095 -> Ok("fff")
+    example 26 -> Ok("1a")
+    example -1 -> Err("n must be non-negative")
+    if n < 0 then
+        return Err("n must be non-negative")
+    end if
+    if n == 0 then
+        return Ok("0")
+    end if
+    var x: Int = n
+    var digits: String = ""
+    while x > 0 do
+        digits = nibble_to_hex(x % 16) + digits
+        x = x / 16
+    end while
+    return Ok(digits)
+end func
+
+func hex_to_int(s: String) -> Result[Int, String]
+    example "0" -> Ok(0)
+    example "a" -> Ok(10)
+    example "ff" -> Ok(255)
+    example "1a" -> Ok(26)
+    example "FFF" -> Ok(4095)
+    example "" -> Err("empty hex string")
+    example "g" -> Err("invalid hex digit")
+    if length(s) == 0 then
+        return Err("empty hex string")
+    end if
+    var result: Int = 0
+    var i: Int = 0
+    while i < length(s) do
+        let c: String = char_at(s, i)
+        match hex_nibble(c) with
+        | None -> return Err("invalid hex digit")
+        | Some(v) -> result = result * 16 + v
+        end match
+        i = i + 1
+    end while
+    return Ok(result)
+end func
+
+@untested("entry point")
+func main() -> String
+    match int_to_hex(255) with
+    | Ok(h) ->
+        match hex_to_int(h) with
+        | Ok(v) -> return "255->" + h + "->" + to_string(v)
+        | Err(e) -> return "decode err: " + e
+        end match
+    | Err(e) -> return "encode err: " + e
+    end match
+end func

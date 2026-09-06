@@ -1,0 +1,23 @@
+/// Price plus sales tax percent, in cents.
+
+func tax_cents(price_cents: Int, tax_percent: Int) -> Int
+    example 10000, 8 -> 800
+    example 2500, 10 -> 250
+    example 999, 5 -> 49
+    example 1000, 0 -> 0
+    return (price_cents * tax_percent) / 100
+end func
+
+func price_with_tax_cents(price_cents: Int, tax_percent: Int) -> Int
+    example 10000, 8 -> 10800
+    example 2500, 10 -> 2750
+    example 999, 5 -> 1048
+    example 1000, 0 -> 1000
+    return price_cents + tax_cents(price_cents, tax_percent)
+end func
+
+@untested("entry point")
+func main() -> String
+    let total: Int = price_with_tax_cents(10000, 8)
+    return "10000 + 8% tax = " + to_string(total)
+end func

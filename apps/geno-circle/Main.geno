@@ -1,0 +1,23 @@
+/// Circle geometry: area and circumference from radius.
+
+import Math
+
+func area(radius: Float) -> Float
+    example 1.0 -> 3.141592653589793
+    example 0.0 -> 0.0
+    example 2.0 -> 12.566370614359172
+    return Math.pi() * radius * radius
+end func
+
+func circumference(radius: Float) -> Float
+    example 1.0 -> 6.283185307179586
+    example 0.0 -> 0.0
+    example 2.0 -> 12.566370614359172
+    return 2.0 * Math.pi() * radius
+end func
+
+@untested("entry point")
+func main() -> String
+    let r: Float = 2.0
+    return "r=2 area=" + to_string(area(r)) + " circ=" + to_string(circumference(r))
+end func

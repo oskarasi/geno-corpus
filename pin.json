@@ -1,0 +1,5 @@
+{
+  "geno_lang": "0.4.3",
+  "pip": "geno-lang==0.4.3",
+  "note": "Bump this pin when validating a new geno-lang release against the corpus."
+}

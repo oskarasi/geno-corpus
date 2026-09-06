@@ -1,0 +1,36 @@
+/// Rectangle area and perimeter.
+
+func area(width: Int, height: Int) -> Result[Int, String]
+    example 3, 4 -> Ok(12)
+    example 5, 5 -> Ok(25)
+    example 0, 4 -> Ok(0)
+    example -1, 4 -> Err("dimensions must be non-negative")
+    example 3, -2 -> Err("dimensions must be non-negative")
+    if width < 0 or height < 0 then
+        return Err("dimensions must be non-negative")
+    end if
+    return Ok(width * height)
+end func
+
+func perimeter(width: Int, height: Int) -> Result[Int, String]
+    example 3, 4 -> Ok(14)
+    example 5, 5 -> Ok(20)
+    example 0, 0 -> Ok(0)
+    example -1, 1 -> Err("dimensions must be non-negative")
+    if width < 0 or height < 0 then
+        return Err("dimensions must be non-negative")
+    end if
+    return Ok(2 * (width + height))
+end func
+
+@untested("entry point")
+func main() -> String
+    match area(3, 4) with
+    | Ok(a) ->
+        match perimeter(3, 4) with
+        | Ok(p) -> return "3x4 area=" + to_string(a) + " perimeter=" + to_string(p)
+        | Err(e) -> return e
+        end match
+    | Err(e) -> return e
+    end match
+end func

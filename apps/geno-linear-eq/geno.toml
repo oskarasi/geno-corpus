@@ -1,0 +1,5 @@
+name = "geno-linear-eq"
+version = "0.1.0"
+entrypoint = "Main"
+targets = ["python-cli"]
+files = ["Main"]

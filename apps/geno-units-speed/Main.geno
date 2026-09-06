@@ -1,0 +1,22 @@
+/// Convert between miles per hour and kilometers per hour (1 mi = 1.60934 km).
+
+func mph_to_kmh(mph: Float) -> Float
+    example 1.0 -> 1.60934
+    example 0.0 -> 0.0
+    example 60.0 -> 96.5604
+    return mph * 1.60934
+end func
+
+func kmh_to_mph(kmh: Float) -> Float
+    example 1.60934 -> 1.0
+    example 0.0 -> 0.0
+    example 96.5604 -> 60.0
+    return kmh / 1.60934
+end func
+
+@untested("entry point")
+func main() -> String
+    let k: Float = mph_to_kmh(60.0)
+    let m: Float = kmh_to_mph(96.5604)
+    return "60mph=" + to_string(k) + "kmh 96.5604kmh=" + to_string(m) + "mph"
+end func

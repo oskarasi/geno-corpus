@@ -1,0 +1,28 @@
+/// Dot product of two equal-length integer vectors.
+
+func dot(a: List[Int], b: List[Int]) -> Result[Int, String]
+    example [1, 2, 3], [4, 5, 6] -> Ok(32)
+    example [1, 0], [0, 1] -> Ok(0)
+    example [2, 3], [4, 5] -> Ok(23)
+    example [], [] -> Ok(0)
+    example [1], [1, 2] -> Err("length mismatch")
+    example [1, 2], [1] -> Err("length mismatch")
+    if length(a) != length(b) then
+        return Err("length mismatch")
+    end if
+    var sum: Int = 0
+    var i: Int = 0
+    while i < length(a) do
+        sum = sum + a[i] * b[i]
+        i = i + 1
+    end while
+    return Ok(sum)
+end func
+
+@untested("entry point")
+func main() -> String
+    match dot([1, 2, 3], [4, 5, 6]) with
+    | Ok(v) -> return "dot=" + to_string(v)
+    | Err(e) -> return "error: " + e
+    end match
+end func

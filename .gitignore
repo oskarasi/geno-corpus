@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+results/latest.json
+results/summary.md
+.DS_Store

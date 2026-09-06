@@ -1,0 +1,37 @@
+/// Greedy US coin change: quarters, dimes, nickels, pennies.
+
+func change(cents: Int) -> Result[List[Int], String]
+    example 0 -> Ok([0, 0, 0, 0])
+    example 41 -> Ok([1, 1, 1, 1])
+    example 30 -> Ok([1, 0, 1, 0])
+    example 99 -> Ok([3, 2, 0, 4])
+    example 10 -> Ok([0, 1, 0, 0])
+    example -1 -> Err("cents must be non-negative")
+    if cents < 0 then
+        return Err("cents must be non-negative")
+    end if
+    var rem: Int = cents
+    let q: Int = rem / 25
+    rem = rem % 25
+    let d: Int = rem / 10
+    rem = rem % 10
+    let n: Int = rem / 5
+    rem = rem % 5
+    let p: Int = rem
+    return Ok([q, d, n, p])
+end func
+
+func describe(cents: Int) -> String
+    example 41 -> "41 -> 1q 1d 1n 1p"
+    example 0 -> "0 -> 0q 0d 0n 0p"
+    example -5 -> "-5 -> cents must be non-negative"
+    match change(cents) with
+    | Ok(coins) -> return to_string(cents) + " -> " + to_string(coins[0]) + "q " + to_string(coins[1]) + "d " + to_string(coins[2]) + "n " + to_string(coins[3]) + "p"
+    | Err(msg) -> return to_string(cents) + " -> " + msg
+    end match
+end func
+
+@untested("entry point")
+func main() -> String
+    return describe(41) + " | " + describe(99)
+end func

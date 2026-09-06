@@ -1,0 +1,34 @@
+/// Count vowels (a,e,i,o,u) ignoring case; y is not a vowel.
+
+import String
+
+func is_vowel(c: String) -> Bool
+    example "a" -> true
+    example "E" -> true
+    example "y" -> false
+    example "b" -> false
+    let lower: String = to_lower(c)
+    return lower == "a" or lower == "e" or lower == "i" or lower == "o" or lower == "u"
+end func
+
+func count_vowels(text: String) -> Int
+    example "hello" -> 2
+    example "AEIOU" -> 5
+    example "rhythm" -> 0
+    example "" -> 0
+    example "Beautiful" -> 5
+    var count: Int = 0
+    var i: Int = 0
+    while i < length(text) do
+        if is_vowel(char_at(text, i)) then
+            count = count + 1
+        end if
+        i = i + 1
+    end while
+    return count
+end func
+
+@untested("entry point")
+func main() -> String
+    return "hello=" + to_string(count_vowels("hello")) + " Beautiful=" + to_string(count_vowels("Beautiful"))
+end func

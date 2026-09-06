@@ -1,0 +1,188 @@
+/// Convert non-negative integers between base 10 and bases 2..16 (lowercase digits).
+
+import String
+
+func digit_char(d: Int) -> String
+    example 0 -> "0"
+    example 9 -> "9"
+    example 10 -> "a"
+    example 15 -> "f"
+    example 11 -> "b"
+    if d < 10 then
+        return to_string(d)
+    else if d == 10 then
+        return "a"
+    else if d == 11 then
+        return "b"
+    else if d == 12 then
+        return "c"
+    else if d == 13 then
+        return "d"
+    else if d == 14 then
+        return "e"
+    else
+        return "f"
+    end if
+end func
+
+func char_digit(c: String) -> Option[Int]
+    example "0" -> Some(0)
+    example "9" -> Some(9)
+    example "a" -> Some(10)
+    example "f" -> Some(15)
+    example "A" -> Some(10)
+    example "g" -> None
+    example "" -> None
+    let lower: String = to_lower(c)
+    if lower >= "0" and lower <= "9" then
+        return Some(char_code(lower) - char_code("0"))
+    else if lower >= "a" and lower <= "f" then
+        return Some(10 + (char_code(lower) - char_code("a")))
+    else
+        return None
+    end if
+end func
+
+func to_base(n: Int, base: Int) -> Result[String, String]
+    example 255, 16 -> Ok("ff")
+    example 10, 2 -> Ok("1010")
+    example 0, 10 -> Ok("0")
+    example 42, 10 -> Ok("42")
+    example 15, 8 -> Ok("17")
+    example 13, 16 -> Ok("d")
+    example 7, 2 -> Ok("111")
+    example (-1), 10 -> Err("n must be non-negative")
+    example 5, 1 -> Err("base must be 2..16")
+    example 5, 17 -> Err("base must be 2..16")
+    if n < 0 then
+        return Err("n must be non-negative")
+    end if
+    if base < 2 or base > 16 then
+        return Err("base must be 2..16")
+    end if
+    if n == 0 then
+        return Ok("0")
+    end if
+    var x: Int = n
+    var digits: String = ""
+    while x > 0 do
+        digits = digit_char(x % base) + digits
+        x = x / base
+    end while
+    return Ok(digits)
+end func
+
+func from_base(s: String, base: Int) -> Result[Int, String]
+    example "ff", 16 -> Ok(255)
+    example "1010", 2 -> Ok(10)
+    example "0", 10 -> Ok(0)
+    example "17", 8 -> Ok(15)
+    example "d", 16 -> Ok(13)
+    example "111", 2 -> Ok(7)
+    example "", 10 -> Err("empty string")
+    example "2", 2 -> Err("invalid digit")
+    example "10", 1 -> Err("base must be 2..16")
+    example "g", 16 -> Err("invalid digit")
+    if base < 2 or base > 16 then
+        return Err("base must be 2..16")
+    end if
+    if length(s) == 0 then
+        return Err("empty string")
+    end if
+    var result: Int = 0
+    var i: Int = 0
+    while i < length(s) do
+        let c: String = char_at(s, i)
+        match char_digit(c) with
+        | None -> return Err("invalid digit")
+        | Some(v) ->
+            if v >= base then
+                return Err("invalid digit")
+            end if
+            result = result * base + v
+        end match
+        i = i + 1
+    end while
+    return Ok(result)
+end func
+
+/// Round-trip: to_base then from_base should recover n.
+func round_trip(n: Int, base: Int) -> Result[Bool, String]
+    example 255, 16 -> Ok(true)
+    example 10, 2 -> Ok(true)
+    example 0, 10 -> Ok(true)
+    example 42, 8 -> Ok(true)
+    example (-1), 10 -> Err("n must be non-negative")
+    example 5, 1 -> Err("base must be 2..16")
+    match to_base(n: n, base: base) with
+    | Err(e) -> return Err(e)
+    | Ok(digits) ->
+        match from_base(s: digits, base: base) with
+        | Err(e) -> return Err(e)
+        | Ok(v) -> return Ok(v == n)
+        end match
+    end match
+end func
+
+/// CLI-style: `to <n> <base>` | `from <digits> <base>` | `roundtrip <n> <base>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["to", "255", "16"] -> Ok("ff")
+    example ["from", "ff", "16"] -> Ok("255")
+    example ["roundtrip", "255", "16"] -> Ok("ok")
+    example ["to", "5", "1"] -> Err("base must be 2..16")
+    example [] -> Err("usage: to <n> <base> | from <digits> <base> | roundtrip <n> <base>")
+    example ["to", "255"] -> Err("usage: to <n> <base> | from <digits> <base> | roundtrip <n> <base>")
+    if length(args) != 3 then
+        return Err("usage: to <n> <base> | from <digits> <base> | roundtrip <n> <base>")
+    end if
+    let cmd: String = args[0]
+    match parse_int(args[2]) with
+    | None -> return Err("base must be an integer")
+    | Some(base) ->
+        if cmd == "from" then
+            match from_base(s: args[1], base: base) with
+            | Ok(v) -> return Ok(to_string(v))
+            | Err(e) -> return Err(e)
+            end match
+        else if cmd == "to" or cmd == "roundtrip" then
+            match parse_int(args[1]) with
+            | None -> return Err("n must be an integer")
+            | Some(n) ->
+                if cmd == "to" then
+                    match to_base(n: n, base: base) with
+                    | Ok(digits) -> return Ok(digits)
+                    | Err(e) -> return Err(e)
+                    end match
+                else
+                    match round_trip(n: n, base: base) with
+                    | Ok(ok) ->
+                        if ok then
+                            return Ok("ok")
+                        else
+                            return Err("round-trip mismatch")
+                        end if
+                    | Err(e) -> return Err(e)
+                    end match
+                end if
+            end match
+        else
+            return Err("usage: to <n> <base> | from <digits> <base> | roundtrip <n> <base>")
+        end if
+    end match
+end func
+
+@untested("entry point")
+func main() -> String
+    match run(["to", "255", "16"]) with
+    | Ok(hex) ->
+        match run(["from", hex, "16"]) with
+        | Ok(dec) ->
+            match run(["roundtrip", "42", "8"]) with
+            | Ok(rt) -> return "255->16:" + hex + "->" + dec + " roundtrip42base8=" + rt
+            | Err(e) -> return "error: " + e
+            end match
+        | Err(e) -> return "error: " + e
+        end match
+    | Err(e) -> return "error: " + e
+    end match
+end func

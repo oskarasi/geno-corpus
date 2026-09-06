@@ -1,0 +1,66 @@
+/// Binary encode/decode for non-negative integers.
+
+import String
+
+func int_to_binary(n: Int) -> Result[String, String]
+    example 0 -> Ok("0")
+    example 1 -> Ok("1")
+    example 2 -> Ok("10")
+    example 5 -> Ok("101")
+    example 13 -> Ok("1101")
+    example 255 -> Ok("11111111")
+    example -1 -> Err("n must be non-negative")
+    if n < 0 then
+        return Err("n must be non-negative")
+    end if
+    if n == 0 then
+        return Ok("0")
+    end if
+    var x: Int = n
+    var bits: String = ""
+    while x > 0 do
+        bits = to_string(x % 2) + bits
+        x = x / 2
+    end while
+    return Ok(bits)
+end func
+
+func binary_to_int(s: String) -> Result[Int, String]
+    example "0" -> Ok(0)
+    example "1" -> Ok(1)
+    example "10" -> Ok(2)
+    example "101" -> Ok(5)
+    example "1101" -> Ok(13)
+    example "11111111" -> Ok(255)
+    example "" -> Err("empty binary string")
+    example "102" -> Err("invalid binary digit")
+    if length(s) == 0 then
+        return Err("empty binary string")
+    end if
+    var result: Int = 0
+    var i: Int = 0
+    while i < length(s) do
+        let c: String = char_at(s, i)
+        if c == "0" then
+            result = result * 2
+        else if c == "1" then
+            result = result * 2 + 1
+        else
+            return Err("invalid binary digit")
+        end if
+        i = i + 1
+    end while
+    return Ok(result)
+end func
+
+@untested("entry point")
+func main() -> String
+    match int_to_binary(13) with
+    | Ok(b) ->
+        match binary_to_int(b) with
+        | Ok(v) -> return "13->" + b + "->" + to_string(v)
+        | Err(e) -> return "decode err: " + e
+        end match
+    | Err(e) -> return "encode err: " + e
+    end match
+end func

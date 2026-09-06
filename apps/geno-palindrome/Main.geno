@@ -1,0 +1,47 @@
+/// Palindrome checker ignoring case and spaces.
+
+import String
+
+func normalize(text: String) -> String
+    example "Race Car" -> "racecar"
+    example "A man a plan a canal Panama" -> "amanaplanacanalpanama"
+    example "Hi" -> "hi"
+    let lower: String = to_lower(text)
+    var result: String = ""
+    var i: Int = 0
+    while i < length(lower) do
+        let c: String = char_at(lower, i)
+        if c != " " then
+            result = result + c
+        end if
+        i = i + 1
+    end while
+    return result
+end func
+
+func is_palindrome(text: String) -> Bool
+    example "racecar" -> true
+    example "Race Car" -> true
+    example "hello" -> false
+    example "A man a plan a canal Panama" -> true
+    example "" -> true
+    example "a" -> true
+    let s: String = normalize(text)
+    var i: Int = 0
+    var j: Int = length(s) - 1
+    while i < j do
+        if char_at(s, i) != char_at(s, j) then
+            return false
+        end if
+        i = i + 1
+        j = j - 1
+    end while
+    return true
+end func
+
+@untested("entry point")
+func main() -> String
+    let a: Bool = is_palindrome("Race Car")
+    let b: Bool = is_palindrome("hello")
+    return "racecar=" + to_string(a) + " hello=" + to_string(b)
+end func

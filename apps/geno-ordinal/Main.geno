@@ -1,0 +1,35 @@
+/// Convert integers to ordinal strings: 1st, 2nd, 3rd, 11th, etc.
+
+func ordinal(n: Int) -> String
+    example 1 -> "1st"
+    example 2 -> "2nd"
+    example 3 -> "3rd"
+    example 4 -> "4th"
+    example 11 -> "11th"
+    example 12 -> "12th"
+    example 13 -> "13th"
+    example 21 -> "21st"
+    example 22 -> "22nd"
+    example 23 -> "23rd"
+    example 111 -> "111th"
+    example 0 -> "0th"
+    let mod100: Int = n % 100
+    if mod100 >= 11 and mod100 <= 13 then
+        return to_string(n) + "th"
+    end if
+    let mod10: Int = n % 10
+    if mod10 == 1 then
+        return to_string(n) + "st"
+    else if mod10 == 2 then
+        return to_string(n) + "nd"
+    else if mod10 == 3 then
+        return to_string(n) + "rd"
+    else
+        return to_string(n) + "th"
+    end if
+end func
+
+@untested("entry point")
+func main() -> String
+    return ordinal(1) + " " + ordinal(2) + " " + ordinal(3) + " " + ordinal(11) + " " + ordinal(22)
+end func

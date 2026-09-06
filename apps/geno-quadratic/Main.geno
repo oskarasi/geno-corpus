@@ -1,0 +1,53 @@
+/// Solve ax^2 + bx + c = 0 over the reals.
+
+import Math
+
+func discriminant(a: Float, b: Float, c: Float) -> Float
+    example 1.0, -5.0, 6.0 -> 1.0
+    example 1.0, 0.0, -4.0 -> 16.0
+    example 1.0, 0.0, 1.0 -> -4.0
+    return b * b - 4.0 * a * c
+end func
+
+func solve(a: Float, b: Float, c: Float) -> Result[List[Float], String]
+    example 1.0, -5.0, 6.0 -> Ok([2.0, 3.0])
+    example 1.0, 0.0, -4.0 -> Ok([-2.0, 2.0])
+    example 1.0, -2.0, 1.0 -> Ok([1.0])
+    example 1.0, 0.0, 1.0 -> Err("no real roots")
+    example 0.0, 2.0, -4.0 -> Err("not quadratic (a=0)")
+    if a == 0.0 then
+        return Err("not quadratic (a=0)")
+    end if
+    let d: Float = discriminant(a: a, b: b, c: c)
+    if d < 0.0 then
+        return Err("no real roots")
+    end if
+    let sqrt_d: Float = Math.sqrt(d)
+    let r1: Float = (0.0 - b - sqrt_d) / (2.0 * a)
+    let r2: Float = (0.0 - b + sqrt_d) / (2.0 * a)
+    if d == 0.0 then
+        return Ok([r1])
+    end if
+    if r1 <= r2 then
+        return Ok([r1, r2])
+    else
+        return Ok([r2, r1])
+    end if
+end func
+
+func describe(a: Float, b: Float, c: Float) -> String
+    example 1.0, -5.0, 6.0 -> "roots=[2.0, 3.0]"
+    example 1.0, 0.0, 1.0 -> "no real roots"
+    match solve(a: a, b: b, c: c) with
+    | Ok(roots) -> return "roots=" + to_string(roots)
+    | Err(msg) -> return msg
+    end match
+end func
+
+@untested("entry point")
+func main() -> String
+    match solve(a: 1.0, b: -5.0, c: 6.0) with
+    | Ok(roots) -> return "nroots=" + to_string(length(roots)) + " r0=" + to_string(roots[0]) + " r1=" + to_string(roots[1])
+    | Err(msg) -> return msg
+    end match
+end func

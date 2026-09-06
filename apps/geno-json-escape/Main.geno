@@ -1,0 +1,45 @@
+/// Escape a string for inclusion inside a JSON string literal.
+
+import String
+
+func escape_char(c: String) -> String
+    example "\\" -> "\\\\"
+    example "\"" -> "\\\""
+    example "\n" -> "\\n"
+    example "\r" -> "\\r"
+    example "\t" -> "\\t"
+    example "a" -> "a"
+    if c == "\\" then
+        return "\\\\"
+    else if c == "\"" then
+        return "\\\""
+    else if c == "\n" then
+        return "\\n"
+    else if c == "\r" then
+        return "\\r"
+    else if c == "\t" then
+        return "\\t"
+    else
+        return c
+    end if
+end func
+
+func json_escape(s: String) -> String
+    example "" -> ""
+    example "hi" -> "hi"
+    example "a\"b" -> "a\\\"b"
+    example "a\\b" -> "a\\\\b"
+    example "a\tb" -> "a\\tb"
+    var out: String = ""
+    var i: Int = 0
+    while i < length(s) do
+        out = out + escape_char(char_at(s, i))
+        i = i + 1
+    end while
+    return out
+end func
+
+@untested("entry point")
+func main() -> String
+    return json_escape("say \"hi\"\tnow")
+end func

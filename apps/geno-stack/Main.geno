@@ -1,0 +1,48 @@
+/// Stack ADT over List[Int]: top is the end of the list.
+
+func push(s: List[Int], x: Int) -> List[Int]
+    example [], 1 -> [1]
+    example [1], 2 -> [1, 2]
+    example [1, 2], 3 -> [1, 2, 3]
+    return append(s, x)
+end func
+
+func peek(s: List[Int]) -> Result[Int, String]
+    example [1, 2, 3] -> Ok(3)
+    example [7] -> Ok(7)
+    example [] -> Err("empty stack")
+    if length(s) == 0 then
+        return Err("empty stack")
+    end if
+    return Ok(s[length(s) - 1])
+end func
+
+func pop(s: List[Int]) -> Result[List[Int], String]
+    example [1, 2, 3] -> Ok([1, 2])
+    example [7] -> Ok([])
+    example [] -> Err("empty stack")
+    if length(s) == 0 then
+        return Err("empty stack")
+    end if
+    return Ok(slice(list: s, start: 0, stop: length(s) - 1))
+end func
+
+func is_empty(s: List[Int]) -> Bool
+    example [] -> true
+    example [1] -> false
+    return length(s) == 0
+end func
+
+@untested("entry point")
+func main() -> String
+    let s1: List[Int] = push([], 10)
+    let s2: List[Int] = push(s1, 20)
+    match peek(s2) with
+    | Ok(top) ->
+        match pop(s2) with
+        | Ok(rest) -> return "top=" + to_string(top) + " rest_len=" + to_string(length(rest))
+        | Err(e) -> return "pop error: " + e
+        end match
+    | Err(e) -> return "peek error: " + e
+    end match
+end func

@@ -1,0 +1,32 @@
+/// Iterative Fibonacci: fib(0)=0, fib(1)=1.
+
+func fib(n: Int) -> Int
+    requires n >= 0
+    example 0 -> 0
+    example 1 -> 1
+    example 2 -> 1
+    example 5 -> 5
+    example 10 -> 55
+    example 15 -> 610
+    if n == 0 then
+        return 0
+    end if
+    if n == 1 then
+        return 1
+    end if
+    var a: Int = 0
+    var b: Int = 1
+    var i: Int = 2
+    while i <= n do
+        let next: Int = a + b
+        a = b
+        b = next
+        i = i + 1
+    end while
+    return b
+end func
+
+@untested("entry point")
+func main() -> String
+    return "fib(10)=" + to_string(fib(10)) + " fib(15)=" + to_string(fib(15))
+end func

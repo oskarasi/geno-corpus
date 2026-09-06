@@ -1,0 +1,44 @@
+/// Least common multiple via GCD: |a*b|/gcd(a,b).
+
+func abs_int(n: Int) -> Int
+    example -4 -> 4
+    example 4 -> 4
+    example 0 -> 0
+    if n < 0 then
+        return 0 - n
+    else
+        return n
+    end if
+end func
+
+func gcd(a: Int, b: Int) -> Int
+    example 12, 8 -> 4
+    example 7, 3 -> 1
+    example 0, 9 -> 9
+    var x: Int = abs_int(a)
+    var y: Int = abs_int(b)
+    while y != 0 do
+        let r: Int = x % y
+        x = y
+        y = r
+    end while
+    return x
+end func
+
+func lcm(a: Int, b: Int) -> Int
+    example 4, 6 -> 12
+    example 3, 5 -> 15
+    example 0, 5 -> 0
+    example 12, 8 -> 24
+    example -4, 6 -> 12
+    if a == 0 or b == 0 then
+        return 0
+    end if
+    let g: Int = gcd(a, b)
+    return abs_int(a / g * b)
+end func
+
+@untested("entry point")
+func main() -> String
+    return "lcm(4,6)=" + to_string(lcm(4, 6)) + " lcm(12,8)=" + to_string(lcm(12, 8))
+end func

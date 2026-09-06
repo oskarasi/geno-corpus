@@ -1,0 +1,161 @@
+import String
+
+/// Password strength meter for Geno.
+/// Scores 0-5 from character-class coverage plus length.
+
+func is_lower(c: String) -> Bool
+    example "a" -> true
+    example "z" -> true
+    example "A" -> false
+    example "0" -> false
+    return c >= "a" and c <= "z"
+end func
+
+func is_upper(c: String) -> Bool
+    example "A" -> true
+    example "Z" -> true
+    example "a" -> false
+    example "9" -> false
+    return c >= "A" and c <= "Z"
+end func
+
+func is_digit(c: String) -> Bool
+    example "0" -> true
+    example "9" -> true
+    example "a" -> false
+    example "!" -> false
+    return c >= "0" and c <= "9"
+end func
+
+func is_symbol(c: String) -> Bool
+    example "!" -> true
+    example "@" -> true
+    example "a" -> false
+    example "5" -> false
+    if length(c) == 0 then
+        return false
+    end if
+    if is_lower(c) or is_upper(c) or is_digit(c) then
+        return false
+    else
+        return true
+    end if
+end func
+
+func has_lower(password: String) -> Bool
+    example "Hello" -> true
+    example "HELLO" -> false
+    example "" -> false
+    var i: Int = 0
+    while i < length(password) do
+        if is_lower(char_at(password, i)) then
+            return true
+        end if
+        i = i + 1
+    end while
+    return false
+end func
+
+func has_upper(password: String) -> Bool
+    example "Hello" -> true
+    example "hello" -> false
+    example "" -> false
+    var i: Int = 0
+    while i < length(password) do
+        if is_upper(char_at(password, i)) then
+            return true
+        end if
+        i = i + 1
+    end while
+    return false
+end func
+
+func has_digit(password: String) -> Bool
+    example "pass1" -> true
+    example "password" -> false
+    example "" -> false
+    var i: Int = 0
+    while i < length(password) do
+        if is_digit(char_at(password, i)) then
+            return true
+        end if
+        i = i + 1
+    end while
+    return false
+end func
+
+func has_symbol(password: String) -> Bool
+    example "pass!" -> true
+    example "password" -> false
+    example "" -> false
+    var i: Int = 0
+    while i < length(password) do
+        if is_symbol(char_at(password, i)) then
+            return true
+        end if
+        i = i + 1
+    end while
+    return false
+end func
+
+/// Score 0-5: +1 each for lower, upper, digit, symbol, and length >= 8.
+func score(password: String) -> Int
+    example "" -> 0
+    example "abc" -> 1
+    example "Abcdefgh" -> 3
+    example "Abcdefg1" -> 4
+    example "Abcdefg1!" -> 5
+    var s: Int = 0
+    if has_lower(password) then
+        s = s + 1
+    end if
+    if has_upper(password) then
+        s = s + 1
+    end if
+    if has_digit(password) then
+        s = s + 1
+    end if
+    if has_symbol(password) then
+        s = s + 1
+    end if
+    if length(password) >= 8 then
+        s = s + 1
+    end if
+    return s
+end func
+
+func label(s: Int) -> String
+    requires s >= 0 and s <= 5
+    example 0 -> "weak"
+    example 1 -> "weak"
+    example 2 -> "fair"
+    example 3 -> "good"
+    example 4 -> "strong"
+    example 5 -> "strong"
+    if s <= 1 then
+        return "weak"
+    else if s == 2 then
+        return "fair"
+    else if s == 3 then
+        return "good"
+    else
+        return "strong"
+    end if
+end func
+
+func summarize(password: String) -> String
+    example "abc" -> "score=1 label=weak"
+    example "Abcdefg1!" -> "score=5 label=strong"
+    let s: Int = score(password)
+    return "score=" + to_string(s) + " label=" + label(s)
+end func
+
+@untested("entry point")
+func main() -> List[String]
+    return [
+        summarize("abc"),
+        summarize("Password"),
+        summarize("Password1"),
+        summarize("Password1!")
+    ]
+end func

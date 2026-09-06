@@ -1,0 +1,28 @@
+/// Triangle area via Heron's formula. Invalid sides return Err.
+
+import Math
+
+func heron_area(a: Float, b: Float, c: Float) -> Result[Float, String]
+    example 3.0, 4.0, 5.0 -> Ok(6.0)
+    example 5.0, 5.0, 6.0 -> Ok(12.0)
+    example 1.0, 2.0, 3.0 -> Err("invalid triangle")
+    example 1.0, 1.0, 3.0 -> Err("invalid triangle")
+    example (-1.0), 2.0, 2.0 -> Err("sides must be positive")
+    if a <= 0.0 or b <= 0.0 or c <= 0.0 then
+        return Err("sides must be positive")
+    end if
+    if a + b <= c or a + c <= b or b + c <= a then
+        return Err("invalid triangle")
+    end if
+    let s: Float = (a + b + c) / 2.0
+    let area: Float = Math.sqrt(s * (s - a) * (s - b) * (s - c))
+    return Ok(area)
+end func
+
+@untested("entry point")
+func main() -> String
+    match heron_area(a: 3.0, b: 4.0, c: 5.0) with
+    | Ok(a) -> return "3-4-5 area=" + to_string(a)
+    | Err(msg) -> return "error: " + msg
+    end match
+end func

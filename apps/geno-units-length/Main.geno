@@ -1,0 +1,22 @@
+/// Convert between meters and feet (1 m = 3.28084 ft).
+
+func meters_to_feet(meters: Float) -> Float
+    example 1.0 -> 3.28084
+    example 0.0 -> 0.0
+    example 2.0 -> 6.56168
+    return meters * 3.28084
+end func
+
+func feet_to_meters(feet: Float) -> Float
+    example 3.28084 -> 1.0
+    example 0.0 -> 0.0
+    example 6.56168 -> 2.0
+    return feet / 3.28084
+end func
+
+@untested("entry point")
+func main() -> String
+    let ft: Float = meters_to_feet(1.0)
+    let m: Float = feet_to_meters(3.28084)
+    return "1m=" + to_string(ft) + "ft 3.28084ft=" + to_string(m) + "m"
+end func

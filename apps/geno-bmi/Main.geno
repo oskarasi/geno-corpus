@@ -1,0 +1,84 @@
+/// Body Mass Index calculator with WHO-style categories.
+
+func bmi(weight_kg: Float, height_m: Float) -> Float
+    requires height_m > 0.0
+    ensures result > 0.0
+    example 70.0, 1.75 -> 22.857142857142858
+    example 80.0, 2.0 -> 20.0
+    example 90.0, 1.8 -> 27.77777777777778
+    example 50.0, 1.6 -> 19.53125
+    return weight_kg / (height_m * height_m)
+end func
+
+/// Safe BMI: validates height > 0 without relying on contract traps.
+func safe_bmi(weight_kg: Float, height_m: Float) -> Result[Float, String]
+    example 70.0, 1.75 -> Ok(22.857142857142858)
+    example 80.0, 2.0 -> Ok(20.0)
+    example 70.0, 0.0 -> Err("height must be > 0")
+    example 70.0, (-1.0) -> Err("height must be > 0")
+    if height_m <= 0.0 then
+        return Err("height must be > 0")
+    end if
+    return Ok(weight_kg / (height_m * height_m))
+end func
+
+/// Categories: underweight < 18.5, normal < 25, overweight < 30, else obese.
+func category(bmi_value: Float) -> String
+    example 17.0 -> "underweight"
+    example 18.499 -> "underweight"
+    example 18.5 -> "normal"
+    example 22.0 -> "normal"
+    example 24.999 -> "normal"
+    example 25.0 -> "overweight"
+    example 27.0 -> "overweight"
+    example 29.999 -> "overweight"
+    example 30.0 -> "obese"
+    example 32.0 -> "obese"
+    if bmi_value < 18.5 then
+        return "underweight"
+    else if bmi_value < 25.0 then
+        return "normal"
+    else if bmi_value < 30.0 then
+        return "overweight"
+    else
+        return "obese"
+    end if
+end func
+
+/// CLI-style args: `<weight_kg> <height_m>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["70", "1.75"] -> Ok("bmi=22.857142857142858 category=normal")
+    example ["80", "2"] -> Ok("bmi=20.0 category=normal")
+    example ["70", "0"] -> Err("height must be > 0")
+    example [] -> Err("usage: <weight_kg> <height_m>")
+    example ["70"] -> Err("usage: <weight_kg> <height_m>")
+    example ["x", "1.75"] -> Err("weight_kg must be a number")
+    if length(args) != 2 then
+        return Err("usage: <weight_kg> <height_m>")
+    end if
+    match parse_float(args[0]) with
+    | None -> return Err("weight_kg must be a number")
+    | Some(w) ->
+        match parse_float(args[1]) with
+        | None -> return Err("height_m must be a number")
+        | Some(h) ->
+            match safe_bmi(w, h) with
+            | Err(msg) -> return Err(msg)
+            | Ok(v) ->
+                return Ok("bmi=" + to_string(v) + " category=" + category(v))
+            end match
+        end match
+    end match
+end func
+
+@untested("entry point")
+func main() -> String
+    match run(["70", "1.75"]) with
+    | Ok(line) ->
+        match run(["95", "1.7"]) with
+        | Ok(high) -> return line + " | " + high
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
+end func

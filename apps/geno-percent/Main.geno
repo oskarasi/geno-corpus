@@ -1,0 +1,29 @@
+/// Percentage helpers: percent_of and what_percent.
+
+func percent_of(percent: Float, whole: Float) -> Float
+    example 25.0, 200.0 -> 50.0
+    example 10.0, 50.0 -> 5.0
+    example 0.0, 100.0 -> 0.0
+    example 100.0, 7.0 -> 7.0
+    return (percent / 100.0) * whole
+end func
+
+func what_percent(part: Float, whole: Float) -> Result[Float, String]
+    example 50.0, 200.0 -> Ok(25.0)
+    example 5.0, 50.0 -> Ok(10.0)
+    example 7.0, 7.0 -> Ok(100.0)
+    example 1.0, 0.0 -> Err("whole must be non-zero")
+    if whole == 0.0 then
+        return Err("whole must be non-zero")
+    end if
+    return Ok((part / whole) * 100.0)
+end func
+
+@untested("entry point")
+func main() -> String
+    let p: Float = percent_of(15.0, 80.0)
+    match what_percent(12.0, 40.0) with
+    | Ok(w) -> return "15% of 80=" + to_string(p) + " 12 is " + to_string(w) + "% of 40"
+    | Err(msg) -> return "error: " + msg
+    end match
+end func

@@ -1,0 +1,42 @@
+/// Capitalize words split on spaces.
+
+import String
+
+func capitalize_word(word: String) -> String
+    example "hello" -> "Hello"
+    example "a" -> "A"
+    example "" -> ""
+    example "WORLD" -> "World"
+    if length(word) == 0 then
+        return ""
+    end if
+    let first: String = to_upper(char_at(word, 0))
+    if length(word) == 1 then
+        return first
+    end if
+    return first + to_lower(substring(text: word, start: 1, stop: length(word)))
+end func
+
+func title_case(text: String) -> String
+    example "hello world" -> "Hello World"
+    example "HELLO WORLD" -> "Hello World"
+    example "a" -> "A"
+    example "" -> ""
+    example "the quick brown fox" -> "The Quick Brown Fox"
+    if length(text) == 0 then
+        return ""
+    end if
+    let words: List[String] = split(text, " ")
+    var parts: List[String] = []
+    var i: Int = 0
+    while i < length(words) do
+        parts = append(parts, capitalize_word(words[i]))
+        i = i + 1
+    end while
+    return join(parts, " ")
+end func
+
+@untested("entry point")
+func main() -> String
+    return title_case("the quick brown fox")
+end func

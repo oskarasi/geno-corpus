@@ -1,0 +1,30 @@
+/// Replace {name} placeholders in a template string.
+
+import String
+
+func render(template: String, name: String, value: String) -> String
+    example "Hi {name}", "name", "Ada" -> "Hi Ada"
+    example "{name}!", "name", "Geno" -> "Geno!"
+    example "nope", "name", "x" -> "nope"
+    example "{name}{name}", "name", "a" -> "aa"
+    example "", "name", "x" -> ""
+    let needle: String = "{" + name + "}"
+    let nlen: Int = length(needle)
+    var out: String = ""
+    var i: Int = 0
+    while i < length(template) do
+        if i + nlen <= length(template) and substring(text: template, start: i, stop: i + nlen) == needle then
+            out = out + value
+            i = i + nlen
+        else
+            out = out + char_at(template, i)
+            i = i + 1
+        end if
+    end while
+    return out
+end func
+
+@untested("entry point")
+func main() -> String
+    return render(template: "Hello, {name}!", name: "name", value: "World")
+end func

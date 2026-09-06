@@ -1,0 +1,23 @@
+/// Running (prefix) sums of a list of integers.
+
+func run_sum(xs: List[Int]) -> List[Int]
+    example [1, 2, 3, 4] -> [1, 3, 6, 10]
+    example [] -> []
+    example [5] -> [5]
+    example [1, (-1), 1] -> [1, 0, 1]
+    example [10, 20, 30] -> [10, 30, 60]
+    var out: List[Int] = []
+    var sum: Int = 0
+    var i: Int = 0
+    while i < length(xs) do
+        sum = sum + xs[i]
+        out = append(out, sum)
+        i = i + 1
+    end while
+    return out
+end func
+
+@untested("entry point")
+func main() -> String
+    return "run_sum=" + to_string(run_sum([1, 2, 3, 4]))
+end func

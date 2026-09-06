@@ -1,0 +1,27 @@
+/// Zip two integer lists into pairs [[x,y], ...], truncated to the shorter length.
+
+func zip_lists(xs: List[Int], ys: List[Int]) -> List[List[Int]]
+    example [1, 2, 3], [4, 5, 6] -> [[1, 4], [2, 5], [3, 6]]
+    example [1, 2], [9] -> [[1, 9]]
+    example [], [1, 2] -> []
+    example [1], [] -> []
+    var out: List[List[Int]] = []
+    var i: Int = 0
+    let n: Int = length(xs)
+    let m: Int = length(ys)
+    var lim: Int = n
+    if m < n then
+        lim = m
+    end if
+    while i < lim do
+        out = append(out, [xs[i], ys[i]])
+        i = i + 1
+    end while
+    return out
+end func
+
+@untested("entry point")
+func main() -> String
+    let z: List[List[Int]] = zip_lists([1, 2, 3], [4, 5])
+    return "zip_len=" + to_string(length(z))
+end func

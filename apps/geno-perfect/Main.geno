@@ -1,0 +1,43 @@
+/// A perfect number equals the sum of its proper divisors (excluding itself).
+
+func divisor_sum(n: Int) -> Int
+    example 6 -> 6
+    example 28 -> 28
+    example 12 -> 16
+    example 1 -> 0
+    if n <= 1 then
+        return 0
+    end if
+    var sum: Int = 1
+    var d: Int = 2
+    while d * d <= n do
+        if n % d == 0 then
+            sum = sum + d
+            let other: Int = n / d
+            if other != d and other != n then
+                sum = sum + other
+            end if
+        end if
+        d = d + 1
+    end while
+    return sum
+end func
+
+func is_perfect(n: Int) -> Bool
+    example 6 -> true
+    example 28 -> true
+    example 496 -> true
+    example 12 -> false
+    example 1 -> false
+    example 0 -> false
+    example (-6) -> false
+    if n <= 1 then
+        return false
+    end if
+    return divisor_sum(n) == n
+end func
+
+@untested("entry point")
+func main() -> String
+    return "6=" + to_string(is_perfect(6)) + " 28=" + to_string(is_perfect(28)) + " 12=" + to_string(is_perfect(12))
+end func

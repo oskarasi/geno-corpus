@@ -1,0 +1,23 @@
+/// Simple interest in cents: principal * rate * time / 100.
+
+func simple_interest_cents(principal_cents: Int, rate_percent: Int, time: Int) -> Int
+    example 10000, 5, 2 -> 1000
+    example 5000, 10, 1 -> 500
+    example 999, 10, 1 -> 99
+    example 10000, 0, 5 -> 0
+    example 20000, 5, 0 -> 0
+    return (principal_cents * rate_percent * time) / 100
+end func
+
+func amount_cents(principal_cents: Int, rate_percent: Int, time: Int) -> Int
+    example 10000, 5, 2 -> 11000
+    example 5000, 10, 1 -> 5500
+    return principal_cents + simple_interest_cents(principal_cents: principal_cents, rate_percent: rate_percent, time: time)
+end func
+
+@untested("entry point")
+func main() -> String
+    let interest: Int = simple_interest_cents(principal_cents: 10000, rate_percent: 5, time: 2)
+    let total: Int = amount_cents(principal_cents: 10000, rate_percent: 5, time: 2)
+    return "interest=" + to_string(interest) + " amount=" + to_string(total)
+end func

@@ -1,0 +1,22 @@
+/// Split a List[Int] into chunks of size n. Invalid n returns empty list.
+
+import List
+
+func chunk_list(xs: List[Int], n: Int) -> List[List[Int]]
+    example [1, 2, 3, 4, 5], 2 -> [[1, 2], [3, 4], [5]]
+    example [1, 2, 3], 3 -> [[1, 2, 3]]
+    example [1, 2, 3], 1 -> [[1], [2], [3]]
+    example [], 2 -> []
+    example [1, 2], 0 -> []
+    example [1, 2], (-1) -> []
+    if n <= 0 then
+        return []
+    end if
+    return List.chunk(xs, n)
+end func
+
+@untested("entry point")
+func main() -> String
+    let chunks: List[List[Int]] = chunk_list([1, 2, 3, 4, 5], 2)
+    return "chunk_count=" + to_string(length(chunks))
+end func

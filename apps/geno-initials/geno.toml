@@ -1,0 +1,5 @@
+name = "geno-initials"
+version = "0.1.0"
+entrypoint = "Main"
+targets = ["python-cli"]
+files = ["Main"]

@@ -1,0 +1,129 @@
+/// Morse code encoder for A-Z and digits 0-9. Letters separated by space.
+
+import String
+
+func morse_char(c: String) -> String
+    example "A" -> ".-"
+    example "a" -> ".-"
+    example "S" -> "..."
+    example "0" -> "-----"
+    example "1" -> ".----"
+    example " " -> "/"
+    example "!" -> ""
+    let ch: String = to_upper(c)
+    if ch == "A" then
+        return ".-"
+    else if ch == "B" then
+        return "-..."
+    else if ch == "C" then
+        return "-.-."
+    else if ch == "D" then
+        return "-.."
+    else if ch == "E" then
+        return "."
+    else if ch == "F" then
+        return "..-."
+    else if ch == "G" then
+        return "--."
+    else if ch == "H" then
+        return "...."
+    else if ch == "I" then
+        return ".."
+    else if ch == "J" then
+        return ".---"
+    else if ch == "K" then
+        return "-.-"
+    else if ch == "L" then
+        return ".-.."
+    else if ch == "M" then
+        return "--"
+    else if ch == "N" then
+        return "-."
+    else if ch == "O" then
+        return "---"
+    else if ch == "P" then
+        return ".--."
+    else if ch == "Q" then
+        return "--.-"
+    else if ch == "R" then
+        return ".-."
+    else if ch == "S" then
+        return "..."
+    else if ch == "T" then
+        return "-"
+    else if ch == "U" then
+        return "..-"
+    else if ch == "V" then
+        return "...-"
+    else if ch == "W" then
+        return ".--"
+    else if ch == "X" then
+        return "-..-"
+    else if ch == "Y" then
+        return "-.--"
+    else if ch == "Z" then
+        return "--.."
+    else if ch == "0" then
+        return "-----"
+    else if ch == "1" then
+        return ".----"
+    else if ch == "2" then
+        return "..---"
+    else if ch == "3" then
+        return "...--"
+    else if ch == "4" then
+        return "....-"
+    else if ch == "5" then
+        return "....."
+    else if ch == "6" then
+        return "-...."
+    else if ch == "7" then
+        return "--..."
+    else if ch == "8" then
+        return "---.."
+    else if ch == "9" then
+        return "----."
+    else if ch == " " then
+        return "/"
+    else
+        return ""
+    end if
+end func
+
+func is_alnum_or_space(c: String) -> Bool
+    example "A" -> true
+    example "5" -> true
+    example " " -> true
+    example "!" -> false
+    let u: String = to_upper(c)
+    return (u >= "A" and u <= "Z") or (u >= "0" and u <= "9") or u == " "
+end func
+
+func encode(s: String) -> String
+    example "" -> ""
+    example "A" -> ".-"
+    example "SOS" -> "... --- ..."
+    example "Hi" -> ".... .."
+    example "A 1" -> ".- / .----"
+    var out: String = ""
+    var i: Int = 0
+    var first: Bool = true
+    while i < length(s) do
+        let c: String = char_at(s, i)
+        let code: String = morse_char(c)
+        if length(code) > 0 then
+            if not first then
+                out = out + " "
+            end if
+            out = out + code
+            first = false
+        end if
+        i = i + 1
+    end while
+    return out
+end func
+
+@untested("entry point")
+func main() -> String
+    return "SOS=" + encode("SOS") + " HI=" + encode("HI")
+end func

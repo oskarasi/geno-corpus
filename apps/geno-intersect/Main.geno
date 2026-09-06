@@ -1,0 +1,39 @@
+/// Common elements of two List[Int], preserving order from the first list (deduped).
+
+func contains_int(xs: List[Int], x: Int) -> Bool
+    example [1, 2, 3], 2 -> true
+    example [1, 2, 3], 9 -> false
+    var i: Int = 0
+    while i < length(xs) do
+        if xs[i] == x then
+            return true
+        end if
+        i = i + 1
+    end while
+    return false
+end func
+
+func intersect(a: List[Int], b: List[Int]) -> List[Int]
+    example [1, 2, 3, 2], [2, 4, 1] -> [1, 2]
+    example [1, 2], [3, 4] -> []
+    example [], [1] -> []
+    example [5, 5, 6], [5] -> [5]
+    var out: List[Int] = []
+    var i: Int = 0
+    while i < length(a) do
+        let x: Int = a[i]
+        if contains_int(b, x) then
+            if contains_int(out, x) == false then
+                out = append(out, x)
+            end if
+        end if
+        i = i + 1
+    end while
+    return out
+end func
+
+@untested("entry point")
+func main() -> String
+    let out: List[Int] = intersect([1, 2, 3, 2], [2, 4, 1])
+    return "intersect_len=" + to_string(length(out)) + " first=" + to_string(out[0]) + " second=" + to_string(out[1])
+end func

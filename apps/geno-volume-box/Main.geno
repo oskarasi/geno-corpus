@@ -1,0 +1,35 @@
+/// Box (rectangular prism) volume and surface area.
+
+func volume(l: Int, w: Int, h: Int) -> Result[Int, String]
+    example 2, 3, 4 -> Ok(24)
+    example 1, 1, 1 -> Ok(1)
+    example 0, 5, 5 -> Ok(0)
+    example -1, 2, 3 -> Err("dimensions must be non-negative")
+    if l < 0 or w < 0 or h < 0 then
+        return Err("dimensions must be non-negative")
+    end if
+    return Ok(l * w * h)
+end func
+
+func surface(l: Int, w: Int, h: Int) -> Result[Int, String]
+    example 2, 3, 4 -> Ok(52)
+    example 1, 1, 1 -> Ok(6)
+    example 0, 0, 0 -> Ok(0)
+    example 1, -1, 1 -> Err("dimensions must be non-negative")
+    if l < 0 or w < 0 or h < 0 then
+        return Err("dimensions must be non-negative")
+    end if
+    return Ok(2 * (l * w + l * h + w * h))
+end func
+
+@untested("entry point")
+func main() -> String
+    match volume(l: 2, w: 3, h: 4) with
+    | Ok(v) ->
+        match surface(l: 2, w: 3, h: 4) with
+        | Ok(s) -> return "2x3x4 volume=" + to_string(v) + " surface=" + to_string(s)
+        | Err(e) -> return e
+        end match
+    | Err(e) -> return e
+    end match
+end func

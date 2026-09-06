@@ -1,0 +1,5 @@
+name = "geno-luhn"
+version = "0.2.0"
+entrypoint = "Main"
+targets = ["python-cli"]
+files = ["Main"]

@@ -1,0 +1,83 @@
+/// Roman numeral CLI/demo entrypoints.
+
+import String
+import Lib
+
+/// Argv-style driver: `to <n>` or `from <roman>`. No capabilities required.
+func run(args: List[String]) -> Result[String, String]
+    example ["to", "1994"] -> Ok("MCMXCIV")
+    example ["from", "MCMXCIV"] -> Ok("1994")
+    example ["from", "iv"] -> Ok("4")
+    example ["to", "0"] -> Err("n must be between 1 and 3999")
+    example ["from", "ABC"] -> Err("invalid roman numeral")
+    example [] -> Err("usage: to <n> | from <roman>")
+    example ["to"] -> Err("usage: to <n> | from <roman>")
+    example ["bogus", "1"] -> Err("usage: to <n> | from <roman>")
+    example ["to", "x"] -> Err("not an integer: x")
+
+    if length(args) < 2 then
+        return Err("usage: to <n> | from <roman>")
+    end if
+
+    let cmd: String = args[0]
+    let arg: String = args[1]
+
+    if cmd == "to" then
+        match parse_int(arg) with
+        | None -> return Err("not an integer: " + arg)
+        | Some(n) ->
+            match to_roman(n) with
+            | Ok(roman) -> return Ok(roman)
+            | Err(e) -> return Err(e)
+            end match
+        end match
+    end if
+
+    if cmd == "from" then
+        match from_roman(arg) with
+        | Ok(n) -> return Ok(to_string(n))
+        | Err(e) -> return Err(e)
+        end match
+    end if
+
+    return Err("usage: to <n> | from <roman>")
+end func
+
+func demo_pair(n: Int) -> String
+    example 4 -> "4=IV=4"
+    match to_roman(n) with
+    | Err(e) -> return "to_err:" + e
+    | Ok(roman) ->
+        match from_roman(roman) with
+        | Ok(v) -> return to_string(n) + "=" + roman + "=" + to_string(v)
+        | Err(e) -> return "from_err:" + e
+        end match
+    end match
+end func
+
+/// Capability-free default entry: demos a few conversions as a String summary.
+@untested("entry point")
+func main() -> String
+    let nums: List[Int] = [1, 4, 9, 40, 44, 1994, 3999]
+    var parts: List[String] = []
+    var i: Int = 0
+    while i < length(nums) do
+        parts = append(parts, demo_pair(nums[i]))
+        i = i + 1
+    end while
+    return join(parts, " ")
+end func
+
+/// Optional real CLI: needs env+print and --unsafe/--json. Keep untested.
+@untested("requires --unsafe --cap env,print")
+func cli_main() -> Int
+    let args: List[String] = cli_args()
+    match run(args) with
+    | Ok(out) ->
+        print(out)
+        return 0
+    | Err(e) ->
+        print(e)
+        return 1
+    end match
+end func

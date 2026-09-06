@@ -1,0 +1,51 @@
+/// Temperature converter between Celsius, Fahrenheit, and Kelvin (Float).
+
+func c_to_f(c: Float) -> Float
+    example 0.0 -> 32.0
+    example 100.0 -> 212.0
+    example (-40.0) -> -40.0
+    return (c * 9.0 / 5.0) + 32.0
+end func
+
+func f_to_c(f: Float) -> Float
+    example 32.0 -> 0.0
+    example 212.0 -> 100.0
+    example (-40.0) -> -40.0
+    return (f - 32.0) * 5.0 / 9.0
+end func
+
+func c_to_k(c: Float) -> Float
+    example 0.0 -> 273.15
+    example (-273.15) -> 0.0
+    example 100.0 -> 373.15
+    return c + 273.15
+end func
+
+func k_to_c(k: Float) -> Float
+    example 273.15 -> 0.0
+    example 0.0 -> -273.15
+    example 373.15 -> 100.0
+    return k - 273.15
+end func
+
+func f_to_k(f: Float) -> Float
+    example 32.0 -> 273.15
+    example (-40.0) -> 233.15
+    return c_to_k(f_to_c(f))
+end func
+
+/// Round to tenths as an Int (value * 10), useful for display.
+func round_tenths(x: Float) -> Int
+    example 32.0 -> 320
+    example 98.6 -> 986
+    example (-40.0) -> -400
+    return round(x * 10.0)
+end func
+
+@untested("entry point")
+func main() -> String
+    let f: Float = c_to_f(0.0)
+    let c: Float = f_to_c(212.0)
+    let k: Float = c_to_k(0.0)
+    return "0C=" + to_string(f) + "F 212F=" + to_string(c) + "C 0C=" + to_string(k) + "K"
+end func

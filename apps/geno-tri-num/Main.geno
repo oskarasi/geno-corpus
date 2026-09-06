@@ -1,0 +1,42 @@
+/// Triangular numbers T_n = n(n+1)/2 and membership test.
+
+func tri_num(n: Int) -> Result[Int, String]
+    example 0 -> Ok(0)
+    example 1 -> Ok(1)
+    example 2 -> Ok(3)
+    example 3 -> Ok(6)
+    example 4 -> Ok(10)
+    example 8 -> Ok(36)
+    example (-1) -> Err("n must be non-negative")
+    if n < 0 then
+        return Err("n must be non-negative")
+    end if
+    return Ok(n * (n + 1) / 2)
+end func
+
+func is_triangular(x: Int) -> Bool
+    example 0 -> true
+    example 1 -> true
+    example 3 -> true
+    example 6 -> true
+    example 10 -> true
+    example 2 -> false
+    example 7 -> false
+    example (-1) -> false
+    if x < 0 then
+        return false
+    end if
+    var n: Int = 0
+    while n * (n + 1) / 2 < x do
+        n = n + 1
+    end while
+    return n * (n + 1) / 2 == x
+end func
+
+@untested("entry point")
+func main() -> String
+    match tri_num(8) with
+    | Ok(t) -> return "T8=" + to_string(t) + " is7=" + to_string(is_triangular(7))
+    | Err(e) -> return "error: " + e
+    end match
+end func

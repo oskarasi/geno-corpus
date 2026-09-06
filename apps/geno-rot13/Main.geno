@@ -1,0 +1,43 @@
+/// ROT13 letter cipher; preserve case; leave non-letters unchanged.
+
+import String
+
+func rot13_char(ch: String) -> String
+    example "a" -> "n"
+    example "n" -> "a"
+    example "A" -> "N"
+    example "Z" -> "M"
+    example "!" -> "!"
+    let lower: String = "abcdefghijklmnopqrstuvwxyz"
+    let upper: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    let lo: Int = String.index_of(lower, ch)
+    if lo >= 0 then
+        return String.char_at(lower, (lo + 13) % 26)
+    end if
+    let up: Int = String.index_of(upper, ch)
+    if up >= 0 then
+        return String.char_at(upper, (up + 13) % 26)
+    end if
+    return ch
+end func
+
+func rot13(text: String) -> String
+    example "Hello" -> "Uryyb"
+    example "Uryyb" -> "Hello"
+    example "ABC xyz!" -> "NOP klm!"
+    example "" -> ""
+    var result: String = ""
+    var i: Int = 0
+    while i < length(text) do
+        result = result + rot13_char(String.char_at(text, i))
+        i = i + 1
+    end while
+    return result
+end func
+
+@untested("entry point")
+func main() -> String
+    let plain: String = "Hello, Geno!"
+    let cipher: String = rot13(plain)
+    return "plain=" + plain + " rot13=" + cipher + " back=" + rot13(cipher)
+end func

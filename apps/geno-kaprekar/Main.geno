@@ -1,0 +1,133 @@
+/// Kaprekar's routine for 4-digit numbers (leading zeros allowed).
+/// Repeatedly: rearrange digits descending minus ascending until 6174 (or 0).
+
+func abs_int(n: Int) -> Int
+    example 5 -> 5
+    example -3 -> 3
+    example 0 -> 0
+    if n < 0 then
+        return 0 - n
+    else
+        return n
+    end if
+end func
+
+func norm4(n: Int) -> Int
+    example 6174 -> 6174
+    example 10000 -> 0
+    example -42 -> 42
+    return abs_int(n) % 10000
+end func
+
+func max2(a: Int, b: Int) -> Int
+    example 3, 5 -> 5
+    example 7, 2 -> 7
+    if a >= b then
+        return a
+    else
+        return b
+    end if
+end func
+
+func min2(a: Int, b: Int) -> Int
+    example 3, 5 -> 3
+    example 7, 2 -> 2
+    if a <= b then
+        return a
+    else
+        return b
+    end if
+end func
+
+/// Sort four ints descending into a 4-digit number.
+func pack_desc(a: Int, b: Int, c: Int, d: Int) -> Int
+    example 1, 2, 3, 4 -> 4321
+    example 6, 1, 7, 4 -> 7641
+    example 1, 0, 0, 0 -> 1000
+    var w: Int = a
+    var x: Int = b
+    var y: Int = c
+    var z: Int = d
+    if w < x then
+        let t: Int = w
+        w = x
+        x = t
+    end if
+    if y < z then
+        let t2: Int = y
+        y = z
+        z = t2
+    end if
+    if w < y then
+        let t3: Int = w
+        w = y
+        y = t3
+    end if
+    if x < z then
+        let t4: Int = x
+        x = z
+        z = t4
+    end if
+    if x < y then
+        let t5: Int = x
+        x = y
+        y = t5
+    end if
+    return w * 1000 + x * 100 + y * 10 + z
+end func
+
+func digits_desc(n: Int) -> Int
+    example 6174 -> 7641
+    example 1234 -> 4321
+    example 1000 -> 1000
+    example 3524 -> 5432
+    let m: Int = norm4(n)
+    let a: Int = (m / 1000) % 10
+    let b: Int = (m / 100) % 10
+    let c: Int = (m / 10) % 10
+    let d: Int = m % 10
+    return pack_desc(a: a, b: b, c: c, d: d)
+end func
+
+func digits_asc(n: Int) -> Int
+    example 6174 -> 1467
+    example 1234 -> 1234
+    example 1000 -> 1
+    example 3524 -> 2345
+    let desc: Int = digits_desc(n)
+    let a: Int = (desc / 1000) % 10
+    let b: Int = (desc / 100) % 10
+    let c: Int = (desc / 10) % 10
+    let d: Int = desc % 10
+    return d * 1000 + c * 100 + b * 10 + a
+end func
+
+func kaprekar_step(n: Int) -> Int
+    example 3524 -> 3087
+    example 3087 -> 8352
+    example 8352 -> 6174
+    example 6174 -> 6174
+    example 1111 -> 0
+    example 1000 -> 999
+    return digits_desc(n) - digits_asc(n)
+end func
+
+func kaprekar_count(n: Int) -> Int
+    example 6174 -> 0
+    example 3524 -> 3
+    example 1111 -> 1
+    example 1000 -> 5
+    example 1234 -> 3
+    var x: Int = norm4(n)
+    var steps: Int = 0
+    while x != 6174 and x != 0 and steps < 10 do
+        x = kaprekar_step(x)
+        steps = steps + 1
+    end while
+    return steps
+end func
+
+@untested("entry point")
+func main() -> String
+    return "3524 steps=" + to_string(kaprekar_count(3524)) + " next=" + to_string(kaprekar_step(3524))
+end func

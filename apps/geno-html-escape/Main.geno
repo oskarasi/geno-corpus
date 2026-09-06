@@ -1,0 +1,45 @@
+/// HTML-escape &, <, >, ", and '.
+
+import String
+
+func escape_char(c: String) -> String
+    example "&" -> "&amp;"
+    example "<" -> "&lt;"
+    example ">" -> "&gt;"
+    example "\"" -> "&quot;"
+    example "'" -> "&#39;"
+    example "a" -> "a"
+    if c == "&" then
+        return "&amp;"
+    else if c == "<" then
+        return "&lt;"
+    else if c == ">" then
+        return "&gt;"
+    else if c == "\"" then
+        return "&quot;"
+    else if c == "'" then
+        return "&#39;"
+    else
+        return c
+    end if
+end func
+
+func html_escape(s: String) -> String
+    example "" -> ""
+    example "a<b" -> "a&lt;b"
+    example "x&y" -> "x&amp;y"
+    example "\"hi\"" -> "&quot;hi&quot;"
+    example "a>b'c" -> "a&gt;b&#39;c"
+    var out: String = ""
+    var i: Int = 0
+    while i < length(s) do
+        out = out + escape_char(char_at(s, i))
+        i = i + 1
+    end while
+    return out
+end func
+
+@untested("entry point")
+func main() -> String
+    return html_escape("<b>&\"x\"</b>")
+end func

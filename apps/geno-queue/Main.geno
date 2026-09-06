@@ -1,0 +1,48 @@
+/// Queue ADT over List[Int]: front is index 0, enqueue at the end.
+
+func enqueue(q: List[Int], x: Int) -> List[Int]
+    example [], 1 -> [1]
+    example [1], 2 -> [1, 2]
+    example [1, 2], 3 -> [1, 2, 3]
+    return append(q, x)
+end func
+
+func front(q: List[Int]) -> Result[Int, String]
+    example [1, 2, 3] -> Ok(1)
+    example [7] -> Ok(7)
+    example [] -> Err("empty queue")
+    if length(q) == 0 then
+        return Err("empty queue")
+    end if
+    return Ok(q[0])
+end func
+
+func dequeue(q: List[Int]) -> Result[List[Int], String]
+    example [1, 2, 3] -> Ok([2, 3])
+    example [7] -> Ok([])
+    example [] -> Err("empty queue")
+    if length(q) == 0 then
+        return Err("empty queue")
+    end if
+    return Ok(slice(list: q, start: 1, stop: length(q)))
+end func
+
+func is_empty(q: List[Int]) -> Bool
+    example [] -> true
+    example [1] -> false
+    return length(q) == 0
+end func
+
+@untested("entry point")
+func main() -> String
+    let q1: List[Int] = enqueue([], 10)
+    let q2: List[Int] = enqueue(q1, 20)
+    match front(q2) with
+    | Ok(f) ->
+        match dequeue(q2) with
+        | Ok(rest) -> return "front=" + to_string(f) + " rest_len=" + to_string(length(rest))
+        | Err(e) -> return "dequeue error: " + e
+        end match
+    | Err(e) -> return "front error: " + e
+    end match
+end func

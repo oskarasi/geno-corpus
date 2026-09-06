@@ -1,0 +1,47 @@
+/// Slugify: lowercase, spaces to hyphens, keep letters/digits only.
+
+import String
+
+func is_alnum(c: String) -> Bool
+    example "a" -> true
+    example "Z" -> true
+    example "5" -> true
+    example "-" -> false
+    example "!" -> false
+    return (c >= "a" and c <= "z") or (c >= "A" and c <= "Z") or (c >= "0" and c <= "9")
+end func
+
+func slugify(text: String) -> String
+    example "Hello World" -> "hello-world"
+    example "Foo  Bar!" -> "foo-bar"
+    example "Already-slug" -> "already-slug"
+    example "  spaced  " -> "spaced"
+    example "A_B C" -> "ab-c"
+    example "" -> ""
+    let lower: String = to_lower(text)
+    var result: String = ""
+    var i: Int = 0
+    var last_dash: Bool = true
+    while i < length(lower) do
+        let c: String = char_at(lower, i)
+        if is_alnum(c) then
+            result = result + c
+            last_dash = false
+        else if c == " " or c == "-" then
+            if not last_dash then
+                result = result + "-"
+                last_dash = true
+            end if
+        end if
+        i = i + 1
+    end while
+    if length(result) > 0 and char_at(result, length(result) - 1) == "-" then
+        result = substring(text: result, start: 0, stop: length(result) - 1)
+    end if
+    return result
+end func
+
+@untested("entry point")
+func main() -> String
+    return slugify("Hello World!") + " | " + slugify("Foo  Bar Baz")
+end func

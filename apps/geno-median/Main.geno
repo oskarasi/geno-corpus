@@ -1,0 +1,52 @@
+/// Median of a list of integers (integer average for even length).
+
+func sort_ints(xs: List[Int]) -> List[Int]
+    example [3, 1, 2] -> [1, 2, 3]
+    example [] -> []
+    example [5] -> [5]
+    example [2, 2, 1] -> [1, 2, 2]
+    var arr: List[Int] = xs
+    var n: Int = length(arr)
+    var i: Int = 0
+    while i < n do
+        var j: Int = 0
+        while j < n - 1 - i do
+            if arr[j] > arr[j + 1] then
+                let tmp: Int = arr[j]
+                arr = set_at(list: arr, index: j, value: arr[j + 1])
+                arr = set_at(list: arr, index: j + 1, value: tmp)
+            end if
+            j = j + 1
+        end while
+        i = i + 1
+    end while
+    return arr
+end func
+
+func median(xs: List[Int]) -> Result[Int, String]
+    example [1, 3, 2] -> Ok(2)
+    example [1, 2, 3, 4] -> Ok(2)
+    example [7] -> Ok(7)
+    example [5, 1] -> Ok(3)
+    example [] -> Err("empty list")
+    if length(xs) == 0 then
+        return Err("empty list")
+    end if
+    let sorted: List[Int] = sort_ints(xs)
+    let n: Int = length(sorted)
+    if n % 2 == 1 then
+        return Ok(sorted[n / 2])
+    else
+        let a: Int = sorted[n / 2 - 1]
+        let b: Int = sorted[n / 2]
+        return Ok((a + b) / 2)
+    end if
+end func
+
+@untested("entry point")
+func main() -> String
+    match median([1, 3, 2, 8, 5]) with
+    | Ok(m) -> return "median=" + to_string(m)
+    | Err(e) -> return "error: " + e
+    end match
+end func

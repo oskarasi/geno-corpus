@@ -1,0 +1,100 @@
+/// Tip and bill splitter using cents (Int) to avoid float money issues.
+
+func tip_cents(bill_cents: Int, tip_percent: Int) -> Int
+    requires bill_cents >= 0
+    requires tip_percent >= 0
+    ensures result >= 0
+    example 10000, 15 -> 1500
+    example 2500, 20 -> 500
+    example 999, 10 -> 99
+    example 0, 15 -> 0
+    example 100, 0 -> 0
+    return (bill_cents * tip_percent) / 100
+end func
+
+func total_cents(bill_cents: Int, tip_percent: Int) -> Int
+    requires bill_cents >= 0
+    requires tip_percent >= 0
+    ensures result >= bill_cents
+    example 10000, 15 -> 11500
+    example 2500, 20 -> 3000
+    example 999, 10 -> 1098
+    example 0, 20 -> 0
+    return bill_cents + tip_cents(bill_cents, tip_percent)
+end func
+
+func split_cents(total: Int, people: Int) -> Result[Int, String]
+    example 11500, 2 -> Ok(5750)
+    example 3000, 3 -> Ok(1000)
+    example 100, 1 -> Ok(100)
+    example 100, 0 -> Err("people must be at least 1")
+    example 100, -1 -> Err("people must be at least 1")
+    if people < 1 then
+        return Err("people must be at least 1")
+    else
+        return Ok(total / people)
+    end if
+end func
+
+/// CLI-style args: `tip <bill_cents> <tip_percent>` or `split <total_cents> <people>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["tip", "10000", "15"] -> Ok("tip_cents=1500 total_cents=11500")
+    example ["split", "11500", "4"] -> Ok("each_cents=2875")
+    example ["split", "100", "0"] -> Err("people must be at least 1")
+    example [] -> Err("usage: tip <bill_cents> <tip_percent> | split <total_cents> <people>")
+    example ["tip", "10000"] -> Err("usage: tip <bill_cents> <tip_percent> | split <total_cents> <people>")
+    example ["tip", "x", "15"] -> Err("bill_cents must be an integer")
+    if length(args) != 3 then
+        return Err("usage: tip <bill_cents> <tip_percent> | split <total_cents> <people>")
+    end if
+    let cmd: String = args[0]
+    match parse_int(args[1]) with
+    | None ->
+        if cmd == "tip" then
+            return Err("bill_cents must be an integer")
+        else if cmd == "split" then
+            return Err("total_cents must be an integer")
+        else
+            return Err("usage: tip <bill_cents> <tip_percent> | split <total_cents> <people>")
+        end if
+    | Some(a) ->
+        match parse_int(args[2]) with
+        | None ->
+            if cmd == "tip" then
+                return Err("tip_percent must be an integer")
+            else if cmd == "split" then
+                return Err("people must be an integer")
+            else
+                return Err("usage: tip <bill_cents> <tip_percent> | split <total_cents> <people>")
+            end if
+        | Some(b) ->
+            if cmd == "tip" then
+                if a < 0 or b < 0 then
+                    return Err("bill_cents and tip_percent must be non-negative")
+                end if
+                let tip: Int = tip_cents(a, b)
+                let total: Int = total_cents(a, b)
+                return Ok("tip_cents=" + to_string(tip) + " total_cents=" + to_string(total))
+            else if cmd == "split" then
+                match split_cents(a, b) with
+                | Ok(share) -> return Ok("each_cents=" + to_string(share))
+                | Err(msg) -> return Err(msg)
+                end match
+            else
+                return Err("usage: tip <bill_cents> <tip_percent> | split <total_cents> <people>")
+            end if
+        end match
+    end match
+end func
+
+@untested("entry point")
+func main() -> String
+    match run(["tip", "10000", "15"]) with
+    | Ok(tip_line) ->
+        match run(["split", "11500", "4"]) with
+        | Ok(split_line) -> return tip_line + " | " + split_line
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
+end func

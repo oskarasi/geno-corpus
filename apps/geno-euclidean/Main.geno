@@ -1,0 +1,20 @@
+/// Euclidean distance between 2D integer points (returns Float).
+
+import Math
+
+func euclidean(x1: Int, y1: Int, x2: Int, y2: Int) -> Float
+    example 0, 0, 3, 4 -> 5.0
+    example 1, 1, 1, 1 -> 0.0
+    example 0, 0, 5, 12 -> 13.0
+    example (-3), 0, 0, 4 -> 5.0
+    let dx: Float = (x1 - x2) * 1.0
+    let dy: Float = (y1 - y2) * 1.0
+    return Math.sqrt(dx * dx + dy * dy)
+end func
+
+@untested("entry point")
+func main() -> String
+    let d: Float = euclidean(x1: 0, y1: 0, x2: 3, y2: 4)
+    let d2: Float = euclidean(x1: 0, y1: 0, x2: 5, y2: 12)
+    return "d(0,0)-(3,4)=" + to_string(d) + " d(0,0)-(5,12)=" + to_string(d2)
+end func

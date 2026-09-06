@@ -1,0 +1,27 @@
+/// Build an acronym from the first letter of each whitespace-separated word.
+
+import String
+
+func acronym(text: String) -> String
+    example "Portable Network Graphics" -> "PNG"
+    example "as soon as possible" -> "ASAP"
+    example "  hello   world " -> "HW"
+    example "" -> ""
+    example "Geno" -> "G"
+    let parts: List[String] = String.split(String.trim(text), " ")
+    var out: String = ""
+    var i: Int = 0
+    while i < length(parts) do
+        let w: String = parts[i]
+        if length(w) > 0 then
+            out = out + String.to_upper(String.char_at(w, 0))
+        end if
+        i = i + 1
+    end while
+    return out
+end func
+
+@untested("entry point")
+func main() -> String
+    return "acronym=" + acronym("Portable Network Graphics")
+end func

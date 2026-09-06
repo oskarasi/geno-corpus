@@ -1,0 +1,50 @@
+/// Simple CSV row join (comma-separated, no quoting) and split.
+
+import String
+
+func join_row(fields: List[String]) -> String
+    example [] -> ""
+    example ["a"] -> "a"
+    example ["a", "b", "c"] -> "a,b,c"
+    example ["", "x"] -> ",x"
+    var out: String = ""
+    var i: Int = 0
+    while i < length(fields) do
+        if i > 0 then
+            out = out + ","
+        end if
+        out = out + fields[i]
+        i = i + 1
+    end while
+    return out
+end func
+
+func split_row(row: String) -> List[String]
+    example "" -> [""]
+    example "a" -> ["a"]
+    example "a,b,c" -> ["a", "b", "c"]
+    example ",x" -> ["", "x"]
+    example "a,,b" -> ["a", "", "b"]
+    var fields: List[String] = []
+    var cur: String = ""
+    var i: Int = 0
+    while i < length(row) do
+        let c: String = char_at(row, i)
+        if c == "," then
+            fields = append(fields, cur)
+            cur = ""
+        else
+            cur = cur + c
+        end if
+        i = i + 1
+    end while
+    fields = append(fields, cur)
+    return fields
+end func
+
+@untested("entry point")
+func main() -> String
+    let joined: String = join_row(["a", "b", "c"])
+    let parts: List[String] = split_row(joined)
+    return "join=" + joined + " nfields=" + to_string(length(parts))
+end func

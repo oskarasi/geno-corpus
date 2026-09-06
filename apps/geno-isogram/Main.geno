@@ -1,0 +1,56 @@
+/// An isogram has no repeating letters (case-insensitive); non-letters ignored.
+
+import String
+
+func is_letter(c: String) -> Bool
+    example "a" -> true
+    example "Z" -> true
+    example "1" -> false
+    example " " -> false
+    let lower: String = to_lower(c)
+    return lower >= "a" and lower <= "z"
+end func
+
+func contains_char(xs: List[String], c: String) -> Bool
+    example ["a", "b"], "b" -> true
+    example ["a", "b"], "c" -> false
+    example [], "a" -> false
+    var i: Int = 0
+    while i < length(xs) do
+        if xs[i] == c then
+            return true
+        end if
+        i = i + 1
+    end while
+    return false
+end func
+
+func is_isogram(text: String) -> Bool
+    example "isogram" -> true
+    example "Alphabet" -> false
+    example "Dermatoglyphics" -> true
+    example "aba" -> false
+    example "moOse" -> false
+    example "thumbscrew-japingly" -> true
+    example "" -> true
+    example "Eleven" -> false
+    var seen: List[String] = []
+    var i: Int = 0
+    while i < length(text) do
+        let c: String = char_at(text, i)
+        if is_letter(c) then
+            let lower: String = to_lower(c)
+            if contains_char(seen, lower) then
+                return false
+            end if
+            seen = append(seen, lower)
+        end if
+        i = i + 1
+    end while
+    return true
+end func
+
+@untested("entry point")
+func main() -> String
+    return "isogram=" + to_string(is_isogram("isogram")) + " Alphabet=" + to_string(is_isogram("Alphabet"))
+end func

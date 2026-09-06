@@ -1,0 +1,62 @@
+/// Simple English pluralization rules.
+
+import String
+
+func ends_with(s: String, suffix: String) -> Bool
+    example "boxes", "es" -> true
+    example "box", "es" -> false
+    example "fly", "y" -> true
+    example "", "y" -> false
+    let n: Int = length(s)
+    let m: Int = length(suffix)
+    if m > n then
+        return false
+    end if
+    return substring(text: s, start: n - m, stop: n) == suffix
+end func
+
+func is_vowel(c: String) -> Bool
+    example "a" -> true
+    example "E" -> true
+    example "b" -> false
+    let u: String = to_lower(c)
+    return u == "a" or u == "e" or u == "i" or u == "o" or u == "u"
+end func
+
+func pluralize(word: String) -> String
+    example "" -> ""
+    example "cat" -> "cats"
+    example "box" -> "boxes"
+    example "bush" -> "bushes"
+    example "church" -> "churches"
+    example "buzz" -> "buzzes"
+    example "fly" -> "flies"
+    example "day" -> "days"
+    example "leaf" -> "leaves"
+    example "knife" -> "knives"
+    if length(word) == 0 then
+        return ""
+    end if
+    let w: String = to_lower(word)
+    if ends_with(w, "fe") then
+        return substring(text: w, start: 0, stop: length(w) - 2) + "ves"
+    end if
+    if ends_with(w, "f") then
+        return substring(text: w, start: 0, stop: length(w) - 1) + "ves"
+    end if
+    if ends_with(w, "y") and length(w) >= 2 then
+        let before: String = char_at(w, length(w) - 2)
+        if not is_vowel(before) then
+            return substring(text: w, start: 0, stop: length(w) - 1) + "ies"
+        end if
+    end if
+    if ends_with(w, "s") or ends_with(w, "x") or ends_with(w, "z") or ends_with(w, "ch") or ends_with(w, "sh") then
+        return w + "es"
+    end if
+    return w + "s"
+end func
+
+@untested("entry point")
+func main() -> String
+    return pluralize("cat") + " " + pluralize("box") + " " + pluralize("fly") + " " + pluralize("day")
+end func

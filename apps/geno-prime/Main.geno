@@ -1,0 +1,136 @@
+/// Prime number helpers: test, next prime, and list up to a small limit.
+
+func is_prime(n: Int) -> Bool
+    example 2 -> true
+    example 3 -> true
+    example 4 -> false
+    example 17 -> true
+    example 97 -> true
+    example 1 -> false
+    example 0 -> false
+    example -5 -> false
+    example 9 -> false
+    example 25 -> false
+    if n <= 1 then
+        return false
+    end if
+    if n == 2 then
+        return true
+    end if
+    if n % 2 == 0 then
+        return false
+    end if
+    var d: Int = 3
+    while d * d <= n do
+        if n % d == 0 then
+            return false
+        end if
+        d = d + 2
+    end while
+    return true
+end func
+
+func next_prime(n: Int) -> Int
+    ensures result >= 2
+    ensures is_prime(result)
+    example 1 -> 2
+    example 2 -> 2
+    example 10 -> 11
+    example 14 -> 17
+    example 97 -> 97
+    example 100 -> 101
+    var cand: Int = n
+    if cand < 2 then
+        cand = 2
+    end if
+    while is_prime(cand) == false do
+        cand = cand + 1
+    end while
+    return cand
+end func
+
+func primes_up_to(limit: Int) -> List[Int]
+    example 10 -> [2, 3, 5, 7]
+    example 1 -> []
+    example 0 -> []
+    example 2 -> [2]
+    example 20 -> [2, 3, 5, 7, 11, 13, 17, 19]
+    example 30 -> [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+    var result: List[Int] = []
+    var i: Int = 2
+    while i <= limit do
+        if is_prime(i) then
+            result = append(result, i)
+        end if
+        i = i + 1
+    end while
+    return result
+end func
+
+func ints_csv(xs: List[Int]) -> String
+    example [2, 3, 5] -> "2,3,5"
+    example [] -> ""
+    example [7] -> "7"
+    var parts: List[String] = []
+    var i: Int = 0
+    while i < length(xs) do
+        parts = append(parts, to_string(xs[i]))
+        i = i + 1
+    end while
+    return join(parts, ",")
+end func
+
+/// CLI-style: `check <n>` | `next <n>` | `upto <limit>` (keep limits small, e.g. <= 200).
+func run(args: List[String]) -> Result[String, String]
+    example ["check", "17"] -> Ok("is_prime=true")
+    example ["check", "4"] -> Ok("is_prime=false")
+    example ["next", "10"] -> Ok("next_prime=11")
+    example ["upto", "20"] -> Ok("primes=2,3,5,7,11,13,17,19")
+    example ["upto", "500"] -> Err("limit too large (max 200 for demo)")
+    example [] -> Err("usage: check <n> | next <n> | upto <limit>")
+    example ["check"] -> Err("usage: check <n> | next <n> | upto <limit>")
+    example ["nope", "1"] -> Err("usage: check <n> | next <n> | upto <limit>")
+    if length(args) != 2 then
+        return Err("usage: check <n> | next <n> | upto <limit>")
+    end if
+    let cmd: String = args[0]
+    match parse_int(args[1]) with
+    | None -> return Err("n/limit must be an integer")
+    | Some(n) ->
+        if cmd == "check" then
+            var flag: String = "false"
+            if is_prime(n) then
+                flag = "true"
+            end if
+            return Ok("is_prime=" + flag)
+        else if cmd == "next" then
+            return Ok("next_prime=" + to_string(next_prime(n)))
+        else if cmd == "upto" then
+            if n > 200 then
+                return Err("limit too large (max 200 for demo)")
+            end if
+            if n < 0 then
+                return Err("limit must be non-negative")
+            end if
+            return Ok("primes=" + ints_csv(primes_up_to(n)))
+        else
+            return Err("usage: check <n> | next <n> | upto <limit>")
+        end if
+    end match
+end func
+
+@untested("entry point")
+func main() -> String
+    match run(["upto", "50"]) with
+    | Ok(upto_line) ->
+        match run(["next", "90"]) with
+        | Ok(next_line) ->
+            match run(["check", "97"]) with
+            | Ok(check_line) -> return upto_line + " | " + next_line + " | " + check_line
+            | Err(msg) -> return "error: " + msg
+            end match
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
+end func

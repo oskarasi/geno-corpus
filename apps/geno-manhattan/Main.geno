@@ -1,0 +1,18 @@
+/// Manhattan (taxicab) distance between 2D integer points.
+
+import Math
+
+func manhattan(x1: Int, y1: Int, x2: Int, y2: Int) -> Int
+    example 0, 0, 3, 4 -> 7
+    example 1, 1, 1, 1 -> 0
+    example (-2), 3, 1, (-1) -> 7
+    example 5, 5, 2, 8 -> 6
+    return Math.abs(x1 - x2) + Math.abs(y1 - y2)
+end func
+
+@untested("entry point")
+func main() -> String
+    let d: Int = manhattan(x1: 0, y1: 0, x2: 3, y2: 4)
+    let d2: Int = manhattan(x1: -2, y1: 3, x2: 1, y2: -1)
+    return "d(0,0)-(3,4)=" + to_string(d) + " d(-2,3)-(1,-1)=" + to_string(d2)
+end func

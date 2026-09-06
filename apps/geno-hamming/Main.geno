@@ -1,0 +1,32 @@
+/// Hamming distance between equal-length strings.
+
+import String
+
+func hamming_distance(a: String, b: String) -> Result[Int, String]
+    example "karolin", "kathrin" -> Ok(3)
+    example "1011101", "1001001" -> Ok(2)
+    example "abc", "abc" -> Ok(0)
+    example "", "" -> Ok(0)
+    example "ab", "abc" -> Err("strings must be equal length")
+    example "a", "" -> Err("strings must be equal length")
+    if length(a) != length(b) then
+        return Err("strings must be equal length")
+    end if
+    var dist: Int = 0
+    var i: Int = 0
+    while i < length(a) do
+        if char_at(a, i) != char_at(b, i) then
+            dist = dist + 1
+        end if
+        i = i + 1
+    end while
+    return Ok(dist)
+end func
+
+@untested("entry point")
+func main() -> String
+    match hamming_distance("karolin", "kathrin") with
+    | Ok(d) -> return "karolin/kathrin=" + to_string(d)
+    | Err(e) -> return "error: " + e
+    end match
+end func

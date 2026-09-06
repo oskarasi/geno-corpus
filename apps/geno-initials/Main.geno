@@ -1,0 +1,42 @@
+/// Extract uppercase initials from a personal name.
+
+import String
+
+func is_letter(c: String) -> Bool
+    example "A" -> true
+    example "z" -> true
+    example " " -> false
+    example "-" -> false
+    let u: String = to_upper(c)
+    return u >= "A" and u <= "Z"
+end func
+
+func initials(name: String) -> String
+    example "" -> ""
+    example "Ada" -> "A"
+    example "Ada Lovelace" -> "AL"
+    example "john quincy adams" -> "JQA"
+    example "  Marie  Curie  " -> "MC"
+    example "Jean-Luc Picard" -> "JLP"
+    var out: String = ""
+    var i: Int = 0
+    var at_word: Bool = true
+    while i < length(name) do
+        let c: String = char_at(name, i)
+        if c == " " or c == "-" or c == "'" then
+            at_word = true
+        else
+            if at_word and is_letter(c) then
+                out = out + to_upper(c)
+                at_word = false
+            end if
+        end if
+        i = i + 1
+    end while
+    return out
+end func
+
+@untested("entry point")
+func main() -> String
+    return initials("Ada Lovelace") + " " + initials("john quincy adams")
+end func

@@ -1,0 +1,34 @@
+/// Anagram key: lowercase letters only, sorted into a signature string.
+
+import String
+
+func normalize_letters(text: String) -> String
+    example " Listen " -> "listen"
+    example "A gentleman" -> "agentleman"
+    example "123!" -> ""
+    var out: String = ""
+    var i: Int = 0
+    let lower: String = to_lower(text)
+    while i < length(lower) do
+        let c: String = char_at(lower, i)
+        if c >= "a" and c <= "z" then
+            out = out + c
+        end if
+        i = i + 1
+    end while
+    return out
+end func
+
+func anagram_key(text: String) -> String
+    example "Listen" -> "eilnst"
+    example "Silent" -> "eilnst"
+    example "Hello World" -> "dehllloorw"
+    example "" -> ""
+    example "A gentleman" -> "aaeeglmnnt"
+    return join(sort_strings(to_chars(normalize_letters(text))), "")
+end func
+
+@untested("entry point")
+func main() -> String
+    return "listen=" + anagram_key("Listen") + " silent=" + anagram_key("Silent")
+end func

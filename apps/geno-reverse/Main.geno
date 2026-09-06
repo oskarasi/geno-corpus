@@ -1,0 +1,32 @@
+/// Reverse a string and a list.
+
+import String
+
+func reverse_string(text: String) -> String
+    example "hello" -> "olleh"
+    example "" -> ""
+    example "a" -> "a"
+    example "Geno" -> "oneG"
+    var result: String = ""
+    var i: Int = length(text) - 1
+    while i >= 0 do
+        result = result + char_at(text, i)
+        i = i - 1
+    end while
+    return result
+end func
+
+func reverse_list(xs: List[Int]) -> List[Int]
+    example [1, 2, 3] -> [3, 2, 1]
+    example [] -> []
+    example [7] -> [7]
+    example [1, 2] -> [2, 1]
+    return reverse(xs)
+end func
+
+@untested("entry point")
+func main() -> String
+    let s: String = reverse_string("Geno")
+    let xs: List[Int] = reverse_list([1, 2, 3, 4])
+    return "str=" + s + " list_len=" + to_string(length(xs)) + " head=" + to_string(xs[0])
+end func

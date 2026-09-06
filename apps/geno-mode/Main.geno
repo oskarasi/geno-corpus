@@ -1,0 +1,50 @@
+/// Mode (most frequent value). Ties break to the smaller value.
+
+func count_of(xs: List[Int], target: Int) -> Int
+    example [1, 2, 2, 3], 2 -> 2
+    example [1, 1, 1], 1 -> 3
+    example [], 5 -> 0
+    var c: Int = 0
+    var i: Int = 0
+    while i < length(xs) do
+        if xs[i] == target then
+            c = c + 1
+        end if
+        i = i + 1
+    end while
+    return c
+end func
+
+func mode(xs: List[Int]) -> Result[Int, String]
+    example [1, 2, 2, 3] -> Ok(2)
+    example [1, 1, 2, 2] -> Ok(1)
+    example [5] -> Ok(5)
+    example [3, 1, 3, 1, 3] -> Ok(3)
+    example [] -> Err("empty list")
+    if length(xs) == 0 then
+        return Err("empty list")
+    end if
+    var best: Int = xs[0]
+    var best_count: Int = count_of(xs, best)
+    var i: Int = 1
+    while i < length(xs) do
+        let v: Int = xs[i]
+        let c: Int = count_of(xs, v)
+        if c > best_count then
+            best = v
+            best_count = c
+        else if c == best_count and v < best then
+            best = v
+        end if
+        i = i + 1
+    end while
+    return Ok(best)
+end func
+
+@untested("entry point")
+func main() -> String
+    match mode([1, 2, 2, 3, 3, 3]) with
+    | Ok(m) -> return "mode=" + to_string(m)
+    | Err(e) -> return "error: " + e
+    end match
+end func

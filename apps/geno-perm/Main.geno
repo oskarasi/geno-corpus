@@ -1,0 +1,37 @@
+/// Permutations P(n, k) = n! / (n-k)!.
+
+func perm(n: Int, k: Int) -> Result[Int, String]
+    example 5, 2 -> Ok(20)
+    example 5, 0 -> Ok(1)
+    example 5, 5 -> Ok(120)
+    example 6, 3 -> Ok(120)
+    example 4, 1 -> Ok(4)
+    example 0, 0 -> Ok(1)
+    example 3, 5 -> Ok(0)
+    example (-1), 2 -> Err("n must be non-negative")
+    example 5, (-1) -> Err("k must be non-negative")
+    if n < 0 then
+        return Err("n must be non-negative")
+    end if
+    if k < 0 then
+        return Err("k must be non-negative")
+    end if
+    if k > n then
+        return Ok(0)
+    end if
+    var result: Int = 1
+    var i: Int = 0
+    while i < k do
+        result = result * (n - i)
+        i = i + 1
+    end while
+    return Ok(result)
+end func
+
+@untested("entry point")
+func main() -> String
+    match perm(n: 5, k: 2) with
+    | Ok(v) -> return "P(5,2)=" + to_string(v)
+    | Err(e) -> return "error: " + e
+    end match
+end func

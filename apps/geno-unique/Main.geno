@@ -1,0 +1,37 @@
+/// Deduplicate List[Int] while preserving first-seen order.
+
+func contains_int(xs: List[Int], x: Int) -> Bool
+    example [1, 2, 3], 2 -> true
+    example [1, 2, 3], 9 -> false
+    example [], 1 -> false
+    var i: Int = 0
+    while i < length(xs) do
+        if xs[i] == x then
+            return true
+        end if
+        i = i + 1
+    end while
+    return false
+end func
+
+func unique(xs: List[Int]) -> List[Int]
+    example [1, 2, 2, 3, 1] -> [1, 2, 3]
+    example [] -> []
+    example [7, 7, 7] -> [7]
+    example [4, 1, 4, 2, 1] -> [4, 1, 2]
+    var out: List[Int] = []
+    var i: Int = 0
+    while i < length(xs) do
+        if contains_int(out, xs[i]) == false then
+            out = append(out, xs[i])
+        end if
+        i = i + 1
+    end while
+    return out
+end func
+
+@untested("entry point")
+func main() -> String
+    let u: List[Int] = unique([1, 2, 2, 3, 1, 4])
+    return "unique_len=" + to_string(length(u)) + " first=" + to_string(u[0]) + " last=" + to_string(u[3])
+end func

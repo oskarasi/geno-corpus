@@ -1,0 +1,43 @@
+/// Atbash letter cipher (a<->z, b<->y, ...); preserve case; leave non-letters unchanged.
+
+import String
+
+func atbash_char(ch: String) -> String
+    example "a" -> "z"
+    example "z" -> "a"
+    example "A" -> "Z"
+    example "B" -> "Y"
+    example "!" -> "!"
+    let lower: String = "abcdefghijklmnopqrstuvwxyz"
+    let upper: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    let lo: Int = String.index_of(lower, ch)
+    if lo >= 0 then
+        return String.char_at(lower, 25 - lo)
+    end if
+    let up: Int = String.index_of(upper, ch)
+    if up >= 0 then
+        return String.char_at(upper, 25 - up)
+    end if
+    return ch
+end func
+
+func atbash(text: String) -> String
+    example "Hello" -> "Svool"
+    example "Svool" -> "Hello"
+    example "ABC xyz!" -> "ZYX cba!"
+    example "" -> ""
+    var result: String = ""
+    var i: Int = 0
+    while i < length(text) do
+        result = result + atbash_char(String.char_at(text, i))
+        i = i + 1
+    end while
+    return result
+end func
+
+@untested("entry point")
+func main() -> String
+    let plain: String = "Hello, Geno!"
+    let cipher: String = atbash(plain)
+    return "plain=" + plain + " atbash=" + cipher + " back=" + atbash(cipher)
+end func

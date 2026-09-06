@@ -1,0 +1,24 @@
+/// Price after percent discount, in cents (integer arithmetic).
+
+func discount_amount_cents(price_cents: Int, percent_off: Int) -> Int
+    example 10000, 20 -> 2000
+    example 2500, 10 -> 250
+    example 999, 50 -> 499
+    example 1000, 0 -> 0
+    return (price_cents * percent_off) / 100
+end func
+
+func price_after_discount_cents(price_cents: Int, percent_off: Int) -> Int
+    example 10000, 20 -> 8000
+    example 2500, 10 -> 2250
+    example 999, 50 -> 500
+    example 1000, 0 -> 1000
+    example 5000, 100 -> 0
+    return price_cents - discount_amount_cents(price_cents, percent_off)
+end func
+
+@untested("entry point")
+func main() -> String
+    let final_price: Int = price_after_discount_cents(10000, 25)
+    return "10000 after 25% off = " + to_string(final_price)
+end func

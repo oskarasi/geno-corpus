@@ -1,0 +1,75 @@
+/// Frequency histogram helpers for List[Int].
+
+func count_of(xs: List[Int], target: Int) -> Int
+    example [1, 2, 2, 3], 2 -> 2
+    example [1, 1, 1], 1 -> 3
+    example [], 5 -> 0
+    var c: Int = 0
+    var i: Int = 0
+    while i < length(xs) do
+        if xs[i] == target then
+            c = c + 1
+        end if
+        i = i + 1
+    end while
+    return c
+end func
+
+func contains_int(xs: List[Int], x: Int) -> Bool
+    example [1, 2], 2 -> true
+    example [1, 2], 9 -> false
+    var i: Int = 0
+    while i < length(xs) do
+        if xs[i] == x then
+            return true
+        end if
+        i = i + 1
+    end while
+    return false
+end func
+
+func unique_values(xs: List[Int]) -> List[Int]
+    example [2, 1, 2, 3, 1] -> [2, 1, 3]
+    example [] -> []
+    example [5, 5] -> [5]
+    var out: List[Int] = []
+    var i: Int = 0
+    while i < length(xs) do
+        if contains_int(out, xs[i]) == false then
+            out = append(out, xs[i])
+        end if
+        i = i + 1
+    end while
+    return out
+end func
+
+/// Frequencies aligned with unique_values order: count for each unique value.
+func frequencies(xs: List[Int]) -> List[Int]
+    example [1, 2, 2, 3, 1, 1] -> [3, 2, 1]
+    example [] -> []
+    example [5, 5, 5] -> [3]
+    let vals: List[Int] = unique_values(xs)
+    var freqs: List[Int] = []
+    var i: Int = 0
+    while i < length(vals) do
+        freqs = append(freqs, count_of(xs, vals[i]))
+        i = i + 1
+    end while
+    return freqs
+end func
+
+func describe(xs: List[Int]) -> String
+    example [1, 2, 2] -> "values=[1, 2] freqs=[1, 2]"
+    example [] -> "values=[] freqs=[]"
+    let vals: List[Int] = unique_values(xs)
+    let freqs: List[Int] = frequencies(xs)
+    return "values=" + to_string(vals) + " freqs=" + to_string(freqs)
+end func
+
+@untested("entry point")
+func main() -> String
+    let xs: List[Int] = [1, 2, 2, 3, 1, 1]
+    let vals: List[Int] = unique_values(xs)
+    let freqs: List[Int] = frequencies(xs)
+    return "nunique=" + to_string(length(vals)) + " first_freq=" + to_string(freqs[0])
+end func

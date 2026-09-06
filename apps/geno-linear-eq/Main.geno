@@ -1,0 +1,31 @@
+/// Solve ax + b = 0 for x.
+
+func solve(a: Float, b: Float) -> Result[Float, String]
+    example 2.0, -4.0 -> Ok(2.0)
+    example 1.0, 0.0 -> Ok(0.0)
+    example 5.0, 10.0 -> Ok(-2.0)
+    example 0.0, 0.0 -> Err("infinite solutions")
+    example 0.0, 3.0 -> Err("no solution")
+    if a == 0.0 then
+        if b == 0.0 then
+            return Err("infinite solutions")
+        else
+            return Err("no solution")
+        end if
+    end if
+    return Ok((0.0 - b) / a)
+end func
+
+func describe(a: Float, b: Float) -> String
+    example 2.0, -4.0 -> "x=2.0"
+    example 0.0, 3.0 -> "no solution"
+    match solve(a, b) with
+    | Ok(x) -> return "x=" + to_string(x)
+    | Err(msg) -> return msg
+    end match
+end func
+
+@untested("entry point")
+func main() -> String
+    return describe(2.0, -4.0) + " | " + describe(5.0, 10.0)
+end func

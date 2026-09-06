@@ -1,0 +1,62 @@
+/// Min, max, and span (max - min) for a non-empty list of integers.
+
+func min_int(xs: List[Int]) -> Result[Int, String]
+    example [3, 1, 4] -> Ok(1)
+    example [7] -> Ok(7)
+    example [-2, -5, 0] -> Ok((-5))
+    example [] -> Err("empty list")
+    if length(xs) == 0 then
+        return Err("empty list")
+    end if
+    var m: Int = xs[0]
+    var i: Int = 1
+    while i < length(xs) do
+        if xs[i] < m then
+            m = xs[i]
+        end if
+        i = i + 1
+    end while
+    return Ok(m)
+end func
+
+func max_int(xs: List[Int]) -> Result[Int, String]
+    example [3, 1, 4] -> Ok(4)
+    example [7] -> Ok(7)
+    example [-2, -5, 0] -> Ok(0)
+    example [] -> Err("empty list")
+    if length(xs) == 0 then
+        return Err("empty list")
+    end if
+    var m: Int = xs[0]
+    var i: Int = 1
+    while i < length(xs) do
+        if xs[i] > m then
+            m = xs[i]
+        end if
+        i = i + 1
+    end while
+    return Ok(m)
+end func
+
+func span(xs: List[Int]) -> Result[Int, String]
+    example [3, 1, 4] -> Ok(3)
+    example [7] -> Ok(0)
+    example [-2, -5, 0] -> Ok(5)
+    example [] -> Err("empty list")
+    match min_int(xs) with
+    | Err(e) -> return Err(e)
+    | Ok(lo) ->
+        match max_int(xs) with
+        | Err(e2) -> return Err(e2)
+        | Ok(hi) -> return Ok(hi - lo)
+        end match
+    end match
+end func
+
+@untested("entry point")
+func main() -> String
+    match span([3, 1, 4, 1, 5]) with
+    | Ok(s) -> return "span=" + to_string(s)
+    | Err(e) -> return "error: " + e
+    end match
+end func

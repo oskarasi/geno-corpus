@@ -1,0 +1,510 @@
+{
+  "schema": 1,
+  "apps": [
+    {
+      "id": "geno-acronym",
+      "tier": "corpus",
+      "path": "apps/geno-acronym"
+    },
+    {
+      "id": "geno-anagram",
+      "tier": "corpus",
+      "path": "apps/geno-anagram"
+    },
+    {
+      "id": "geno-anagram-key",
+      "tier": "corpus",
+      "path": "apps/geno-anagram-key"
+    },
+    {
+      "id": "geno-area-rect",
+      "tier": "corpus",
+      "path": "apps/geno-area-rect"
+    },
+    {
+      "id": "geno-armstrong",
+      "tier": "corpus",
+      "path": "apps/geno-armstrong"
+    },
+    {
+      "id": "geno-atbash",
+      "tier": "corpus",
+      "path": "apps/geno-atbash"
+    },
+    {
+      "id": "geno-base-convert",
+      "tier": "flagship",
+      "path": "apps/geno-base-convert"
+    },
+    {
+      "id": "geno-binary",
+      "tier": "corpus",
+      "path": "apps/geno-binary"
+    },
+    {
+      "id": "geno-binary-search",
+      "tier": "corpus",
+      "path": "apps/geno-binary-search"
+    },
+    {
+      "id": "geno-bmi",
+      "tier": "flagship",
+      "path": "apps/geno-bmi"
+    },
+    {
+      "id": "geno-chunk",
+      "tier": "corpus",
+      "path": "apps/geno-chunk"
+    },
+    {
+      "id": "geno-cipher",
+      "tier": "flagship",
+      "path": "apps/geno-cipher"
+    },
+    {
+      "id": "geno-circle",
+      "tier": "corpus",
+      "path": "apps/geno-circle"
+    },
+    {
+      "id": "geno-clock-angle",
+      "tier": "corpus",
+      "path": "apps/geno-clock-angle"
+    },
+    {
+      "id": "geno-coin-change",
+      "tier": "corpus",
+      "path": "apps/geno-coin-change"
+    },
+    {
+      "id": "geno-collatz",
+      "tier": "corpus",
+      "path": "apps/geno-collatz"
+    },
+    {
+      "id": "geno-combin",
+      "tier": "corpus",
+      "path": "apps/geno-combin"
+    },
+    {
+      "id": "geno-credit-mask",
+      "tier": "corpus",
+      "path": "apps/geno-credit-mask"
+    },
+    {
+      "id": "geno-csv-row",
+      "tier": "corpus",
+      "path": "apps/geno-csv-row"
+    },
+    {
+      "id": "geno-currency",
+      "tier": "corpus",
+      "path": "apps/geno-currency"
+    },
+    {
+      "id": "geno-diff-list",
+      "tier": "corpus",
+      "path": "apps/geno-diff-list"
+    },
+    {
+      "id": "geno-discount",
+      "tier": "corpus",
+      "path": "apps/geno-discount"
+    },
+    {
+      "id": "geno-dot",
+      "tier": "corpus",
+      "path": "apps/geno-dot"
+    },
+    {
+      "id": "geno-email-check",
+      "tier": "corpus",
+      "path": "apps/geno-email-check"
+    },
+    {
+      "id": "geno-euclidean",
+      "tier": "corpus",
+      "path": "apps/geno-euclidean"
+    },
+    {
+      "id": "geno-factorial",
+      "tier": "corpus",
+      "path": "apps/geno-factorial"
+    },
+    {
+      "id": "geno-fib",
+      "tier": "corpus",
+      "path": "apps/geno-fib"
+    },
+    {
+      "id": "geno-fizzbuzz",
+      "tier": "corpus",
+      "path": "apps/geno-fizzbuzz"
+    },
+    {
+      "id": "geno-flatten",
+      "tier": "corpus",
+      "path": "apps/geno-flatten"
+    },
+    {
+      "id": "geno-gcd",
+      "tier": "corpus",
+      "path": "apps/geno-gcd"
+    },
+    {
+      "id": "geno-hamming",
+      "tier": "corpus",
+      "path": "apps/geno-hamming"
+    },
+    {
+      "id": "geno-happy",
+      "tier": "corpus",
+      "path": "apps/geno-happy"
+    },
+    {
+      "id": "geno-hex",
+      "tier": "corpus",
+      "path": "apps/geno-hex"
+    },
+    {
+      "id": "geno-histogram",
+      "tier": "corpus",
+      "path": "apps/geno-histogram"
+    },
+    {
+      "id": "geno-html-escape",
+      "tier": "corpus",
+      "path": "apps/geno-html-escape"
+    },
+    {
+      "id": "geno-initials",
+      "tier": "corpus",
+      "path": "apps/geno-initials"
+    },
+    {
+      "id": "geno-interest",
+      "tier": "corpus",
+      "path": "apps/geno-interest"
+    },
+    {
+      "id": "geno-intersect",
+      "tier": "corpus",
+      "path": "apps/geno-intersect"
+    },
+    {
+      "id": "geno-isbn",
+      "tier": "flagship",
+      "path": "apps/geno-isbn"
+    },
+    {
+      "id": "geno-isogram",
+      "tier": "corpus",
+      "path": "apps/geno-isogram"
+    },
+    {
+      "id": "geno-json-escape",
+      "tier": "corpus",
+      "path": "apps/geno-json-escape"
+    },
+    {
+      "id": "geno-kaprekar",
+      "tier": "corpus",
+      "path": "apps/geno-kaprekar"
+    },
+    {
+      "id": "geno-lcm",
+      "tier": "corpus",
+      "path": "apps/geno-lcm"
+    },
+    {
+      "id": "geno-leap",
+      "tier": "corpus",
+      "path": "apps/geno-leap"
+    },
+    {
+      "id": "geno-levenshtein",
+      "tier": "flagship",
+      "path": "apps/geno-levenshtein"
+    },
+    {
+      "id": "geno-linear-eq",
+      "tier": "corpus",
+      "path": "apps/geno-linear-eq"
+    },
+    {
+      "id": "geno-luhn",
+      "tier": "flagship",
+      "path": "apps/geno-luhn"
+    },
+    {
+      "id": "geno-manhattan",
+      "tier": "corpus",
+      "path": "apps/geno-manhattan"
+    },
+    {
+      "id": "geno-matrix2",
+      "tier": "corpus",
+      "path": "apps/geno-matrix2"
+    },
+    {
+      "id": "geno-mean",
+      "tier": "corpus",
+      "path": "apps/geno-mean"
+    },
+    {
+      "id": "geno-median",
+      "tier": "corpus",
+      "path": "apps/geno-median"
+    },
+    {
+      "id": "geno-mode",
+      "tier": "corpus",
+      "path": "apps/geno-mode"
+    },
+    {
+      "id": "geno-morse",
+      "tier": "corpus",
+      "path": "apps/geno-morse"
+    },
+    {
+      "id": "geno-mortgage",
+      "tier": "corpus",
+      "path": "apps/geno-mortgage"
+    },
+    {
+      "id": "geno-nato",
+      "tier": "corpus",
+      "path": "apps/geno-nato"
+    },
+    {
+      "id": "geno-ordinal",
+      "tier": "corpus",
+      "path": "apps/geno-ordinal"
+    },
+    {
+      "id": "geno-palindrome",
+      "tier": "corpus",
+      "path": "apps/geno-palindrome"
+    },
+    {
+      "id": "geno-pangram",
+      "tier": "corpus",
+      "path": "apps/geno-pangram"
+    },
+    {
+      "id": "geno-pascal",
+      "tier": "corpus",
+      "path": "apps/geno-pascal"
+    },
+    {
+      "id": "geno-percent",
+      "tier": "corpus",
+      "path": "apps/geno-percent"
+    },
+    {
+      "id": "geno-percentile",
+      "tier": "corpus",
+      "path": "apps/geno-percentile"
+    },
+    {
+      "id": "geno-perfect",
+      "tier": "corpus",
+      "path": "apps/geno-perfect"
+    },
+    {
+      "id": "geno-perm",
+      "tier": "corpus",
+      "path": "apps/geno-perm"
+    },
+    {
+      "id": "geno-phone-norm",
+      "tier": "corpus",
+      "path": "apps/geno-phone-norm"
+    },
+    {
+      "id": "geno-pig-latin",
+      "tier": "corpus",
+      "path": "apps/geno-pig-latin"
+    },
+    {
+      "id": "geno-pluralize",
+      "tier": "corpus",
+      "path": "apps/geno-pluralize"
+    },
+    {
+      "id": "geno-power-set-size",
+      "tier": "corpus",
+      "path": "apps/geno-power-set-size"
+    },
+    {
+      "id": "geno-prime",
+      "tier": "flagship",
+      "path": "apps/geno-prime"
+    },
+    {
+      "id": "geno-pwd",
+      "tier": "corpus",
+      "path": "apps/geno-pwd"
+    },
+    {
+      "id": "geno-pythagoras",
+      "tier": "corpus",
+      "path": "apps/geno-pythagoras"
+    },
+    {
+      "id": "geno-quadratic",
+      "tier": "corpus",
+      "path": "apps/geno-quadratic"
+    },
+    {
+      "id": "geno-queue",
+      "tier": "corpus",
+      "path": "apps/geno-queue"
+    },
+    {
+      "id": "geno-range-stats",
+      "tier": "corpus",
+      "path": "apps/geno-range-stats"
+    },
+    {
+      "id": "geno-ratio",
+      "tier": "corpus",
+      "path": "apps/geno-ratio"
+    },
+    {
+      "id": "geno-ref-ledger",
+      "tier": "reference",
+      "path": "apps/geno-ref-ledger"
+    },
+    {
+      "id": "geno-reverse",
+      "tier": "corpus",
+      "path": "apps/geno-reverse"
+    },
+    {
+      "id": "geno-rle",
+      "tier": "flagship",
+      "path": "apps/geno-rle"
+    },
+    {
+      "id": "geno-roman",
+      "tier": "flagship",
+      "path": "apps/geno-roman"
+    },
+    {
+      "id": "geno-rot13",
+      "tier": "corpus",
+      "path": "apps/geno-rot13"
+    },
+    {
+      "id": "geno-rotate",
+      "tier": "corpus",
+      "path": "apps/geno-rotate"
+    },
+    {
+      "id": "geno-run-max",
+      "tier": "corpus",
+      "path": "apps/geno-run-max"
+    },
+    {
+      "id": "geno-run-sum",
+      "tier": "corpus",
+      "path": "apps/geno-run-sum"
+    },
+    {
+      "id": "geno-setops",
+      "tier": "corpus",
+      "path": "apps/geno-setops"
+    },
+    {
+      "id": "geno-slugify",
+      "tier": "corpus",
+      "path": "apps/geno-slugify"
+    },
+    {
+      "id": "geno-sort-ints",
+      "tier": "corpus",
+      "path": "apps/geno-sort-ints"
+    },
+    {
+      "id": "geno-square-num",
+      "tier": "corpus",
+      "path": "apps/geno-square-num"
+    },
+    {
+      "id": "geno-stack",
+      "tier": "corpus",
+      "path": "apps/geno-stack"
+    },
+    {
+      "id": "geno-tax",
+      "tier": "corpus",
+      "path": "apps/geno-tax"
+    },
+    {
+      "id": "geno-temp",
+      "tier": "corpus",
+      "path": "apps/geno-temp"
+    },
+    {
+      "id": "geno-template",
+      "tier": "corpus",
+      "path": "apps/geno-template"
+    },
+    {
+      "id": "geno-tip",
+      "tier": "flagship",
+      "path": "apps/geno-tip"
+    },
+    {
+      "id": "geno-titlecase",
+      "tier": "corpus",
+      "path": "apps/geno-titlecase"
+    },
+    {
+      "id": "geno-tri-num",
+      "tier": "corpus",
+      "path": "apps/geno-tri-num"
+    },
+    {
+      "id": "geno-triangle",
+      "tier": "corpus",
+      "path": "apps/geno-triangle"
+    },
+    {
+      "id": "geno-unique",
+      "tier": "corpus",
+      "path": "apps/geno-unique"
+    },
+    {
+      "id": "geno-units-length",
+      "tier": "corpus",
+      "path": "apps/geno-units-length"
+    },
+    {
+      "id": "geno-units-speed",
+      "tier": "corpus",
+      "path": "apps/geno-units-speed"
+    },
+    {
+      "id": "geno-units-weight",
+      "tier": "corpus",
+      "path": "apps/geno-units-weight"
+    },
+    {
+      "id": "geno-volume-box",
+      "tier": "corpus",
+      "path": "apps/geno-volume-box"
+    },
+    {
+      "id": "geno-vowels",
+      "tier": "corpus",
+      "path": "apps/geno-vowels"
+    },
+    {
+      "id": "geno-zip-lists",
+      "tier": "corpus",
+      "path": "apps/geno-zip-lists"
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+/// Simple email shape check: local@domain with a dot in domain.
+
+import String
+
+func is_allowed_local(c: String) -> Bool
+    example "a" -> true
+    example "Z" -> true
+    example "5" -> true
+    example "." -> true
+    example "_" -> true
+    example "%" -> true
+    example "+" -> true
+    example "-" -> true
+    example "@" -> false
+    example " " -> false
+    if (c >= "a" and c <= "z") or (c >= "A" and c <= "Z") or (c >= "0" and c <= "9") then
+        return true
+    end if
+    return c == "." or c == "_" or c == "%" or c == "+" or c == "-"
+end func
+
+func is_allowed_domain(c: String) -> Bool
+    example "a" -> true
+    example "5" -> true
+    example "." -> true
+    example "-" -> true
+    example "@" -> false
+    if (c >= "a" and c <= "z") or (c >= "A" and c <= "Z") or (c >= "0" and c <= "9") then
+        return true
+    end if
+    return c == "." or c == "-"
+end func
+
+func count_char(s: String, ch: String) -> Int
+    example "a@b@c", "@" -> 2
+    example "abc", "@" -> 0
+    var n: Int = 0
+    var i: Int = 0
+    while i < length(s) do
+        if char_at(s, i) == ch then
+            n = n + 1
+        end if
+        i = i + 1
+    end while
+    return n
+end func
+
+func index_of_char(s: String, ch: String) -> Int
+    example "a@b", "@" -> 1
+    example "abc", "@" -> -1
+    var i: Int = 0
+    while i < length(s) do
+        if char_at(s, i) == ch then
+            return i
+        end if
+        i = i + 1
+    end while
+    return 0 - 1
+end func
+
+func all_local_ok(s: String) -> Bool
+    example "a.b" -> true
+    example "a b" -> false
+    example "" -> false
+    if length(s) == 0 then
+        return false
+    end if
+    var i: Int = 0
+    while i < length(s) do
+        if not is_allowed_local(char_at(s, i)) then
+            return false
+        end if
+        i = i + 1
+    end while
+    return true
+end func
+
+func all_domain_ok(s: String) -> Bool
+    example "ex.com" -> true
+    example "ex com" -> false
+    example "" -> false
+    if length(s) == 0 then
+        return false
+    end if
+    var i: Int = 0
+    while i < length(s) do
+        if not is_allowed_domain(char_at(s, i)) then
+            return false
+        end if
+        i = i + 1
+    end while
+    return true
+end func
+
+func is_email(s: String) -> Bool
+    example "a@b.co" -> true
+    example "user.name+tag@example.com" -> true
+    example "nope" -> false
+    example "@x.com" -> false
+    example "a@" -> false
+    example "a@b" -> false
+    example "a@b." -> false
+    example "a@@b.com" -> false
+    example "" -> false
+    if count_char(s, "@") != 1 then
+        return false
+    end if
+    let at: Int = index_of_char(s, "@")
+    let local: String = substring(text: s, start: 0, stop: at)
+    let domain: String = substring(text: s, start: at + 1, stop: length(s))
+    if not all_local_ok(local) then
+        return false
+    end if
+    if not all_domain_ok(domain) then
+        return false
+    end if
+    if contains_substring(text: domain, substring: ".") == false then
+        return false
+    end if
+    if char_at(domain, 0) == "." or char_at(domain, length(domain) - 1) == "." then
+        return false
+    end if
+    return true
+end func
+
+@untested("entry point")
+func main() -> String
+    return "ok=" + to_string(is_email("user@example.com")) + " bad=" + to_string(is_email("nope"))
+end func

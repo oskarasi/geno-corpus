@@ -1,0 +1,28 @@
+/// Power set cardinality: |P(S)| = 2^n for a set of size n.
+
+func power_set_size(n: Int) -> Result[Int, String]
+    example 0 -> Ok(1)
+    example 1 -> Ok(2)
+    example 3 -> Ok(8)
+    example 5 -> Ok(32)
+    example 10 -> Ok(1024)
+    example (-1) -> Err("n must be non-negative")
+    if n < 0 then
+        return Err("n must be non-negative")
+    end if
+    var result: Int = 1
+    var i: Int = 0
+    while i < n do
+        result = result * 2
+        i = i + 1
+    end while
+    return Ok(result)
+end func
+
+@untested("entry point")
+func main() -> String
+    match power_set_size(5) with
+    | Ok(v) -> return "2^5=" + to_string(v)
+    | Err(e) -> return "error: " + e
+    end match
+end func

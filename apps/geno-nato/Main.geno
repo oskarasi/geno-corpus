@@ -1,0 +1,95 @@
+/// NATO phonetic alphabet: letter -> word.
+
+import String
+
+func nato_word(c: String) -> String
+    example "A" -> "Alfa"
+    example "a" -> "Alfa"
+    example "Z" -> "Zulu"
+    example "B" -> "Bravo"
+    example "1" -> ""
+    let ch: String = to_upper(c)
+    if ch == "A" then
+        return "Alfa"
+    else if ch == "B" then
+        return "Bravo"
+    else if ch == "C" then
+        return "Charlie"
+    else if ch == "D" then
+        return "Delta"
+    else if ch == "E" then
+        return "Echo"
+    else if ch == "F" then
+        return "Foxtrot"
+    else if ch == "G" then
+        return "Golf"
+    else if ch == "H" then
+        return "Hotel"
+    else if ch == "I" then
+        return "India"
+    else if ch == "J" then
+        return "Juliett"
+    else if ch == "K" then
+        return "Kilo"
+    else if ch == "L" then
+        return "Lima"
+    else if ch == "M" then
+        return "Mike"
+    else if ch == "N" then
+        return "November"
+    else if ch == "O" then
+        return "Oscar"
+    else if ch == "P" then
+        return "Papa"
+    else if ch == "Q" then
+        return "Quebec"
+    else if ch == "R" then
+        return "Romeo"
+    else if ch == "S" then
+        return "Sierra"
+    else if ch == "T" then
+        return "Tango"
+    else if ch == "U" then
+        return "Uniform"
+    else if ch == "V" then
+        return "Victor"
+    else if ch == "W" then
+        return "Whiskey"
+    else if ch == "X" then
+        return "Xray"
+    else if ch == "Y" then
+        return "Yankee"
+    else if ch == "Z" then
+        return "Zulu"
+    else
+        return ""
+    end if
+end func
+
+func encode(s: String) -> String
+    example "" -> ""
+    example "A" -> "Alfa"
+    example "Hi" -> "Hotel India"
+    example "NATO" -> "November Alfa Tango Oscar"
+    example "a b" -> "Alfa Bravo"
+    var out: String = ""
+    var i: Int = 0
+    var first: Bool = true
+    while i < length(s) do
+        let word: String = nato_word(char_at(s, i))
+        if length(word) > 0 then
+            if not first then
+                out = out + " "
+            end if
+            out = out + word
+            first = false
+        end if
+        i = i + 1
+    end while
+    return out
+end func
+
+@untested("entry point")
+func main() -> String
+    return encode("Geno")
+end func
