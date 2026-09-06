@@ -4,3 +4,6 @@ __pycache__/
 results/latest.json
 results/summary.md
 .DS_Store
+
+# Needs token with workflow scope to push; use ci/conformance.yml copy instead
+.github/workflows/
