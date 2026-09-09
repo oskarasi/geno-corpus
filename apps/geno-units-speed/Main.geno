@@ -4,6 +4,7 @@ func mph_to_kmh(mph: Float) -> Float
     example 1.0 -> 1.60934
     example 0.0 -> 0.0
     example 60.0 -> 96.5604
+    example 30.0 -> 48.2802
     return mph * 1.60934
 end func
 
@@ -14,9 +15,39 @@ func kmh_to_mph(kmh: Float) -> Float
     return kmh / 1.60934
 end func
 
+/// CLI: `mph2kmh <mph>` | `kmh2mph <kmh>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["mph2kmh", "60"] -> Ok("96.5604")
+    example ["kmh2mph", "96.5604"] -> Ok("60.0")
+    example ["mph2kmh", "1"] -> Ok("1.60934")
+    example [] -> Err("usage: mph2kmh <mph> | kmh2mph <kmh>")
+    example ["mph2kmh"] -> Err("usage: mph2kmh <mph> | kmh2mph <kmh>")
+    example ["nope", "1"] -> Err("usage: mph2kmh <mph> | kmh2mph <kmh>")
+    example ["mph2kmh", "x"] -> Err("value must be a float")
+    if length(args) != 2 then
+        return Err("usage: mph2kmh <mph> | kmh2mph <kmh>")
+    end if
+    match parse_float(args[1]) with
+    | None -> return Err("value must be a float")
+    | Some(v) ->
+        if args[0] == "mph2kmh" then
+            return Ok(to_string(mph_to_kmh(v)))
+        else if args[0] == "kmh2mph" then
+            return Ok(to_string(kmh_to_mph(v)))
+        else
+            return Err("usage: mph2kmh <mph> | kmh2mph <kmh>")
+        end if
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    let k: Float = mph_to_kmh(60.0)
-    let m: Float = kmh_to_mph(96.5604)
-    return "60mph=" + to_string(k) + "kmh 96.5604kmh=" + to_string(m) + "mph"
+    match run(["mph2kmh", "60"]) with
+    | Ok(a) ->
+        match run(["kmh2mph", "96.5604"]) with
+        | Ok(b) -> return "60mph=" + a + "kmh 96.5604kmh=" + b + "mph"
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

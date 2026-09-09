@@ -5,6 +5,7 @@ func percent_of(percent: Float, whole: Float) -> Float
     example 10.0, 50.0 -> 5.0
     example 0.0, 100.0 -> 0.0
     example 100.0, 7.0 -> 7.0
+    example 15.0, 80.0 -> 12.0
     return (percent / 100.0) * whole
 end func
 
@@ -12,6 +13,7 @@ func what_percent(part: Float, whole: Float) -> Result[Float, String]
     example 50.0, 200.0 -> Ok(25.0)
     example 5.0, 50.0 -> Ok(10.0)
     example 7.0, 7.0 -> Ok(100.0)
+    example 12.0, 40.0 -> Ok(30.0)
     example 1.0, 0.0 -> Err("whole must be non-zero")
     if whole == 0.0 then
         return Err("whole must be non-zero")
@@ -19,11 +21,47 @@ func what_percent(part: Float, whole: Float) -> Result[Float, String]
     return Ok((part / whole) * 100.0)
 end func
 
+/// CLI: `of <percent> <whole>` or `what <part> <whole>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["of", "25", "200"] -> Ok("50.0")
+    example ["what", "50", "200"] -> Ok("25.0")
+    example ["of", "15", "80"] -> Ok("12.0")
+    example ["what", "1", "0"] -> Err("whole must be non-zero")
+    example [] -> Err("usage: of <percent> <whole> | what <part> <whole>")
+    example ["of", "25"] -> Err("usage: of <percent> <whole> | what <part> <whole>")
+    example ["nope", "1", "2"] -> Err("usage: of <percent> <whole> | what <part> <whole>")
+    example ["of", "x", "200"] -> Err("numbers must be floats")
+    if length(args) != 3 then
+        return Err("usage: of <percent> <whole> | what <part> <whole>")
+    end if
+    match parse_float(args[1]) with
+    | None -> return Err("numbers must be floats")
+    | Some(a) ->
+        match parse_float(args[2]) with
+        | None -> return Err("numbers must be floats")
+        | Some(b) ->
+            if args[0] == "of" then
+                return Ok(to_string(percent_of(a, b)))
+            end if
+            if args[0] == "what" then
+                match what_percent(a, b) with
+                | Ok(v) -> return Ok(to_string(v))
+                | Err(msg) -> return Err(msg)
+                end match
+            end if
+            return Err("usage: of <percent> <whole> | what <part> <whole>")
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    let p: Float = percent_of(15.0, 80.0)
-    match what_percent(12.0, 40.0) with
-    | Ok(w) -> return "15% of 80=" + to_string(p) + " 12 is " + to_string(w) + "% of 40"
+    match run(["of", "15", "80"]) with
+    | Ok(a) ->
+        match run(["what", "12", "40"]) with
+        | Ok(b) -> return "15% of 80=" + a + " | 12 is " + b + "% of 40"
+        | Err(msg) -> return "error: " + msg
+        end match
     | Err(msg) -> return "error: " + msg
     end match
 end func

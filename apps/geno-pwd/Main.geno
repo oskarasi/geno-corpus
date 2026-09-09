@@ -1,7 +1,7 @@
-import String
-
 /// Password strength meter for Geno.
 /// Scores 0-5 from character-class coverage plus length.
+
+import String
 
 func is_lower(c: String) -> Bool
     example "a" -> true
@@ -105,6 +105,7 @@ func score(password: String) -> Int
     example "Abcdefgh" -> 3
     example "Abcdefg1" -> 4
     example "Abcdefg1!" -> 5
+    example "Password1!" -> 5
     var s: Int = 0
     if has_lower(password) then
         s = s + 1
@@ -146,16 +147,32 @@ end func
 func summarize(password: String) -> String
     example "abc" -> "score=1 label=weak"
     example "Abcdefg1!" -> "score=5 label=strong"
+    example "Password" -> "score=3 label=good"
     let s: Int = score(password)
     return "score=" + to_string(s) + " label=" + label(s)
 end func
 
+/// CLI: joins all args as the password to score.
+func run(args: List[String]) -> Result[String, String]
+    example ["abc"] -> Ok("score=1 label=weak")
+    example ["Abcdefg1!"] -> Ok("score=5 label=strong")
+    example ["Password1!"] -> Ok("score=5 label=strong")
+    example ["Pass", "word1!"] -> Ok("score=5 label=strong")
+    example [] -> Err("usage: <password...>")
+    if length(args) == 0 then
+        return Err("usage: <password...>")
+    end if
+    return Ok(summarize(join(args, " ")))
+end func
+
 @untested("entry point")
-func main() -> List[String]
-    return [
-        summarize("abc"),
-        summarize("Password"),
-        summarize("Password1"),
-        summarize("Password1!")
-    ]
+func main() -> String
+    match run(["abc"]) with
+    | Ok(a) ->
+        match run(["Password1!"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

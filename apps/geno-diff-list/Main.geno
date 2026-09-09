@@ -6,6 +6,7 @@ func diff_list(xs: List[Int]) -> List[Int]
     example [] -> []
     example [10, 7, 7, 4] -> [(-3), 0, (-3)]
     example [1, 2] -> [1]
+    example [0, 0, 0] -> [0, 0]
     var out: List[Int] = []
     var i: Int = 0
     while i + 1 < length(xs) do
@@ -15,7 +16,42 @@ func diff_list(xs: List[Int]) -> List[Int]
     return out
 end func
 
+func ints_csv(xs: List[Int]) -> String
+    example [2, 3, 4] -> "2,3,4"
+    example [] -> ""
+    example [(-3), 0] -> "-3,0"
+    var parts: List[String] = []
+    var i: Int = 0
+    while i < length(xs) do
+        parts = append(parts, to_string(xs[i]))
+        i = i + 1
+    end while
+    return join(parts, ",")
+end func
+
+/// CLI: `<ints...>`
+func run(args: List[String]) -> Result[String, String]
+    example ["1", "3", "6", "10"] -> Ok("2,3,4")
+    example ["10", "7", "7", "4"] -> Ok("-3,0,-3")
+    example ["5"] -> Ok("")
+    example [] -> Ok("")
+    example ["1", "x"] -> Err("values must be integers")
+    var xs: List[Int] = []
+    var i: Int = 0
+    while i < length(args) do
+        match parse_int(args[i]) with
+        | None -> return Err("values must be integers")
+        | Some(v) -> xs = append(xs, v)
+        end match
+        i = i + 1
+    end while
+    return Ok(ints_csv(diff_list(xs)))
+end func
+
 @untested("entry point")
 func main() -> String
-    return "diff=" + to_string(diff_list([1, 3, 6, 10]))
+    match run(["1", "3", "6", "10"]) with
+    | Ok(line) -> return "diff=" + line
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

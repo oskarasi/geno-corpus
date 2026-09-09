@@ -6,6 +6,7 @@ func power_set_size(n: Int) -> Result[Int, String]
     example 3 -> Ok(8)
     example 5 -> Ok(32)
     example 10 -> Ok(1024)
+    example 12 -> Ok(4096)
     example (-1) -> Err("n must be non-negative")
     if n < 0 then
         return Err("n must be non-negative")
@@ -19,10 +20,40 @@ func power_set_size(n: Int) -> Result[Int, String]
     return Ok(result)
 end func
 
+/// CLI: `<n>` with 0 <= n <= 60 for demo.
+func run(args: List[String]) -> Result[String, String]
+    example ["5"] -> Ok("2^5=32")
+    example ["0"] -> Ok("2^0=1")
+    example ["10"] -> Ok("2^10=1024")
+    example ["-1"] -> Err("n must be non-negative")
+    example ["61"] -> Err("n too large (max 60 for demo)")
+    example [] -> Err("usage: <n>")
+    example ["1", "2"] -> Err("usage: <n>")
+    example ["x"] -> Err("n must be an integer")
+    if length(args) != 1 then
+        return Err("usage: <n>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("n must be an integer")
+    | Some(n) ->
+        if n > 60 then
+            return Err("n too large (max 60 for demo)")
+        end if
+        match power_set_size(n) with
+        | Ok(v) -> return Ok("2^" + to_string(n) + "=" + to_string(v))
+        | Err(msg) -> return Err(msg)
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    match power_set_size(5) with
-    | Ok(v) -> return "2^5=" + to_string(v)
-    | Err(e) -> return "error: " + e
+    match run(["5"]) with
+    | Ok(a) ->
+        match run(["10"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
     end match
 end func

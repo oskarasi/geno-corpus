@@ -34,6 +34,7 @@ end func
 func count_char(s: String, ch: String) -> Int
     example "a@b@c", "@" -> 2
     example "abc", "@" -> 0
+    example "", "x" -> 0
     var n: Int = 0
     var i: Int = 0
     while i < length(s) do
@@ -48,6 +49,7 @@ end func
 func index_of_char(s: String, ch: String) -> Int
     example "a@b", "@" -> 1
     example "abc", "@" -> -1
+    example "@", "@" -> 0
     var i: Int = 0
     while i < length(s) do
         if char_at(s, i) == ch then
@@ -62,6 +64,7 @@ func all_local_ok(s: String) -> Bool
     example "a.b" -> true
     example "a b" -> false
     example "" -> false
+    example "user+tag" -> true
     if length(s) == 0 then
         return false
     end if
@@ -79,6 +82,7 @@ func all_domain_ok(s: String) -> Bool
     example "ex.com" -> true
     example "ex com" -> false
     example "" -> false
+    example "mail.example.org" -> true
     if length(s) == 0 then
         return false
     end if
@@ -102,6 +106,7 @@ func is_email(s: String) -> Bool
     example "a@b." -> false
     example "a@@b.com" -> false
     example "" -> false
+    example "user@example.com" -> true
     if count_char(s, "@") != 1 then
         return false
     end if
@@ -123,7 +128,28 @@ func is_email(s: String) -> Bool
     return true
 end func
 
+/// CLI: `<email>`
+func run(args: List[String]) -> Result[String, String]
+    example ["user@example.com"] -> Ok("true")
+    example ["nope"] -> Ok("false")
+    example ["a@b.co"] -> Ok("true")
+    example ["a@@b.com"] -> Ok("false")
+    example [] -> Err("usage: <email>")
+    example ["a", "b"] -> Err("usage: <email>")
+    if length(args) != 1 then
+        return Err("usage: <email>")
+    end if
+    return Ok(to_string(is_email(args[0])))
+end func
+
 @untested("entry point")
 func main() -> String
-    return "ok=" + to_string(is_email("user@example.com")) + " bad=" + to_string(is_email("nope"))
+    match run(["user@example.com"]) with
+    | Ok(a) ->
+        match run(["nope"]) with
+        | Ok(b) -> return "ok=" + a + " bad=" + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

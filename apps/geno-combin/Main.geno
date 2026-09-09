@@ -8,6 +8,7 @@ func combin(n: Int, k: Int) -> Result[Int, String]
     example 6, 3 -> Ok(20)
     example 0, 0 -> Ok(1)
     example 4, 5 -> Ok(0)
+    example 7, 2 -> Ok(21)
     example (-1), 2 -> Err("n must be non-negative")
     example 5, (-1) -> Err("k must be non-negative")
     if n < 0 then
@@ -32,10 +33,38 @@ func combin(n: Int, k: Int) -> Result[Int, String]
     return Ok(result)
 end func
 
+/// CLI: `<n> <k>`
+func run(args: List[String]) -> Result[String, String]
+    example ["10", "3"] -> Ok("C(10,3)=120")
+    example ["5", "2"] -> Ok("C(5,2)=10")
+    example ["4", "5"] -> Ok("C(4,5)=0")
+    example [] -> Err("usage: <n> <k>")
+    example ["5"] -> Err("usage: <n> <k>")
+    example ["x", "2"] -> Err("n must be an integer")
+    example ["5", "y"] -> Err("k must be an integer")
+    example ["-1", "2"] -> Err("n must be non-negative")
+    example ["5", "-1"] -> Err("k must be non-negative")
+    if length(args) != 2 then
+        return Err("usage: <n> <k>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("n must be an integer")
+    | Some(n) ->
+        match parse_int(args[1]) with
+        | None -> return Err("k must be an integer")
+        | Some(k) ->
+            match combin(n, k) with
+            | Err(e) -> return Err(e)
+            | Ok(v) -> return Ok("C(" + to_string(n) + "," + to_string(k) + ")=" + to_string(v))
+            end match
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    match combin(n: 10, k: 3) with
-    | Ok(v) -> return "C(10,3)=" + to_string(v)
-    | Err(e) -> return "error: " + e
+    match run(["10", "3"]) with
+    | Ok(line) -> return line
+    | Err(msg) -> return "error: " + msg
     end match
 end func

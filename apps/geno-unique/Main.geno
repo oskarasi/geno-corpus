@@ -4,6 +4,7 @@ func contains_int(xs: List[Int], x: Int) -> Bool
     example [1, 2, 3], 2 -> true
     example [1, 2, 3], 9 -> false
     example [], 1 -> false
+    example [0], 0 -> true
     var i: Int = 0
     while i < length(xs) do
         if xs[i] == x then
@@ -14,11 +15,25 @@ func contains_int(xs: List[Int], x: Int) -> Bool
     return false
 end func
 
+func ints_csv(xs: List[Int]) -> String
+    example [1, 2, 3] -> "1,2,3"
+    example [] -> ""
+    example [7] -> "7"
+    var parts: List[String] = []
+    var i: Int = 0
+    while i < length(xs) do
+        parts = append(parts, to_string(xs[i]))
+        i = i + 1
+    end while
+    return join(parts, ",")
+end func
+
 func unique(xs: List[Int]) -> List[Int]
     example [1, 2, 2, 3, 1] -> [1, 2, 3]
     example [] -> []
     example [7, 7, 7] -> [7]
     example [4, 1, 4, 2, 1] -> [4, 1, 2]
+    example [1, 2, 3] -> [1, 2, 3]
     var out: List[Int] = []
     var i: Int = 0
     while i < length(xs) do
@@ -30,8 +45,40 @@ func unique(xs: List[Int]) -> List[Int]
     return out
 end func
 
+/// CLI: `unique <ints...>` or bare `<ints...>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["unique", "1", "2", "2", "3", "1"] -> Ok("1,2,3")
+    example ["4", "1", "4", "2", "1"] -> Ok("4,1,2")
+    example ["unique"] -> Ok("")
+    example [] -> Err("usage: unique <ints...> | <ints...>")
+    example ["unique", "x"] -> Err("values must be integers")
+    var start: Int = 0
+    if length(args) >= 1 and args[0] == "unique" then
+        start = 1
+    end if
+    if length(args) == 0 then
+        return Err("usage: unique <ints...> | <ints...>")
+    end if
+    var xs: List[Int] = []
+    var i: Int = start
+    while i < length(args) do
+        match parse_int(args[i]) with
+        | None -> return Err("values must be integers")
+        | Some(v) -> xs = append(xs, v)
+        end match
+        i = i + 1
+    end while
+    return Ok(ints_csv(unique(xs)))
+end func
+
 @untested("entry point")
 func main() -> String
-    let u: List[Int] = unique([1, 2, 2, 3, 1, 4])
-    return "unique_len=" + to_string(length(u)) + " first=" + to_string(u[0]) + " last=" + to_string(u[3])
+    match run(["unique", "1", "2", "2", "3", "1", "4"]) with
+    | Ok(a) ->
+        match run(["7", "7", "7"]) with
+        | Ok(b) -> return "unique=[" + a + "] sevens=[" + b + "]"
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

@@ -5,6 +5,8 @@ func flatten_ints(xss: List[List[Int]]) -> List[Int]
     example [] -> []
     example [[], [1], []] -> [1]
     example [[7, 8, 9]] -> [7, 8, 9]
+    example [[1], [2], [3]] -> [1, 2, 3]
+    example [[10, 20], []] -> [10, 20]
     var out: List[Int] = []
     var i: Int = 0
     while i < length(xss) do
@@ -19,7 +21,56 @@ func flatten_ints(xss: List[List[Int]]) -> List[Int]
     return out
 end func
 
+func parse_row(text: String) -> Result[List[Int], String]
+    example "1,2,3" -> Ok([1, 2, 3])
+    example "7" -> Ok([7])
+    example "" -> Ok([])
+    example "1,x" -> Err("row values must be integers")
+    if text == "" then
+        return Ok([])
+    end if
+    let parts: List[String] = split(text, ",")
+    var out: List[Int] = []
+    var i: Int = 0
+    while i < length(parts) do
+        match parse_int(parts[i]) with
+        | None -> return Err("row values must be integers")
+        | Some(v) -> out = append(out, v)
+        end match
+        i = i + 1
+    end while
+    return Ok(out)
+end func
+
+/// CLI: each arg is a comma-separated row, e.g. `1,2 3 4,5` -> [[1,2],[3],[4,5]].
+func run(args: List[String]) -> Result[String, String]
+    example ["1,2", "3", "4,5"] -> Ok("flat=[1, 2, 3, 4, 5]")
+    example ["7,8,9"] -> Ok("flat=[7, 8, 9]")
+    example [] -> Err("usage: <row...> where each row is comma-separated ints")
+    example ["1,x"] -> Err("row values must be integers")
+    if length(args) == 0 then
+        return Err("usage: <row...> where each row is comma-separated ints")
+    end if
+    var rows: List[List[Int]] = []
+    var i: Int = 0
+    while i < length(args) do
+        match parse_row(args[i]) with
+        | Err(e) -> return Err(e)
+        | Ok(row) -> rows = append(rows, row)
+        end match
+        i = i + 1
+    end while
+    return Ok("flat=" + to_string(flatten_ints(rows)))
+end func
+
 @untested("entry point")
 func main() -> String
-    return "flat=" + to_string(flatten_ints([[1, 2], [3], [4, 5]]))
+    match run(["1,2", "3", "4,5"]) with
+    | Ok(a) ->
+        match run(["7,8,9"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

@@ -6,6 +6,7 @@ func sort_ints(xs: List[Int]) -> List[Int]
     example [3, 1, 2] -> [1, 2, 3]
     example [] -> []
     example [5] -> [5]
+    example [4, 4, 1] -> [1, 4, 4]
     var arr: List[Int] = xs
     var n: Int = length(arr)
     var i: Int = 0
@@ -53,10 +54,46 @@ func percentile(xs: List[Int], p: Int) -> Result[Int, String]
     return Ok(sorted[idx - 1])
 end func
 
+/// CLI: `<p> <ints...>` where p is percentile 1..100.
+func run(args: List[String]) -> Result[String, String]
+    example ["50", "1", "2", "3", "4", "5"] -> Ok("p50=3")
+    example ["100", "1", "2", "3", "4", "5"] -> Ok("p100=5")
+    example ["50", "5", "1", "3"] -> Ok("p50=3")
+    example [] -> Err("usage: <p> <ints...>")
+    example ["50"] -> Err("usage: <p> <ints...>")
+    example ["0", "1", "2"] -> Err("p must be in 1..100")
+    example ["x", "1"] -> Err("p must be an integer")
+    example ["50", "1", "x"] -> Err("values must be integers")
+    if length(args) < 2 then
+        return Err("usage: <p> <ints...>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("p must be an integer")
+    | Some(p) ->
+        var xs: List[Int] = []
+        var i: Int = 1
+        while i < length(args) do
+            match parse_int(args[i]) with
+            | None -> return Err("values must be integers")
+            | Some(v) -> xs = append(xs, v)
+            end match
+            i = i + 1
+        end while
+        match percentile(xs, p) with
+        | Ok(v) -> return Ok("p" + to_string(p) + "=" + to_string(v))
+        | Err(msg) -> return Err(msg)
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    match percentile(xs: [1, 2, 3, 4, 5], p: 50) with
-    | Ok(v) -> return "p50=" + to_string(v)
-    | Err(e) -> return "error: " + e
+    match run(["50", "1", "2", "3", "4", "5"]) with
+    | Ok(a) ->
+        match run(["100", "1", "2", "3", "4", "5"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
     end match
 end func

@@ -8,6 +8,7 @@ func acronym(text: String) -> String
     example "  hello   world " -> "HW"
     example "" -> ""
     example "Geno" -> "G"
+    example "Frequently Asked Questions" -> "FAQ"
     let parts: List[String] = String.split(String.trim(text), " ")
     var out: String = ""
     var i: Int = 0
@@ -21,7 +22,26 @@ func acronym(text: String) -> String
     return out
 end func
 
+/// CLI: joins all args with spaces as the phrase.
+func run(args: List[String]) -> Result[String, String]
+    example ["Portable", "Network", "Graphics"] -> Ok("PNG")
+    example ["as", "soon", "as", "possible"] -> Ok("ASAP")
+    example ["Geno"] -> Ok("G")
+    example [] -> Err("usage: <words...>")
+    if length(args) == 0 then
+        return Err("usage: <words...>")
+    end if
+    return Ok(acronym(join(args, " ")))
+end func
+
 @untested("entry point")
 func main() -> String
-    return "acronym=" + acronym("Portable Network Graphics")
+    match run(["Portable", "Network", "Graphics"]) with
+    | Ok(a) ->
+        match run(["as", "soon", "as", "possible"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

@@ -1,7 +1,6 @@
 # geno-coin-change
 
-Coin change (greedy) in Geno, written in [Geno](https://github.com/davidiach/geno-lang).
-
+Greedy US coin change (quarters, dimes, nickels, pennies). Cents must be **non-negative** in [Geno](https://github.com/davidiach/geno-lang).
 ## Install
 
 ```bash
@@ -16,10 +15,24 @@ geno test Main.geno
 
 ## Run
 
+Default sandbox demo (capability-free `main()`):
+
 ```bash
 geno run Main.geno
 ```
 
+Optional real CLI (needs `--unsafe` because default sandbox does not allow `--cap` without `--unsafe`/`--json`):
+
+```bash
+geno run --unsafe --cap env,print Main.geno -- 41
+geno run --unsafe --cap env,print Main.geno -- 99
+```
+
+Note: `run(args)` is capability-free; OS argv via `cli_args()` needs `--cap env`.
+
 ## API
 
-See `Main.geno` for `Coin change (greedy)` helpers and examples.
+- `change(cents) -> Result[List[Int], String] — [q, d, n, p]`
+- `describe(cents) -> String`
+- `run(args: List[String]) -> Result[String, String] — `<cents>``
+- `main() -> String — demo via `run``

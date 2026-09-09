@@ -4,6 +4,7 @@ func c_to_f(c: Float) -> Float
     example 0.0 -> 32.0
     example 100.0 -> 212.0
     example (-40.0) -> -40.0
+    example 37.0 -> 98.6
     return (c * 9.0 / 5.0) + 32.0
 end func
 
@@ -11,6 +12,7 @@ func f_to_c(f: Float) -> Float
     example 32.0 -> 0.0
     example 212.0 -> 100.0
     example (-40.0) -> -40.0
+    example 98.6 -> 37.0
     return (f - 32.0) * 5.0 / 9.0
 end func
 
@@ -34,18 +36,70 @@ func f_to_k(f: Float) -> Float
     return c_to_k(f_to_c(f))
 end func
 
-/// Round to tenths as an Int (value * 10), useful for display.
-func round_tenths(x: Float) -> Int
-    example 32.0 -> 320
-    example 98.6 -> 986
-    example (-40.0) -> -400
-    return round(x * 10.0)
+func convert(value: Float, frm: String, to: String) -> Result[Float, String]
+    example 0.0, "C", "F" -> Ok(32.0)
+    example 212.0, "F", "C" -> Ok(100.0)
+    example 0.0, "C", "K" -> Ok(273.15)
+    example 273.15, "K", "C" -> Ok(0.0)
+    example 32.0, "F", "K" -> Ok(273.15)
+    example 0.0, "C", "C" -> Ok(0.0)
+    example 1.0, "X", "C" -> Err("units must be C, F, or K")
+    example 1.0, "C", "X" -> Err("units must be C, F, or K")
+    let from_u: String = to_upper(frm)
+    let to_u: String = to_upper(to)
+    if (from_u != "C" and from_u != "F" and from_u != "K") or (to_u != "C" and to_u != "F" and to_u != "K") then
+        return Err("units must be C, F, or K")
+    end if
+    var celsius: Float = value
+    if from_u == "F" then
+        celsius = f_to_c(value)
+    else if from_u == "K" then
+        celsius = k_to_c(value)
+    end if
+    if to_u == "C" then
+        return Ok(celsius)
+    else if to_u == "F" then
+        return Ok(c_to_f(celsius))
+    else
+        return Ok(c_to_k(celsius))
+    end if
+end func
+
+/// CLI: `<value> <from> <to>` with units C|F|K.
+func run(args: List[String]) -> Result[String, String]
+    example ["0", "C", "F"] -> Ok("32.0")
+    example ["212", "F", "C"] -> Ok("100.0")
+    example ["0", "C", "K"] -> Ok("273.15")
+    example ["-40", "C", "F"] -> Ok("-40.0")
+    example [] -> Err("usage: <value> <from> <to>  (units: C|F|K)")
+    example ["0", "C"] -> Err("usage: <value> <from> <to>  (units: C|F|K)")
+    example ["x", "C", "F"] -> Err("value must be a float")
+    example ["1", "X", "C"] -> Err("units must be C, F, or K")
+    if length(args) != 3 then
+        return Err("usage: <value> <from> <to>  (units: C|F|K)")
+    end if
+    match parse_float(args[0]) with
+    | None -> return Err("value must be a float")
+    | Some(v) ->
+        match convert(value: v, frm: args[1], to: args[2]) with
+        | Ok(out) -> return Ok(to_string(out))
+        | Err(e) -> return Err(e)
+        end match
+    end match
 end func
 
 @untested("entry point")
 func main() -> String
-    let f: Float = c_to_f(0.0)
-    let c: Float = f_to_c(212.0)
-    let k: Float = c_to_k(0.0)
-    return "0C=" + to_string(f) + "F 212F=" + to_string(c) + "C 0C=" + to_string(k) + "K"
+    match run(["0", "C", "F"]) with
+    | Ok(a) ->
+        match run(["212", "F", "C"]) with
+        | Ok(b) ->
+            match run(["0", "C", "K"]) with
+            | Ok(c) -> return "0C=" + a + "F 212F=" + b + "C 0C=" + c + "K"
+            | Err(msg) -> return "error: " + msg
+            end match
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

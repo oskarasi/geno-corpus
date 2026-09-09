@@ -6,6 +6,7 @@ func normalize_letters(text: String) -> String
     example " Listen " -> "listen"
     example "A gentleman" -> "agentleman"
     example "123!" -> ""
+    example "" -> ""
     var out: String = ""
     var i: Int = 0
     let lower: String = to_lower(text)
@@ -25,10 +26,30 @@ func anagram_key(text: String) -> String
     example "Hello World" -> "dehllloorw"
     example "" -> ""
     example "A gentleman" -> "aaeeglmnnt"
+    example "123!" -> ""
     return join(sort_strings(to_chars(normalize_letters(text))), "")
+end func
+
+/// CLI: joins all args with spaces as the text.
+func run(args: List[String]) -> Result[String, String]
+    example ["Listen"] -> Ok("eilnst")
+    example ["Hello", "World"] -> Ok("dehllloorw")
+    example ["Silent"] -> Ok("eilnst")
+    example [] -> Err("usage: <text...>")
+    if length(args) == 0 then
+        return Err("usage: <text...>")
+    end if
+    return Ok(anagram_key(join(args, " ")))
 end func
 
 @untested("entry point")
 func main() -> String
-    return "listen=" + anagram_key("Listen") + " silent=" + anagram_key("Silent")
+    match run(["Listen"]) with
+    | Ok(a) ->
+        match run(["Silent"]) with
+        | Ok(b) -> return "listen=" + a + " silent=" + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

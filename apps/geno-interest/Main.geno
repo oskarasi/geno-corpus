@@ -6,18 +6,55 @@ func simple_interest_cents(principal_cents: Int, rate_percent: Int, time: Int) -
     example 999, 10, 1 -> 99
     example 10000, 0, 5 -> 0
     example 20000, 5, 0 -> 0
+    example 100000, 3, 4 -> 12000
     return (principal_cents * rate_percent * time) / 100
 end func
 
 func amount_cents(principal_cents: Int, rate_percent: Int, time: Int) -> Int
     example 10000, 5, 2 -> 11000
     example 5000, 10, 1 -> 5500
+    example 100000, 3, 4 -> 112000
     return principal_cents + simple_interest_cents(principal_cents: principal_cents, rate_percent: rate_percent, time: time)
+end func
+
+/// CLI: `<principal_cents> <rate_percent> <time>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["10000", "5", "2"] -> Ok("interest=1000 amount=11000")
+    example ["5000", "10", "1"] -> Ok("interest=500 amount=5500")
+    example ["100000", "3", "4"] -> Ok("interest=12000 amount=112000")
+    example [] -> Err("usage: <principal_cents> <rate_percent> <time>")
+    example ["10000", "5"] -> Err("usage: <principal_cents> <rate_percent> <time>")
+    example ["x", "5", "2"] -> Err("principal_cents must be an integer")
+    example ["10000", "y", "2"] -> Err("rate_percent must be an integer")
+    example ["10000", "5", "z"] -> Err("time must be an integer")
+    if length(args) != 3 then
+        return Err("usage: <principal_cents> <rate_percent> <time>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("principal_cents must be an integer")
+    | Some(p) ->
+        match parse_int(args[1]) with
+        | None -> return Err("rate_percent must be an integer")
+        | Some(r) ->
+            match parse_int(args[2]) with
+            | None -> return Err("time must be an integer")
+            | Some(t) ->
+                let interest: Int = simple_interest_cents(principal_cents: p, rate_percent: r, time: t)
+                let total: Int = amount_cents(principal_cents: p, rate_percent: r, time: t)
+                return Ok("interest=" + to_string(interest) + " amount=" + to_string(total))
+            end match
+        end match
+    end match
 end func
 
 @untested("entry point")
 func main() -> String
-    let interest: Int = simple_interest_cents(principal_cents: 10000, rate_percent: 5, time: 2)
-    let total: Int = amount_cents(principal_cents: 10000, rate_percent: 5, time: 2)
-    return "interest=" + to_string(interest) + " amount=" + to_string(total)
+    match run(["10000", "5", "2"]) with
+    | Ok(a) ->
+        match run(["5000", "10", "1"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

@@ -9,6 +9,7 @@ func escape_char(c: String) -> String
     example "\r" -> "\\r"
     example "\t" -> "\\t"
     example "a" -> "a"
+    example " " -> " "
     if c == "\\" then
         return "\\\\"
     else if c == "\"" then
@@ -30,6 +31,7 @@ func json_escape(s: String) -> String
     example "a\"b" -> "a\\\"b"
     example "a\\b" -> "a\\\\b"
     example "a\tb" -> "a\\tb"
+    example "line\nbreak" -> "line\\nbreak"
     var out: String = ""
     var i: Int = 0
     while i < length(s) do
@@ -39,7 +41,26 @@ func json_escape(s: String) -> String
     return out
 end func
 
+/// CLI: joins all args with spaces, then JSON-escapes.
+func run(args: List[String]) -> Result[String, String]
+    example ["hi"] -> Ok("hi")
+    example ["say", "\"hi\""] -> Ok("say \\\"hi\\\"")
+    example ["a\\b"] -> Ok("a\\\\b")
+    example [] -> Err("usage: <text...>")
+    if length(args) == 0 then
+        return Err("usage: <text...>")
+    end if
+    return Ok(json_escape(join(args, " ")))
+end func
+
 @untested("entry point")
 func main() -> String
-    return json_escape("say \"hi\"\tnow")
+    match run(["say", "\"hi\""]) with
+    | Ok(a) ->
+        match run(["a\\b"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

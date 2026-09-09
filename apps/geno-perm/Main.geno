@@ -28,10 +28,41 @@ func perm(n: Int, k: Int) -> Result[Int, String]
     return Ok(result)
 end func
 
+/// CLI: `<n> <k>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["5", "2"] -> Ok("P(5,2)=20")
+    example ["5", "0"] -> Ok("P(5,0)=1")
+    example ["6", "3"] -> Ok("P(6,3)=120")
+    example ["-1", "2"] -> Err("n must be non-negative")
+    example ["5", "-1"] -> Err("k must be non-negative")
+    example [] -> Err("usage: <n> <k>")
+    example ["5"] -> Err("usage: <n> <k>")
+    example ["x", "2"] -> Err("n and k must be integers")
+    if length(args) != 2 then
+        return Err("usage: <n> <k>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("n and k must be integers")
+    | Some(n) ->
+        match parse_int(args[1]) with
+        | None -> return Err("n and k must be integers")
+        | Some(k) ->
+            match perm(n, k) with
+            | Ok(v) -> return Ok("P(" + to_string(n) + "," + to_string(k) + ")=" + to_string(v))
+            | Err(msg) -> return Err(msg)
+            end match
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    match perm(n: 5, k: 2) with
-    | Ok(v) -> return "P(5,2)=" + to_string(v)
-    | Err(e) -> return "error: " + e
+    match run(["5", "2"]) with
+    | Ok(a) ->
+        match run(["6", "3"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
     end match
 end func

@@ -1,6 +1,6 @@
 # geno-json-escape
 
-JSON string escape in Geno, written in [Geno](https://github.com/davidiach/geno-lang).
+Escape a string for inclusion inside a JSON string literal in [Geno](https://github.com/davidiach/geno-lang).
 
 ## Install
 
@@ -16,10 +16,24 @@ geno test Main.geno
 
 ## Run
 
+Default sandbox demo (capability-free `main()`):
+
 ```bash
 geno run Main.geno
 ```
 
+Optional real CLI (needs `--unsafe` because default sandbox does not allow `--cap` without `--unsafe`/`--json`):
+
+```bash
+geno run --unsafe --cap env,print Main.geno -- say \"hi\"
+geno run --unsafe --cap env,print Main.geno -- a\\b
+```
+
+Note: `run(args)` is capability-free; OS argv via `cli_args()` needs `--cap env`.
+
 ## API
 
-See `Main.geno` for `JSON string escape` helpers and examples.
+- `escape_char(c: String) -> String`
+- `json_escape(s: String) -> String`
+- `run(args: List[String]) -> Result[String, String] — `<text...>``
+- `main() -> String — demo via `run``

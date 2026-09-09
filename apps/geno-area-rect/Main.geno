@@ -1,9 +1,10 @@
-/// Rectangle area and perimeter.
+/// Rectangle area and perimeter (non-negative dimensions).
 
 func area(width: Int, height: Int) -> Result[Int, String]
     example 3, 4 -> Ok(12)
     example 5, 5 -> Ok(25)
     example 0, 4 -> Ok(0)
+    example 1, 1 -> Ok(1)
     example -1, 4 -> Err("dimensions must be non-negative")
     example 3, -2 -> Err("dimensions must be non-negative")
     if width < 0 or height < 0 then
@@ -16,6 +17,7 @@ func perimeter(width: Int, height: Int) -> Result[Int, String]
     example 3, 4 -> Ok(14)
     example 5, 5 -> Ok(20)
     example 0, 0 -> Ok(0)
+    example 1, 1 -> Ok(4)
     example -1, 1 -> Err("dimensions must be non-negative")
     if width < 0 or height < 0 then
         return Err("dimensions must be non-negative")
@@ -23,14 +25,41 @@ func perimeter(width: Int, height: Int) -> Result[Int, String]
     return Ok(2 * (width + height))
 end func
 
+/// CLI: `<width> <height>` prints area and perimeter.
+func run(args: List[String]) -> Result[String, String]
+    example ["3", "4"] -> Ok("area=12 perimeter=14")
+    example ["5", "5"] -> Ok("area=25 perimeter=20")
+    example ["0", "4"] -> Ok("area=0 perimeter=8")
+    example [] -> Err("usage: <width> <height>")
+    example ["3"] -> Err("usage: <width> <height>")
+    example ["x", "4"] -> Err("width must be an integer")
+    example ["3", "y"] -> Err("height must be an integer")
+    example ["-1", "4"] -> Err("dimensions must be non-negative")
+    if length(args) != 2 then
+        return Err("usage: <width> <height>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("width must be an integer")
+    | Some(w) ->
+        match parse_int(args[1]) with
+        | None -> return Err("height must be an integer")
+        | Some(h) ->
+            match area(w, h) with
+            | Err(e) -> return Err(e)
+            | Ok(a) ->
+                match perimeter(w, h) with
+                | Err(e) -> return Err(e)
+                | Ok(p) -> return Ok("area=" + to_string(a) + " perimeter=" + to_string(p))
+                end match
+            end match
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    match area(3, 4) with
-    | Ok(a) ->
-        match perimeter(3, 4) with
-        | Ok(p) -> return "3x4 area=" + to_string(a) + " perimeter=" + to_string(p)
-        | Err(e) -> return e
-        end match
-    | Err(e) -> return e
+    match run(["3", "4"]) with
+    | Ok(line) -> return line
+    | Err(msg) -> return "error: " + msg
     end match
 end func

@@ -1,10 +1,24 @@
 /// Insertion sort for List[Int], ascending.
 
+func ints_csv(xs: List[Int]) -> String
+    example [1, 2, 3] -> "1,2,3"
+    example [] -> ""
+    example [7] -> "7"
+    var parts: List[String] = []
+    var i: Int = 0
+    while i < length(xs) do
+        parts = append(parts, to_string(xs[i]))
+        i = i + 1
+    end while
+    return join(parts, ",")
+end func
+
 func insert_sorted(sorted: List[Int], x: Int) -> List[Int]
     example [1, 3], 2 -> [1, 2, 3]
     example [], 5 -> [5]
     example [1, 2], 0 -> [0, 1, 2]
     example [1, 2], 3 -> [1, 2, 3]
+    example [1, 1], 1 -> [1, 1, 1]
     var out: List[Int] = []
     var inserted: Bool = false
     var i: Int = 0
@@ -28,6 +42,7 @@ func sort_ints(xs: List[Int]) -> List[Int]
     example [1] -> [1]
     example [5, 4, 3, 2, 1] -> [1, 2, 3, 4, 5]
     example [2, 2, 1] -> [1, 2, 2]
+    example [(-1), 3, (-2)] -> [-2, -1, 3]
     var out: List[Int] = []
     var i: Int = 0
     while i < length(xs) do
@@ -37,8 +52,40 @@ func sort_ints(xs: List[Int]) -> List[Int]
     return out
 end func
 
+/// CLI: `sort <ints...>` or bare `<ints...>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["sort", "3", "1", "2"] -> Ok("1,2,3")
+    example ["5", "4", "3", "2", "1"] -> Ok("1,2,3,4,5")
+    example ["sort"] -> Ok("")
+    example [] -> Err("usage: sort <ints...> | <ints...>")
+    example ["sort", "x"] -> Err("values must be integers")
+    var start: Int = 0
+    if length(args) >= 1 and args[0] == "sort" then
+        start = 1
+    end if
+    if length(args) == 0 then
+        return Err("usage: sort <ints...> | <ints...>")
+    end if
+    var xs: List[Int] = []
+    var i: Int = start
+    while i < length(args) do
+        match parse_int(args[i]) with
+        | None -> return Err("values must be integers")
+        | Some(v) -> xs = append(xs, v)
+        end match
+        i = i + 1
+    end while
+    return Ok(ints_csv(sort_ints(xs)))
+end func
+
 @untested("entry point")
 func main() -> String
-    let sorted: List[Int] = sort_ints([5, 1, 4, 2, 3])
-    return "sorted_len=" + to_string(length(sorted)) + " first=" + to_string(sorted[0]) + " last=" + to_string(sorted[4])
+    match run(["sort", "5", "1", "4", "2", "3"]) with
+    | Ok(a) ->
+        match run(["2", "2", "1"]) with
+        | Ok(b) -> return "sorted=[" + a + "] dupes=[" + b + "]"
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

@@ -6,6 +6,7 @@ func discriminant(a: Float, b: Float, c: Float) -> Float
     example 1.0, -5.0, 6.0 -> 1.0
     example 1.0, 0.0, -4.0 -> 16.0
     example 1.0, 0.0, 1.0 -> -4.0
+    example 1.0, -2.0, 1.0 -> 0.0
     return b * b - 4.0 * a * c
 end func
 
@@ -35,19 +36,63 @@ func solve(a: Float, b: Float, c: Float) -> Result[List[Float], String]
     end if
 end func
 
+func floats_csv(xs: List[Float]) -> String
+    example [2.0, 3.0] -> "2.0,3.0"
+    example [1.0] -> "1.0"
+    example [] -> ""
+    var parts: List[String] = []
+    var i: Int = 0
+    while i < length(xs) do
+        parts = append(parts, to_string(xs[i]))
+        i = i + 1
+    end while
+    return join(parts, ",")
+end func
+
 func describe(a: Float, b: Float, c: Float) -> String
-    example 1.0, -5.0, 6.0 -> "roots=[2.0, 3.0]"
+    example 1.0, -5.0, 6.0 -> "roots=2.0,3.0"
     example 1.0, 0.0, 1.0 -> "no real roots"
+    example 0.0, 1.0, 1.0 -> "not quadratic (a=0)"
     match solve(a: a, b: b, c: c) with
-    | Ok(roots) -> return "roots=" + to_string(roots)
+    | Ok(roots) -> return "roots=" + floats_csv(roots)
     | Err(msg) -> return msg
+    end match
+end func
+
+/// CLI: `<a> <b> <c>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["1", "-5", "6"] -> Ok("roots=2.0,3.0")
+    example ["1", "0", "1"] -> Ok("no real roots")
+    example ["1", "-2", "1"] -> Ok("roots=1.0")
+    example ["0", "2", "-4"] -> Ok("not quadratic (a=0)")
+    example [] -> Err("usage: <a> <b> <c>")
+    example ["1", "2"] -> Err("usage: <a> <b> <c>")
+    example ["x", "1", "1"] -> Err("a, b, c must be numbers")
+    if length(args) != 3 then
+        return Err("usage: <a> <b> <c>")
+    end if
+    match parse_float(args[0]) with
+    | None -> return Err("a, b, c must be numbers")
+    | Some(a) ->
+        match parse_float(args[1]) with
+        | None -> return Err("a, b, c must be numbers")
+        | Some(b) ->
+            match parse_float(args[2]) with
+            | None -> return Err("a, b, c must be numbers")
+            | Some(c) -> return Ok(describe(a: a, b: b, c: c))
+            end match
+        end match
     end match
 end func
 
 @untested("entry point")
 func main() -> String
-    match solve(a: 1.0, b: -5.0, c: 6.0) with
-    | Ok(roots) -> return "nroots=" + to_string(length(roots)) + " r0=" + to_string(roots[0]) + " r1=" + to_string(roots[1])
-    | Err(msg) -> return msg
+    match run(["1", "-5", "6"]) with
+    | Ok(a) ->
+        match run(["1", "0", "1"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
     end match
 end func

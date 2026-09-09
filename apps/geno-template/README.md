@@ -1,6 +1,6 @@
 # geno-template
 
-Simple {name} template in Geno, written in [Geno](https://github.com/davidiach/geno-lang).
+Simple `{name}` template renderer in [Geno](https://github.com/davidiach/geno-lang).
 
 ## Install
 
@@ -16,10 +16,23 @@ geno test Main.geno
 
 ## Run
 
+Default sandbox demo (capability-free `main()`):
+
 ```bash
 geno run Main.geno
 ```
 
+Optional real CLI (needs `--unsafe` because default sandbox does not allow `--cap` without `--unsafe`/`--json`):
+
+```bash
+geno run --unsafe --cap env,print Main.geno -- render "Hello, {name}!" name World
+geno run --unsafe --cap env,print Main.geno -- render "{x}" x Geno
+```
+
+Note: `run(args)` is capability-free; OS argv via `cli_args()` needs `--cap env`.
+
 ## API
 
-See `Main.geno` for `Simple {name} template` helpers and examples.
+- `render(template: String, name: String, value: String) -> String`
+- `run(args: List[String]) -> Result[String, String] — `render <template> <name> <value>``
+- `main() -> String — demo via `run``

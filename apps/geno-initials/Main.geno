@@ -7,6 +7,7 @@ func is_letter(c: String) -> Bool
     example "z" -> true
     example " " -> false
     example "-" -> false
+    example "1" -> false
     let u: String = to_upper(c)
     return u >= "A" and u <= "Z"
 end func
@@ -18,6 +19,7 @@ func initials(name: String) -> String
     example "john quincy adams" -> "JQA"
     example "  Marie  Curie  " -> "MC"
     example "Jean-Luc Picard" -> "JLP"
+    example "O'Connor" -> "OC"
     var out: String = ""
     var i: Int = 0
     var at_word: Bool = true
@@ -36,7 +38,26 @@ func initials(name: String) -> String
     return out
 end func
 
+/// CLI: joins all args with spaces as the name.
+func run(args: List[String]) -> Result[String, String]
+    example ["Ada", "Lovelace"] -> Ok("AL")
+    example ["john", "quincy", "adams"] -> Ok("JQA")
+    example ["Jean-Luc", "Picard"] -> Ok("JLP")
+    example [] -> Err("usage: <name...>")
+    if length(args) == 0 then
+        return Err("usage: <name...>")
+    end if
+    return Ok(initials(join(args, " ")))
+end func
+
 @untested("entry point")
 func main() -> String
-    return initials("Ada Lovelace") + " " + initials("john quincy adams")
+    match run(["Ada", "Lovelace"]) with
+    | Ok(a) ->
+        match run(["john", "quincy", "adams"]) with
+        | Ok(b) -> return a + " " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

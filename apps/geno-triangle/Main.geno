@@ -8,6 +8,7 @@ func heron_area(a: Float, b: Float, c: Float) -> Result[Float, String]
     example 1.0, 2.0, 3.0 -> Err("invalid triangle")
     example 1.0, 1.0, 3.0 -> Err("invalid triangle")
     example (-1.0), 2.0, 2.0 -> Err("sides must be positive")
+    example 2.0, 2.0, 2.0 -> Ok(1.7320508075688772)
     if a <= 0.0 or b <= 0.0 or c <= 0.0 then
         return Err("sides must be positive")
     end if
@@ -19,10 +20,48 @@ func heron_area(a: Float, b: Float, c: Float) -> Result[Float, String]
     return Ok(area)
 end func
 
+/// CLI: `area <a> <b> <c>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["area", "3", "4", "5"] -> Ok("6.0")
+    example ["area", "5", "5", "6"] -> Ok("12.0")
+    example ["area", "1", "2", "3"] -> Err("invalid triangle")
+    example ["area", "-1", "2", "2"] -> Err("sides must be positive")
+    example [] -> Err("usage: area <a> <b> <c>")
+    example ["area", "3", "4"] -> Err("usage: area <a> <b> <c>")
+    example ["nope", "3", "4", "5"] -> Err("usage: area <a> <b> <c>")
+    example ["area", "x", "4", "5"] -> Err("sides must be floats")
+    if length(args) != 4 then
+        return Err("usage: area <a> <b> <c>")
+    end if
+    if args[0] != "area" then
+        return Err("usage: area <a> <b> <c>")
+    end if
+    match parse_float(args[1]) with
+    | None -> return Err("sides must be floats")
+    | Some(a) ->
+        match parse_float(args[2]) with
+        | None -> return Err("sides must be floats")
+        | Some(b) ->
+            match parse_float(args[3]) with
+            | None -> return Err("sides must be floats")
+            | Some(c) ->
+                match heron_area(a: a, b: b, c: c) with
+                | Ok(area) -> return Ok(to_string(area))
+                | Err(e) -> return Err(e)
+                end match
+            end match
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    match heron_area(a: 3.0, b: 4.0, c: 5.0) with
-    | Ok(a) -> return "3-4-5 area=" + to_string(a)
+    match run(["area", "3", "4", "5"]) with
+    | Ok(a) ->
+        match run(["area", "1", "2", "3"]) with
+        | Ok(_) -> return "unexpected ok"
+        | Err(e) -> return "3-4-5 area=" + a + " bad=" + e
+        end match
     | Err(msg) -> return "error: " + msg
     end match
 end func

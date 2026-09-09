@@ -7,6 +7,7 @@ func binary_search(xs: List[Int], target: Int) -> Int
     example [1, 3, 5, 7, 9], 4 -> -1
     example [], 1 -> -1
     example [2], 2 -> 0
+    example [2], 1 -> -1
     var lo: Int = 0
     var hi: Int = length(xs) - 1
     while lo <= hi do
@@ -22,8 +23,61 @@ func binary_search(xs: List[Int], target: Int) -> Int
     return -1
 end func
 
+func parse_int_list(args: List[String], start: Int, stop: Int) -> Result[List[Int], String]
+    example ["1", "2", "3"], 0, 3 -> Ok([1, 2, 3])
+    example ["1", "x"], 0, 2 -> Err("values must be integers")
+    example [], 0, 0 -> Ok([])
+    var out: List[Int] = []
+    var i: Int = start
+    while i < stop do
+        match parse_int(args[i]) with
+        | None -> return Err("values must be integers")
+        | Some(v) -> out = append(out, v)
+        end match
+        i = i + 1
+    end while
+    return Ok(out)
+end func
+
+/// CLI: `<sorted ints...> -- <target>`
+func run(args: List[String]) -> Result[String, String]
+    example ["1", "3", "5", "7", "9", "--", "5"] -> Ok("index=2")
+    example ["1", "3", "5", "7", "9", "--", "4"] -> Ok("index=-1")
+    example ["2", "--", "2"] -> Ok("index=0")
+    example [] -> Err("usage: <sorted ints...> -- <target>")
+    example ["1", "2", "3"] -> Err("usage: <sorted ints...> -- <target>")
+    example ["1", "--"] -> Err("usage: <sorted ints...> -- <target>")
+    example ["1", "--", "x"] -> Err("target must be an integer")
+    example ["1", "x", "--", "1"] -> Err("values must be integers")
+    var sep: Int = 0 - 1
+    var i: Int = 0
+    while i < length(args) do
+        if args[i] == "--" then
+            sep = i
+        end if
+        i = i + 1
+    end while
+    if sep < 0 or sep != length(args) - 2 then
+        return Err("usage: <sorted ints...> -- <target>")
+    end if
+    match parse_int(args[length(args) - 1]) with
+    | None -> return Err("target must be an integer")
+    | Some(target) ->
+        match parse_int_list(args: args, start: 0, stop: sep) with
+        | Err(e) -> return Err(e)
+        | Ok(xs) -> return Ok("index=" + to_string(binary_search(xs, target)))
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    let xs: List[Int] = [1, 3, 5, 7, 9]
-    return "5@" + to_string(binary_search(xs, 5)) + " 4@" + to_string(binary_search(xs, 4))
+    match run(["1", "3", "5", "7", "9", "--", "5"]) with
+    | Ok(a) ->
+        match run(["1", "3", "5", "7", "9", "--", "4"]) with
+        | Ok(b) -> return "5@" + a + " 4@" + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

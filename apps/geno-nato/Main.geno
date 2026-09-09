@@ -7,7 +7,9 @@ func nato_word(c: String) -> String
     example "a" -> "Alfa"
     example "Z" -> "Zulu"
     example "B" -> "Bravo"
+    example "M" -> "Mike"
     example "1" -> ""
+    example " " -> ""
     let ch: String = to_upper(c)
     if ch == "A" then
         return "Alfa"
@@ -72,6 +74,7 @@ func encode(s: String) -> String
     example "Hi" -> "Hotel India"
     example "NATO" -> "November Alfa Tango Oscar"
     example "a b" -> "Alfa Bravo"
+    example "Geno" -> "Golf Echo November Oscar"
     var out: String = ""
     var i: Int = 0
     var first: Bool = true
@@ -89,7 +92,27 @@ func encode(s: String) -> String
     return out
 end func
 
+/// CLI: joins all args with spaces as the text to encode.
+func run(args: List[String]) -> Result[String, String]
+    example ["Hi"] -> Ok("Hotel India")
+    example ["NATO"] -> Ok("November Alfa Tango Oscar")
+    example ["Geno"] -> Ok("Golf Echo November Oscar")
+    example ["a", "b"] -> Ok("Alfa Bravo")
+    example [] -> Err("usage: <text...>")
+    if length(args) == 0 then
+        return Err("usage: <text...>")
+    end if
+    return Ok(encode(join(args, " ")))
+end func
+
 @untested("entry point")
 func main() -> String
-    return encode("Geno")
+    match run(["Geno"]) with
+    | Ok(a) ->
+        match run(["NATO"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

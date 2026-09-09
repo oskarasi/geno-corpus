@@ -8,6 +8,7 @@ func render(template: String, name: String, value: String) -> String
     example "nope", "name", "x" -> "nope"
     example "{name}{name}", "name", "a" -> "aa"
     example "", "name", "x" -> ""
+    example "Hello, {who}!", "who", "World" -> "Hello, World!"
     let needle: String = "{" + name + "}"
     let nlen: Int = length(needle)
     var out: String = ""
@@ -24,7 +25,31 @@ func render(template: String, name: String, value: String) -> String
     return out
 end func
 
+/// CLI: `render <template> <name> <value>` (template may contain spaces if quoted by shell as one arg).
+func run(args: List[String]) -> Result[String, String]
+    example ["render", "Hi {name}", "name", "Ada"] -> Ok("Hi Ada")
+    example ["render", "{name}!", "name", "Geno"] -> Ok("Geno!")
+    example ["render", "Hello, {who}!", "who", "World"] -> Ok("Hello, World!")
+    example [] -> Err("usage: render <template> <name> <value>")
+    example ["render", "x", "name"] -> Err("usage: render <template> <name> <value>")
+    example ["nope", "a", "b", "c"] -> Err("usage: render <template> <name> <value>")
+    if length(args) != 4 then
+        return Err("usage: render <template> <name> <value>")
+    end if
+    if args[0] != "render" then
+        return Err("usage: render <template> <name> <value>")
+    end if
+    return Ok(render(template: args[1], name: args[2], value: args[3]))
+end func
+
 @untested("entry point")
 func main() -> String
-    return render(template: "Hello, {name}!", name: "name", value: "World")
+    match run(["render", "Hello, {name}!", "name", "World"]) with
+    | Ok(a) ->
+        match run(["render", "{name}{name}", "name", "Go"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

@@ -6,6 +6,7 @@ func clock_angle(hour: Int, minute: Int) -> Result[Float, String]
     example 12, 30 -> Ok(165.0)
     example 6, 0 -> Ok(180.0)
     example 2, 20 -> Ok(50.0)
+    example 9, 0 -> Ok(90.0)
     example 24, 0 -> Err("hour must be 0..23")
     example 3, 60 -> Err("minute must be 0..59")
     example (-1), 0 -> Err("hour must be 0..23")
@@ -28,13 +29,41 @@ func clock_angle(hour: Int, minute: Int) -> Result[Float, String]
     return Ok(diff)
 end func
 
+/// CLI: `<hour> <minute>`
+func run(args: List[String]) -> Result[String, String]
+    example ["3", "0"] -> Ok("angle=90.0")
+    example ["2", "20"] -> Ok("angle=50.0")
+    example ["12", "0"] -> Ok("angle=0.0")
+    example [] -> Err("usage: <hour> <minute>")
+    example ["3"] -> Err("usage: <hour> <minute>")
+    example ["x", "0"] -> Err("hour must be an integer")
+    example ["3", "y"] -> Err("minute must be an integer")
+    example ["24", "0"] -> Err("hour must be 0..23")
+    example ["3", "60"] -> Err("minute must be 0..59")
+    if length(args) != 2 then
+        return Err("usage: <hour> <minute>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("hour must be an integer")
+    | Some(h) ->
+        match parse_int(args[1]) with
+        | None -> return Err("minute must be an integer")
+        | Some(m) ->
+            match clock_angle(h, m) with
+            | Err(e) -> return Err(e)
+            | Ok(a) -> return Ok("angle=" + to_string(a))
+            end match
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    match clock_angle(3, 0) with
+    match run(["3", "0"]) with
     | Ok(a) ->
-        match clock_angle(2, 20) with
-        | Ok(b) -> return "3:00=" + to_string(a) + " 2:20=" + to_string(b)
-        | Err(m) -> return "error: " + m
+        match run(["2", "20"]) with
+        | Ok(b) -> return "3:00=" + a + " 2:20=" + b
+        | Err(msg) -> return "error: " + msg
         end match
     | Err(msg) -> return "error: " + msg
     end match

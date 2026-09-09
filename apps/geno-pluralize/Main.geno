@@ -19,6 +19,7 @@ func is_vowel(c: String) -> Bool
     example "a" -> true
     example "E" -> true
     example "b" -> false
+    example "y" -> false
     let u: String = to_lower(c)
     return u == "a" or u == "e" or u == "i" or u == "o" or u == "u"
 end func
@@ -56,7 +57,32 @@ func pluralize(word: String) -> String
     return w + "s"
 end func
 
+/// CLI: pluralize each arg and join with spaces.
+func run(args: List[String]) -> Result[String, String]
+    example ["cat"] -> Ok("cats")
+    example ["box", "fly", "day"] -> Ok("boxes flies days")
+    example ["leaf"] -> Ok("leaves")
+    example [] -> Err("usage: <word...>")
+    if length(args) == 0 then
+        return Err("usage: <word...>")
+    end if
+    var parts: List[String] = []
+    var i: Int = 0
+    while i < length(args) do
+        parts = append(parts, pluralize(args[i]))
+        i = i + 1
+    end while
+    return Ok(join(parts, " "))
+end func
+
 @untested("entry point")
 func main() -> String
-    return pluralize("cat") + " " + pluralize("box") + " " + pluralize("fly") + " " + pluralize("day")
+    match run(["cat", "box", "fly", "day"]) with
+    | Ok(a) ->
+        match run(["leaf", "knife"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

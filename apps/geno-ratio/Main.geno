@@ -53,13 +53,43 @@ end func
 func describe(a: Int, b: Int) -> String
     example 2, 4 -> "2:4 -> 1:2"
     example 3, 0 -> "3:0 -> denominator cannot be zero"
+    example 15, 25 -> "15:25 -> 3:5"
     match simplify(a, b) with
     | Ok(pair) -> return to_string(a) + ":" + to_string(b) + " -> " + to_string(pair[0]) + ":" + to_string(pair[1])
     | Err(msg) -> return to_string(a) + ":" + to_string(b) + " -> " + msg
     end match
 end func
 
+/// CLI: `<a> <b>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["15", "25"] -> Ok("15:25 -> 3:5")
+    example ["-6", "-9"] -> Ok("-6:-9 -> 2:3")
+    example ["2", "4"] -> Ok("2:4 -> 1:2")
+    example ["3", "0"] -> Ok("3:0 -> denominator cannot be zero")
+    example [] -> Err("usage: <a> <b>")
+    example ["15"] -> Err("usage: <a> <b>")
+    example ["x", "25"] -> Err("a and b must be integers")
+    if length(args) != 2 then
+        return Err("usage: <a> <b>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("a and b must be integers")
+    | Some(a) ->
+        match parse_int(args[1]) with
+        | None -> return Err("a and b must be integers")
+        | Some(b) -> return Ok(describe(a, b))
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    return describe(15, 25) + " | " + describe(-6, -9)
+    match run(["15", "25"]) with
+    | Ok(a) ->
+        match run(["-6", "-9"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

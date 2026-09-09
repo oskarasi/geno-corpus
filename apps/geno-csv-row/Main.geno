@@ -7,6 +7,7 @@ func join_row(fields: List[String]) -> String
     example ["a"] -> "a"
     example ["a", "b", "c"] -> "a,b,c"
     example ["", "x"] -> ",x"
+    example ["hello", "world"] -> "hello,world"
     var out: String = ""
     var i: Int = 0
     while i < length(fields) do
@@ -42,9 +43,35 @@ func split_row(row: String) -> List[String]
     return fields
 end func
 
+/// CLI: `join <fields...>` or `split <row>`
+func run(args: List[String]) -> Result[String, String]
+    example ["join", "a", "b", "c"] -> Ok("a,b,c")
+    example ["join", "hello"] -> Ok("hello")
+    example ["split", "a,b,c"] -> Ok("a | b | c")
+    example ["split", ",x"] -> Ok(" | x")
+    example [] -> Err("usage: join <fields...> | split <row>")
+    example ["join"] -> Ok("")
+    example ["nope"] -> Err("usage: join <fields...> | split <row>")
+    example ["split"] -> Err("usage: join <fields...> | split <row>")
+    if length(args) >= 1 and args[0] == "join" then
+        let fields: List[String] = slice(list: args, start: 1, stop: length(args))
+        return Ok(join_row(fields))
+    end if
+    if length(args) == 2 and args[0] == "split" then
+        let parts: List[String] = split_row(args[1])
+        return Ok(join(parts, " | "))
+    end if
+    return Err("usage: join <fields...> | split <row>")
+end func
+
 @untested("entry point")
 func main() -> String
-    let joined: String = join_row(["a", "b", "c"])
-    let parts: List[String] = split_row(joined)
-    return "join=" + joined + " nfields=" + to_string(length(parts))
+    match run(["join", "a", "b", "c"]) with
+    | Ok(a) ->
+        match run(["split", "a,b,c"]) with
+        | Ok(b) -> return "join=" + a + " split=[" + b + "]"
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

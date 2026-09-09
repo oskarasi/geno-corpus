@@ -3,9 +3,12 @@
 import String
 
 func pad2(n: Int) -> String
+    requires n >= 0
+    requires n < 100
     example 0 -> "00"
     example 5 -> "05"
     example 42 -> "42"
+    example 9 -> "09"
     if n < 10 then
         return "0" + to_string(n)
     else
@@ -33,7 +36,32 @@ func format_cents(cents: Int) -> String
     return sign + "$" + to_string(dollars) + "." + pad2(rem)
 end func
 
+/// CLI: `<cents>`
+func run(args: List[String]) -> Result[String, String]
+    example ["1234"] -> Ok("$12.34")
+    example ["-50"] -> Ok("-$0.50")
+    example ["0"] -> Ok("$0.00")
+    example ["100"] -> Ok("$1.00")
+    example [] -> Err("usage: <cents>")
+    example ["x"] -> Err("cents must be an integer")
+    example ["1", "2"] -> Err("usage: <cents>")
+    if length(args) != 1 then
+        return Err("usage: <cents>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("cents must be an integer")
+    | Some(c) -> return Ok(format_cents(c))
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    return format_cents(1234) + " " + format_cents((-50))
+    match run(["1234"]) with
+    | Ok(a) ->
+        match run(["-50"]) with
+        | Ok(b) -> return a + " " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

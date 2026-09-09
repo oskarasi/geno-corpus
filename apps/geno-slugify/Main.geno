@@ -8,6 +8,7 @@ func is_alnum(c: String) -> Bool
     example "5" -> true
     example "-" -> false
     example "!" -> false
+    example "_" -> false
     return (c >= "a" and c <= "z") or (c >= "A" and c <= "Z") or (c >= "0" and c <= "9")
 end func
 
@@ -18,6 +19,7 @@ func slugify(text: String) -> String
     example "  spaced  " -> "spaced"
     example "A_B C" -> "ab-c"
     example "" -> ""
+    example "---" -> ""
     let lower: String = to_lower(text)
     var result: String = ""
     var i: Int = 0
@@ -41,7 +43,27 @@ func slugify(text: String) -> String
     return result
 end func
 
+/// CLI: joins all args with spaces, then slugifies.
+func run(args: List[String]) -> Result[String, String]
+    example ["Hello", "World"] -> Ok("hello-world")
+    example ["Foo", "Bar!"] -> Ok("foo-bar")
+    example ["Already-slug"] -> Ok("already-slug")
+    example [] -> Err("usage: <text...>")
+    example ["  spaced  "] -> Ok("spaced")
+    if length(args) == 0 then
+        return Err("usage: <text...>")
+    end if
+    return Ok(slugify(join(args, " ")))
+end func
+
 @untested("entry point")
 func main() -> String
-    return slugify("Hello World!") + " | " + slugify("Foo  Bar Baz")
+    match run(["Hello", "World!"]) with
+    | Ok(a) ->
+        match run(["Foo", "Bar", "Baz"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

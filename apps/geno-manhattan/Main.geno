@@ -3,16 +3,55 @@
 import Math
 
 func manhattan(x1: Int, y1: Int, x2: Int, y2: Int) -> Int
+    ensures result >= 0
     example 0, 0, 3, 4 -> 7
     example 1, 1, 1, 1 -> 0
     example (-2), 3, 1, (-1) -> 7
     example 5, 5, 2, 8 -> 6
+    example (-1), (-1), 2, 3 -> 7
     return Math.abs(x1 - x2) + Math.abs(y1 - y2)
+end func
+
+/// CLI: `<x1> <y1> <x2> <y2>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["0", "0", "3", "4"] -> Ok("distance=7")
+    example ["1", "1", "1", "1"] -> Ok("distance=0")
+    example ["-2", "3", "1", "-1"] -> Ok("distance=7")
+    example ["5", "5", "2", "8"] -> Ok("distance=6")
+    example [] -> Err("usage: <x1> <y1> <x2> <y2>")
+    example ["0", "0", "3"] -> Err("usage: <x1> <y1> <x2> <y2>")
+    example ["x", "0", "3", "4"] -> Err("coordinates must be integers")
+    if length(args) != 4 then
+        return Err("usage: <x1> <y1> <x2> <y2>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("coordinates must be integers")
+    | Some(x1) ->
+        match parse_int(args[1]) with
+        | None -> return Err("coordinates must be integers")
+        | Some(y1) ->
+            match parse_int(args[2]) with
+            | None -> return Err("coordinates must be integers")
+            | Some(x2) ->
+                match parse_int(args[3]) with
+                | None -> return Err("coordinates must be integers")
+                | Some(y2) ->
+                    let d: Int = manhattan(x1: x1, y1: y1, x2: x2, y2: y2)
+                    return Ok("distance=" + to_string(d))
+                end match
+            end match
+        end match
+    end match
 end func
 
 @untested("entry point")
 func main() -> String
-    let d: Int = manhattan(x1: 0, y1: 0, x2: 3, y2: 4)
-    let d2: Int = manhattan(x1: -2, y1: 3, x2: 1, y2: -1)
-    return "d(0,0)-(3,4)=" + to_string(d) + " d(-2,3)-(1,-1)=" + to_string(d2)
+    match run(["0", "0", "3", "4"]) with
+    | Ok(a) ->
+        match run(["-2", "3", "1", "-1"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

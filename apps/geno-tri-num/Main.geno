@@ -8,6 +8,7 @@ func tri_num(n: Int) -> Result[Int, String]
     example 4 -> Ok(10)
     example 8 -> Ok(36)
     example (-1) -> Err("n must be non-negative")
+    example 10 -> Ok(55)
     if n < 0 then
         return Err("n must be non-negative")
     end if
@@ -23,6 +24,7 @@ func is_triangular(x: Int) -> Bool
     example 2 -> false
     example 7 -> false
     example (-1) -> false
+    example 36 -> true
     if x < 0 then
         return false
     end if
@@ -33,10 +35,52 @@ func is_triangular(x: Int) -> Bool
     return n * (n + 1) / 2 == x
 end func
 
+/// CLI: `nth <n>` | `check <x>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["nth", "8"] -> Ok("36")
+    example ["check", "10"] -> Ok("true")
+    example ["check", "7"] -> Ok("false")
+    example ["nth", "-1"] -> Err("n must be non-negative")
+    example [] -> Err("usage: nth <n> | check <x>")
+    example ["nth"] -> Err("usage: nth <n> | check <x>")
+    example ["nope", "3"] -> Err("usage: nth <n> | check <x>")
+    example ["nth", "x"] -> Err("value must be an integer")
+    if length(args) != 2 then
+        return Err("usage: nth <n> | check <x>")
+    end if
+    let cmd: String = args[0]
+    match parse_int(args[1]) with
+    | None -> return Err("value must be an integer")
+    | Some(v) ->
+        if cmd == "nth" then
+            match tri_num(v) with
+            | Ok(t) -> return Ok(to_string(t))
+            | Err(e) -> return Err(e)
+            end match
+        else if cmd == "check" then
+            if is_triangular(v) then
+                return Ok("true")
+            else
+                return Ok("false")
+            end if
+        else
+            return Err("usage: nth <n> | check <x>")
+        end if
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    match tri_num(8) with
-    | Ok(t) -> return "T8=" + to_string(t) + " is7=" + to_string(is_triangular(7))
-    | Err(e) -> return "error: " + e
+    match run(["nth", "8"]) with
+    | Ok(a) ->
+        match run(["check", "7"]) with
+        | Ok(b) ->
+            match run(["check", "36"]) with
+            | Ok(c) -> return "T8=" + a + " is7=" + b + " is36=" + c
+            | Err(msg) -> return "error: " + msg
+            end match
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
     end match
 end func

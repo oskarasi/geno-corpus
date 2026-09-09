@@ -5,6 +5,7 @@ func dot(a: List[Int], b: List[Int]) -> Result[Int, String]
     example [1, 0], [0, 1] -> Ok(0)
     example [2, 3], [4, 5] -> Ok(23)
     example [], [] -> Ok(0)
+    example [7], [3] -> Ok(21)
     example [1], [1, 2] -> Err("length mismatch")
     example [1, 2], [1] -> Err("length mismatch")
     if length(a) != length(b) then
@@ -19,10 +20,60 @@ func dot(a: List[Int], b: List[Int]) -> Result[Int, String]
     return Ok(sum)
 end func
 
+func parse_ints(args: List[String], start: Int, stop: Int) -> Result[List[Int], String]
+    example ["1", "2"], 0, 2 -> Ok([1, 2])
+    example ["x"], 0, 1 -> Err("values must be integers")
+    example [], 0, 0 -> Ok([])
+    var out: List[Int] = []
+    var i: Int = start
+    while i < stop do
+        match parse_int(args[i]) with
+        | None -> return Err("values must be integers")
+        | Some(v) -> out = append(out, v)
+        end match
+        i = i + 1
+    end while
+    return Ok(out)
+end func
+
+/// CLI: `<ints_a...> -- <ints_b...>`
+func run(args: List[String]) -> Result[String, String]
+    example ["1", "2", "3", "--", "4", "5", "6"] -> Ok("dot=32")
+    example ["1", "0", "--", "0", "1"] -> Ok("dot=0")
+    example ["--"] -> Ok("dot=0")
+    example [] -> Err("usage: <ints_a...> -- <ints_b...>")
+    example ["1", "2", "3"] -> Err("usage: <ints_a...> -- <ints_b...>")
+    example ["1", "--", "1", "2"] -> Err("length mismatch")
+    example ["1", "x", "--", "2"] -> Err("values must be integers")
+    var sep: Int = 0 - 1
+    var i: Int = 0
+    while i < length(args) do
+        if args[i] == "--" then
+            sep = i
+        end if
+        i = i + 1
+    end while
+    if sep < 0 then
+        return Err("usage: <ints_a...> -- <ints_b...>")
+    end if
+    match parse_ints(args: args, start: 0, stop: sep) with
+    | Err(e) -> return Err(e)
+    | Ok(a) ->
+        match parse_ints(args: args, start: sep + 1, stop: length(args)) with
+        | Err(e) -> return Err(e)
+        | Ok(b) ->
+            match dot(a, b) with
+            | Err(e) -> return Err(e)
+            | Ok(v) -> return Ok("dot=" + to_string(v))
+            end match
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    match dot([1, 2, 3], [4, 5, 6]) with
-    | Ok(v) -> return "dot=" + to_string(v)
-    | Err(e) -> return "error: " + e
+    match run(["1", "2", "3", "--", "4", "5", "6"]) with
+    | Ok(line) -> return line
+    | Err(msg) -> return "error: " + msg
     end match
 end func

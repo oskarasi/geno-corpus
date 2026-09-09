@@ -7,6 +7,7 @@ func is_letter(c: String) -> Bool
     example "Z" -> true
     example "1" -> false
     example " " -> false
+    example "-" -> false
     let lower: String = to_lower(c)
     return lower >= "a" and lower <= "z"
 end func
@@ -50,7 +51,27 @@ func is_isogram(text: String) -> Bool
     return true
 end func
 
+/// CLI: joins all args with spaces as the text to check.
+func run(args: List[String]) -> Result[String, String]
+    example ["isogram"] -> Ok("isogram=true")
+    example ["Alphabet"] -> Ok("isogram=false")
+    example ["thumbscrew-japingly"] -> Ok("isogram=true")
+    example ["Dermatoglyphics"] -> Ok("isogram=true")
+    example [] -> Err("usage: <text...>")
+    if length(args) == 0 then
+        return Err("usage: <text...>")
+    end if
+    return Ok("isogram=" + to_string(is_isogram(join(args, " "))))
+end func
+
 @untested("entry point")
 func main() -> String
-    return "isogram=" + to_string(is_isogram("isogram")) + " Alphabet=" + to_string(is_isogram("Alphabet"))
+    match run(["isogram"]) with
+    | Ok(a) ->
+        match run(["Alphabet"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

@@ -4,6 +4,7 @@ func normalize(text: String) -> String
     example " Listen " -> "listen"
     example "A gentleman" -> "agentleman"
     example "Elegant man" -> "elegantman"
+    example "" -> ""
     return replace(text: to_lower(trim(text)), old: " ", new: "")
 end func
 
@@ -19,6 +20,7 @@ func letter_signature(text: String) -> String
     example "Listen" -> "eilnst"
     example "Silent" -> "eilnst"
     example "Hello World" -> "dehllloorw"
+    example "" -> ""
     return sorted_chars(normalize(text))
 end func
 
@@ -29,12 +31,43 @@ func is_anagram(a: String, b: String) -> Bool
     example "A gentleman", "Elegant man" -> true
     example "rail safety", "fairy tales" -> true
     example "abc", "ab" -> false
+    example "", "" -> true
     return letter_signature(a) == letter_signature(b)
+end func
+
+/// CLI: `<phrase_a> | <phrase_b>` (use `|` to separate the two phrases).
+func run(args: List[String]) -> Result[String, String]
+    example ["listen", "|", "silent"] -> Ok("true")
+    example ["hello", "|", "world"] -> Ok("false")
+    example ["Listen", "|", "Silent"] -> Ok("true")
+    example [] -> Err("usage: <words...> | <words...>")
+    example ["listen"] -> Err("usage: <words...> | <words...>")
+    example ["listen", "silent"] -> Err("usage: <words...> | <words...>")
+    var mid: Int = 0 - 1
+    var i: Int = 0
+    while i < length(args) do
+        if args[i] == "|" then
+            mid = i
+        end if
+        i = i + 1
+    end while
+    if mid < 0 or mid == 0 or mid == length(args) - 1 then
+        return Err("usage: <words...> | <words...>")
+    end if
+    let left: List[String] = slice(list: args, start: 0, stop: mid)
+    let right: List[String] = slice(list: args, start: mid + 1, stop: length(args))
+    let ok: Bool = is_anagram(join(left, " "), join(right, " "))
+    return Ok(to_string(ok))
 end func
 
 @untested("entry point")
 func main() -> String
-    let a: Bool = is_anagram("listen", "silent")
-    let b: Bool = is_anagram("hello", "world")
-    return "listen/silent=" + to_string(a) + " hello/world=" + to_string(b)
+    match run(["listen", "|", "silent"]) with
+    | Ok(a) ->
+        match run(["hello", "|", "world"]) with
+        | Ok(b) -> return "listen/silent=" + a + " hello/world=" + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

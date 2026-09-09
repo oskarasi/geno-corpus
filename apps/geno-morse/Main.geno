@@ -10,6 +10,7 @@ func morse_char(c: String) -> String
     example "1" -> ".----"
     example " " -> "/"
     example "!" -> ""
+    example "Z" -> "--.."
     let ch: String = to_upper(c)
     if ch == "A" then
         return ".-"
@@ -95,6 +96,7 @@ func is_alnum_or_space(c: String) -> Bool
     example "5" -> true
     example " " -> true
     example "!" -> false
+    example "z" -> true
     let u: String = to_upper(c)
     return (u >= "A" and u <= "Z") or (u >= "0" and u <= "9") or u == " "
 end func
@@ -105,6 +107,7 @@ func encode(s: String) -> String
     example "SOS" -> "... --- ..."
     example "Hi" -> ".... .."
     example "A 1" -> ".- / .----"
+    example "HI" -> ".... .."
     var out: String = ""
     var i: Int = 0
     var first: Bool = true
@@ -123,7 +126,27 @@ func encode(s: String) -> String
     return out
 end func
 
+/// CLI: joins all args with spaces, then Morse-encodes.
+func run(args: List[String]) -> Result[String, String]
+    example ["SOS"] -> Ok("... --- ...")
+    example ["HI"] -> Ok(".... ..")
+    example ["A", "1"] -> Ok(".- / .----")
+    example ["Hello"] -> Ok(".... . .-.. .-.. ---")
+    example [] -> Err("usage: <text...>")
+    if length(args) == 0 then
+        return Err("usage: <text...>")
+    end if
+    return Ok(encode(join(args, " ")))
+end func
+
 @untested("entry point")
 func main() -> String
-    return "SOS=" + encode("SOS") + " HI=" + encode("HI")
+    match run(["SOS"]) with
+    | Ok(a) ->
+        match run(["HI"]) with
+        | Ok(b) -> return "SOS=" + a + " HI=" + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

@@ -2,9 +2,11 @@
 /// Repeatedly: rearrange digits descending minus ascending until 6174 (or 0).
 
 func abs_int(n: Int) -> Int
+    ensures result >= 0
     example 5 -> 5
     example -3 -> 3
     example 0 -> 0
+    example -1 -> 1
     if n < 0 then
         return 0 - n
     else
@@ -13,15 +15,19 @@ func abs_int(n: Int) -> Int
 end func
 
 func norm4(n: Int) -> Int
+    ensures result >= 0
+    ensures result < 10000
     example 6174 -> 6174
     example 10000 -> 0
     example -42 -> 42
+    example 9999 -> 9999
     return abs_int(n) % 10000
 end func
 
 func max2(a: Int, b: Int) -> Int
     example 3, 5 -> 5
     example 7, 2 -> 7
+    example 4, 4 -> 4
     if a >= b then
         return a
     else
@@ -32,6 +38,7 @@ end func
 func min2(a: Int, b: Int) -> Int
     example 3, 5 -> 3
     example 7, 2 -> 2
+    example 4, 4 -> 4
     if a <= b then
         return a
     else
@@ -44,6 +51,7 @@ func pack_desc(a: Int, b: Int, c: Int, d: Int) -> Int
     example 1, 2, 3, 4 -> 4321
     example 6, 1, 7, 4 -> 7641
     example 1, 0, 0, 0 -> 1000
+    example 9, 9, 9, 9 -> 9999
     var w: Int = a
     var x: Int = b
     var y: Int = c
@@ -127,7 +135,35 @@ func kaprekar_count(n: Int) -> Int
     return steps
 end func
 
+/// CLI: `<n>` — print Kaprekar steps and next value (mod 10000).
+func run(args: List[String]) -> Result[String, String]
+    example ["3524"] -> Ok("steps=3 next=3087")
+    example ["6174"] -> Ok("steps=0 next=6174")
+    example ["1111"] -> Ok("steps=1 next=0")
+    example ["1234"] -> Ok("steps=3 next=3087")
+    example [] -> Err("usage: <n>")
+    example ["1", "2"] -> Err("usage: <n>")
+    example ["x"] -> Err("n must be an integer")
+    if length(args) != 1 then
+        return Err("usage: <n>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("n must be an integer")
+    | Some(n) ->
+        let steps: Int = kaprekar_count(n)
+        let nxt: Int = kaprekar_step(norm4(n))
+        return Ok("steps=" + to_string(steps) + " next=" + to_string(nxt))
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    return "3524 steps=" + to_string(kaprekar_count(3524)) + " next=" + to_string(kaprekar_step(3524))
+    match run(["3524"]) with
+    | Ok(a) ->
+        match run(["6174"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

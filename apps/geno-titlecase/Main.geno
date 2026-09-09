@@ -7,6 +7,7 @@ func capitalize_word(word: String) -> String
     example "a" -> "A"
     example "" -> ""
     example "WORLD" -> "World"
+    example "gEnO" -> "Geno"
     if length(word) == 0 then
         return ""
     end if
@@ -23,6 +24,7 @@ func title_case(text: String) -> String
     example "a" -> "A"
     example "" -> ""
     example "the quick brown fox" -> "The Quick Brown Fox"
+    example "mixed CASE words" -> "Mixed Case Words"
     if length(text) == 0 then
         return ""
     end if
@@ -36,7 +38,26 @@ func title_case(text: String) -> String
     return join(parts, " ")
 end func
 
+/// CLI: joins args with spaces, then title-cases.
+func run(args: List[String]) -> Result[String, String]
+    example ["hello", "world"] -> Ok("Hello World")
+    example ["the", "quick", "brown", "fox"] -> Ok("The Quick Brown Fox")
+    example ["HELLO"] -> Ok("Hello")
+    example [] -> Err("usage: <words...>")
+    if length(args) == 0 then
+        return Err("usage: <words...>")
+    end if
+    return Ok(title_case(join(args, " ")))
+end func
+
 @untested("entry point")
 func main() -> String
-    return title_case("the quick brown fox")
+    match run(["the", "quick", "brown", "fox"]) with
+    | Ok(a) ->
+        match run(["HELLO", "WORLD"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

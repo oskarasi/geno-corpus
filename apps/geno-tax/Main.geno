@@ -1,23 +1,75 @@
-/// Price plus sales tax percent, in cents.
+/// Price plus sales tax percent, in cents (integer arithmetic).
 
-func tax_cents(price_cents: Int, tax_percent: Int) -> Int
-    example 10000, 8 -> 800
-    example 2500, 10 -> 250
-    example 999, 5 -> 49
-    example 1000, 0 -> 0
-    return (price_cents * tax_percent) / 100
+func tax_cents(price_cents: Int, tax_percent: Int) -> Result[Int, String]
+    example 10000, 8 -> Ok(800)
+    example 2500, 10 -> Ok(250)
+    example 999, 5 -> Ok(49)
+    example 1000, 0 -> Ok(0)
+    example (-1), 8 -> Err("price_cents and tax_percent must be non-negative")
+    example 100, (-1) -> Err("price_cents and tax_percent must be non-negative")
+    if price_cents < 0 or tax_percent < 0 then
+        return Err("price_cents and tax_percent must be non-negative")
+    end if
+    return Ok((price_cents * tax_percent) / 100)
 end func
 
-func price_with_tax_cents(price_cents: Int, tax_percent: Int) -> Int
-    example 10000, 8 -> 10800
-    example 2500, 10 -> 2750
-    example 999, 5 -> 1048
-    example 1000, 0 -> 1000
-    return price_cents + tax_cents(price_cents, tax_percent)
+func price_with_tax_cents(price_cents: Int, tax_percent: Int) -> Result[Int, String]
+    example 10000, 8 -> Ok(10800)
+    example 2500, 10 -> Ok(2750)
+    example 999, 5 -> Ok(1048)
+    example 1000, 0 -> Ok(1000)
+    example (-5), 10 -> Err("price_cents and tax_percent must be non-negative")
+    match tax_cents(price_cents: price_cents, tax_percent: tax_percent) with
+    | Err(e) -> return Err(e)
+    | Ok(t) -> return Ok(price_cents + t)
+    end match
+end func
+
+/// CLI: `tax <price_cents> <tax_percent>` | `total <price_cents> <tax_percent>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["tax", "10000", "8"] -> Ok("800")
+    example ["total", "10000", "8"] -> Ok("10800")
+    example ["tax", "999", "5"] -> Ok("49")
+    example ["total", "-1", "8"] -> Err("price_cents and tax_percent must be non-negative")
+    example [] -> Err("usage: tax <price_cents> <tax_percent> | total <price_cents> <tax_percent>")
+    example ["tax", "10000"] -> Err("usage: tax <price_cents> <tax_percent> | total <price_cents> <tax_percent>")
+    example ["nope", "1", "2"] -> Err("usage: tax <price_cents> <tax_percent> | total <price_cents> <tax_percent>")
+    example ["tax", "x", "8"] -> Err("values must be integers")
+    if length(args) != 3 then
+        return Err("usage: tax <price_cents> <tax_percent> | total <price_cents> <tax_percent>")
+    end if
+    let cmd: String = args[0]
+    match parse_int(args[1]) with
+    | None -> return Err("values must be integers")
+    | Some(price) ->
+        match parse_int(args[2]) with
+        | None -> return Err("values must be integers")
+        | Some(pct) ->
+            if cmd == "tax" then
+                match tax_cents(price_cents: price, tax_percent: pct) with
+                | Ok(v) -> return Ok(to_string(v))
+                | Err(e) -> return Err(e)
+                end match
+            else if cmd == "total" then
+                match price_with_tax_cents(price_cents: price, tax_percent: pct) with
+                | Ok(v) -> return Ok(to_string(v))
+                | Err(e) -> return Err(e)
+                end match
+            else
+                return Err("usage: tax <price_cents> <tax_percent> | total <price_cents> <tax_percent>")
+            end if
+        end match
+    end match
 end func
 
 @untested("entry point")
 func main() -> String
-    let total: Int = price_with_tax_cents(10000, 8)
-    return "10000 + 8% tax = " + to_string(total)
+    match run(["tax", "10000", "8"]) with
+    | Ok(t) ->
+        match run(["total", "10000", "8"]) with
+        | Ok(tot) -> return "tax=" + t + " total=" + tot
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

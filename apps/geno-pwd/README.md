@@ -1,10 +1,8 @@
 # geno-pwd
 
-Password strength meter written in [Geno](https://github.com/davidiach/geno-lang).
+Password strength meter (score 0–5) in [Geno](https://github.com/davidiach/geno-lang).
 
 ## Scoring
-
-`score(password)` returns an integer from **0–5**:
 
 | Criterion | Points |
 |-----------|--------|
@@ -14,25 +12,41 @@ Password strength meter written in [Geno](https://github.com/davidiach/geno-lang
 | Has symbol (non-alphanumeric) | +1 |
 | Length ≥ 8 | +1 |
 
-`label(score)` maps the score to:
+Labels: 0–1 weak, 2 fair, 3 good, 4–5 strong.
 
-| Score | Label |
-|-------|-------|
-| 0–1 | weak |
-| 2 | fair |
-| 3 | good |
-| 4–5 | strong |
+## Install
 
-Helpers `has_lower`, `has_upper`, `has_digit`, and `has_symbol` scan the string with `char_at`.
+```bash
+pip install geno-lang
+```
+
+## Test
+
+```bash
+geno test Main.geno
+```
 
 ## Run
 
+Default sandbox demo (capability-free `main()`):
+
 ```bash
-geno test .
-geno run .
+geno run Main.geno
 ```
 
-## Layout
+Optional real CLI (needs `--unsafe` because default sandbox does not allow `--cap` without `--unsafe`/`--json`):
 
-- `geno.toml` — project manifest
-- `Main.geno` — strength helpers, scoring, and `main`
+```bash
+geno run --unsafe --cap env,print Main.geno -- abc
+geno run --unsafe --cap env,print Main.geno -- Password1!
+```
+
+Note: `run(args)` is capability-free; OS argv via `cli_args()` needs `--cap env`.
+
+## API
+
+- `score(password: String) -> Int`
+- `label(s: Int) -> String — requires 0..5`
+- `summarize(password: String) -> String`
+- `run(args: List[String]) -> Result[String, String] — `<password...>``
+- `main() -> String — demo via `run``

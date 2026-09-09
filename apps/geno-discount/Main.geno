@@ -1,24 +1,72 @@
 /// Price after percent discount, in cents (integer arithmetic).
 
-func discount_amount_cents(price_cents: Int, percent_off: Int) -> Int
-    example 10000, 20 -> 2000
-    example 2500, 10 -> 250
-    example 999, 50 -> 499
-    example 1000, 0 -> 0
-    return (price_cents * percent_off) / 100
+func discount_amount_cents(price_cents: Int, percent_off: Int) -> Result[Int, String]
+    example 10000, 20 -> Ok(2000)
+    example 2500, 10 -> Ok(250)
+    example 999, 50 -> Ok(499)
+    example 1000, 0 -> Ok(0)
+    example 5000, 100 -> Ok(5000)
+    example 1000, -1 -> Err("percent_off must be 0..100")
+    example 1000, 101 -> Err("percent_off must be 0..100")
+    example (-100), 10 -> Err("price_cents must be non-negative")
+    if price_cents < 0 then
+        return Err("price_cents must be non-negative")
+    end if
+    if percent_off < 0 or percent_off > 100 then
+        return Err("percent_off must be 0..100")
+    end if
+    return Ok((price_cents * percent_off) / 100)
 end func
 
-func price_after_discount_cents(price_cents: Int, percent_off: Int) -> Int
-    example 10000, 20 -> 8000
-    example 2500, 10 -> 2250
-    example 999, 50 -> 500
-    example 1000, 0 -> 1000
-    example 5000, 100 -> 0
-    return price_cents - discount_amount_cents(price_cents, percent_off)
+func price_after_discount_cents(price_cents: Int, percent_off: Int) -> Result[Int, String]
+    example 10000, 20 -> Ok(8000)
+    example 2500, 10 -> Ok(2250)
+    example 999, 50 -> Ok(500)
+    example 1000, 0 -> Ok(1000)
+    example 5000, 100 -> Ok(0)
+    example 1000, -5 -> Err("percent_off must be 0..100")
+    example (-1), 10 -> Err("price_cents must be non-negative")
+    match discount_amount_cents(price_cents, percent_off) with
+    | Err(e) -> return Err(e)
+    | Ok(off) -> return Ok(price_cents - off)
+    end match
+end func
+
+/// CLI: `<price_cents> <percent_off>`
+func run(args: List[String]) -> Result[String, String]
+    example ["10000", "25"] -> Ok("final=7500 off=2500")
+    example ["10000", "20"] -> Ok("final=8000 off=2000")
+    example ["999", "50"] -> Ok("final=500 off=499")
+    example [] -> Err("usage: <price_cents> <percent_off>")
+    example ["1000"] -> Err("usage: <price_cents> <percent_off>")
+    example ["x", "10"] -> Err("price_cents must be an integer")
+    example ["1000", "y"] -> Err("percent_off must be an integer")
+    example ["1000", "101"] -> Err("percent_off must be 0..100")
+    if length(args) != 2 then
+        return Err("usage: <price_cents> <percent_off>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("price_cents must be an integer")
+    | Some(price) ->
+        match parse_int(args[1]) with
+        | None -> return Err("percent_off must be an integer")
+        | Some(pct) ->
+            match discount_amount_cents(price, pct) with
+            | Err(e) -> return Err(e)
+            | Ok(off) ->
+                match price_after_discount_cents(price, pct) with
+                | Err(e) -> return Err(e)
+                | Ok(final_price) -> return Ok("final=" + to_string(final_price) + " off=" + to_string(off))
+                end match
+            end match
+        end match
+    end match
 end func
 
 @untested("entry point")
 func main() -> String
-    let final_price: Int = price_after_discount_cents(10000, 25)
-    return "10000 after 25% off = " + to_string(final_price)
+    match run(["10000", "25"]) with
+    | Ok(line) -> return "10000 after 25% off -> " + line
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

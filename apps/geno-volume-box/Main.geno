@@ -5,6 +5,7 @@ func volume(l: Int, w: Int, h: Int) -> Result[Int, String]
     example 1, 1, 1 -> Ok(1)
     example 0, 5, 5 -> Ok(0)
     example -1, 2, 3 -> Err("dimensions must be non-negative")
+    example 10, 10, 10 -> Ok(1000)
     if l < 0 or w < 0 or h < 0 then
         return Err("dimensions must be non-negative")
     end if
@@ -16,20 +17,62 @@ func surface(l: Int, w: Int, h: Int) -> Result[Int, String]
     example 1, 1, 1 -> Ok(6)
     example 0, 0, 0 -> Ok(0)
     example 1, -1, 1 -> Err("dimensions must be non-negative")
+    example 2, 2, 2 -> Ok(24)
     if l < 0 or w < 0 or h < 0 then
         return Err("dimensions must be non-negative")
     end if
     return Ok(2 * (l * w + l * h + w * h))
 end func
 
+/// CLI: `volume <l> <w> <h>` | `surface <l> <w> <h>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["volume", "2", "3", "4"] -> Ok("24")
+    example ["surface", "2", "3", "4"] -> Ok("52")
+    example ["volume", "1", "1", "1"] -> Ok("1")
+    example ["volume", "-1", "2", "3"] -> Err("dimensions must be non-negative")
+    example [] -> Err("usage: volume <l> <w> <h> | surface <l> <w> <h>")
+    example ["volume", "2", "3"] -> Err("usage: volume <l> <w> <h> | surface <l> <w> <h>")
+    example ["nope", "1", "1", "1"] -> Err("usage: volume <l> <w> <h> | surface <l> <w> <h>")
+    example ["volume", "x", "3", "4"] -> Err("dimensions must be integers")
+    if length(args) != 4 then
+        return Err("usage: volume <l> <w> <h> | surface <l> <w> <h>")
+    end if
+    let cmd: String = args[0]
+    match parse_int(args[1]) with
+    | None -> return Err("dimensions must be integers")
+    | Some(l) ->
+        match parse_int(args[2]) with
+        | None -> return Err("dimensions must be integers")
+        | Some(w) ->
+            match parse_int(args[3]) with
+            | None -> return Err("dimensions must be integers")
+            | Some(h) ->
+                if cmd == "volume" then
+                    match volume(l: l, w: w, h: h) with
+                    | Ok(v) -> return Ok(to_string(v))
+                    | Err(e) -> return Err(e)
+                    end match
+                else if cmd == "surface" then
+                    match surface(l: l, w: w, h: h) with
+                    | Ok(s) -> return Ok(to_string(s))
+                    | Err(e) -> return Err(e)
+                    end match
+                else
+                    return Err("usage: volume <l> <w> <h> | surface <l> <w> <h>")
+                end if
+            end match
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    match volume(l: 2, w: 3, h: 4) with
+    match run(["volume", "2", "3", "4"]) with
     | Ok(v) ->
-        match surface(l: 2, w: 3, h: 4) with
-        | Ok(s) -> return "2x3x4 volume=" + to_string(v) + " surface=" + to_string(s)
-        | Err(e) -> return e
+        match run(["surface", "2", "3", "4"]) with
+        | Ok(s) -> return "2x3x4 volume=" + v + " surface=" + s
+        | Err(msg) -> return "error: " + msg
         end match
-    | Err(e) -> return e
+    | Err(msg) -> return "error: " + msg
     end match
 end func

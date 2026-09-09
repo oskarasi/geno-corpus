@@ -4,6 +4,7 @@ func solve(a: Float, b: Float) -> Result[Float, String]
     example 2.0, -4.0 -> Ok(2.0)
     example 1.0, 0.0 -> Ok(0.0)
     example 5.0, 10.0 -> Ok(-2.0)
+    example 4.0, -8.0 -> Ok(2.0)
     example 0.0, 0.0 -> Err("infinite solutions")
     example 0.0, 3.0 -> Err("no solution")
     if a == 0.0 then
@@ -19,13 +20,45 @@ end func
 func describe(a: Float, b: Float) -> String
     example 2.0, -4.0 -> "x=2.0"
     example 0.0, 3.0 -> "no solution"
+    example 0.0, 0.0 -> "infinite solutions"
+    example 5.0, 10.0 -> "x=-2.0"
     match solve(a, b) with
     | Ok(x) -> return "x=" + to_string(x)
     | Err(msg) -> return msg
     end match
 end func
 
+/// CLI: `<a> <b>` for ax + b = 0.
+func run(args: List[String]) -> Result[String, String]
+    example ["2", "-4"] -> Ok("x=2.0")
+    example ["5", "10"] -> Ok("x=-2.0")
+    example ["0", "3"] -> Ok("no solution")
+    example ["0", "0"] -> Ok("infinite solutions")
+    example [] -> Err("usage: <a> <b>")
+    example ["2"] -> Err("usage: <a> <b>")
+    example ["x", "1"] -> Err("a must be a number")
+    example ["1", "y"] -> Err("b must be a number")
+    if length(args) != 2 then
+        return Err("usage: <a> <b>")
+    end if
+    match parse_float(args[0]) with
+    | None -> return Err("a must be a number")
+    | Some(a) ->
+        match parse_float(args[1]) with
+        | None -> return Err("b must be a number")
+        | Some(b) -> return Ok(describe(a, b))
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    return describe(2.0, -4.0) + " | " + describe(5.0, 10.0)
+    match run(["2", "-4"]) with
+    | Ok(a) ->
+        match run(["5", "10"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

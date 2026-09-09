@@ -6,11 +6,49 @@ func det2(a: Int, b: Int, c: Int, d: Int) -> Int
     example 5, 5, 5, 5 -> 0
     example 1, 0, 0, 1 -> 1
     example 3, 1, 2, 4 -> 10
+    example (-1), 2, 3, (-4) -> (-2)
     return a * d - b * c
+end func
+
+/// CLI: `<a> <b> <c> <d>` for det([[a,b],[c,d]]).
+func run(args: List[String]) -> Result[String, String]
+    example ["1", "2", "3", "4"] -> Ok("det=-2")
+    example ["2", "0", "0", "2"] -> Ok("det=4")
+    example ["3", "1", "2", "4"] -> Ok("det=10")
+    example ["5", "5", "5", "5"] -> Ok("det=0")
+    example [] -> Err("usage: <a> <b> <c> <d>")
+    example ["1", "2", "3"] -> Err("usage: <a> <b> <c> <d>")
+    example ["x", "2", "3", "4"] -> Err("entries must be integers")
+    if length(args) != 4 then
+        return Err("usage: <a> <b> <c> <d>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("entries must be integers")
+    | Some(a) ->
+        match parse_int(args[1]) with
+        | None -> return Err("entries must be integers")
+        | Some(b) ->
+            match parse_int(args[2]) with
+            | None -> return Err("entries must be integers")
+            | Some(c) ->
+                match parse_int(args[3]) with
+                | None -> return Err("entries must be integers")
+                | Some(d) ->
+                    return Ok("det=" + to_string(det2(a: a, b: b, c: c, d: d)))
+                end match
+            end match
+        end match
+    end match
 end func
 
 @untested("entry point")
 func main() -> String
-    let d: Int = det2(a: 1, b: 2, c: 3, d: 4)
-    return "det([[1,2],[3,4]])=" + to_string(d)
+    match run(["1", "2", "3", "4"]) with
+    | Ok(a) ->
+        match run(["3", "1", "2", "4"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

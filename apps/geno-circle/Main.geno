@@ -3,21 +3,76 @@
 import Math
 
 func area(radius: Float) -> Float
+    requires radius >= 0.0
+    ensures result >= 0.0
     example 1.0 -> 3.141592653589793
     example 0.0 -> 0.0
     example 2.0 -> 12.566370614359172
+    example 0.5 -> 0.7853981633974483
     return Math.pi() * radius * radius
 end func
 
 func circumference(radius: Float) -> Float
+    requires radius >= 0.0
+    ensures result >= 0.0
     example 1.0 -> 6.283185307179586
     example 0.0 -> 0.0
     example 2.0 -> 12.566370614359172
+    example 0.5 -> 3.141592653589793
     return 2.0 * Math.pi() * radius
+end func
+
+func safe_area(radius: Float) -> Result[Float, String]
+    example 1.0 -> Ok(3.141592653589793)
+    example 2.0 -> Ok(12.566370614359172)
+    example 0.0 -> Ok(0.0)
+    example (-1.0) -> Err("radius must be non-negative")
+    if radius < 0.0 then
+        return Err("radius must be non-negative")
+    end if
+    return Ok(Math.pi() * radius * radius)
+end func
+
+func safe_circumference(radius: Float) -> Result[Float, String]
+    example 1.0 -> Ok(6.283185307179586)
+    example 2.0 -> Ok(12.566370614359172)
+    example (-1.0) -> Err("radius must be non-negative")
+    if radius < 0.0 then
+        return Err("radius must be non-negative")
+    end if
+    return Ok(2.0 * Math.pi() * radius)
+end func
+
+/// CLI: `<radius>`
+func run(args: List[String]) -> Result[String, String]
+    example ["2"] -> Ok("area=12.566370614359172 circ=12.566370614359172")
+    example ["1"] -> Ok("area=3.141592653589793 circ=6.283185307179586")
+    example ["0"] -> Ok("area=0.0 circ=0.0")
+    example [] -> Err("usage: <radius>")
+    example ["x"] -> Err("radius must be a number")
+    example ["-1"] -> Err("radius must be non-negative")
+    example ["1", "2"] -> Err("usage: <radius>")
+    if length(args) != 1 then
+        return Err("usage: <radius>")
+    end if
+    match parse_float(args[0]) with
+    | None -> return Err("radius must be a number")
+    | Some(r) ->
+        match safe_area(r) with
+        | Err(e) -> return Err(e)
+        | Ok(a) ->
+            match safe_circumference(r) with
+            | Err(e) -> return Err(e)
+            | Ok(c) -> return Ok("area=" + to_string(a) + " circ=" + to_string(c))
+            end match
+        end match
+    end match
 end func
 
 @untested("entry point")
 func main() -> String
-    let r: Float = 2.0
-    return "r=2 area=" + to_string(area(r)) + " circ=" + to_string(circumference(r))
+    match run(["2"]) with
+    | Ok(line) -> return "r=2 " + line
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

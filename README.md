@@ -19,6 +19,8 @@ This is the external, agent-written companion to geno-lang’s in-tree `examples
 
 See `manifest.json` for the authoritative app list and `pin.json` for the pinned `geno-lang` version.
 
+**Flagship bar:** all 100 mini-apps (plus `geno-ref-ledger`) now expose `run(args)` / CLI args — not only the `flagship` CI tier.
+
 CI runs one job per tier (`flagship`, `reference`, `corpus`) with `fail-fast: false`, so a corpus failure does not cancel flagship.
 
 ## Quick start (local)
@@ -117,6 +119,7 @@ If a push is rejected for workflow scope, keep the live workflow local/untracked
 
 ## Changelog
 
+- **2026-09-09** — Vendors re-synced from GitHub `main` (SOURCE.json SHAs) after **all 100 mini-apps** reached the flagship bar (`run(args)` / CLI args). Harness green on geno-lang 0.4.3: **101/101** (`--tier all`; flagship + reference + corpus).
 - **2026-09-06** — Vendors refreshed from GitHub `main` (SOURCE.json SHAs) after the flagship-bar batch-2 upgrades (fizzbuzz, palindrome, factorial, fib, gcd, collatz, binary, hex, leap, rot13, atbash, ordinal, perfect, happy, stack), plus flagships and `geno-ref-ledger`. Harness green on geno-lang 0.4.3: flagship 10/10, reference 1/1, corpus 90/90.
 
 ## Related

@@ -1,9 +1,11 @@
 /// Least common multiple via GCD: |a*b|/gcd(a,b).
 
 func abs_int(n: Int) -> Int
+    ensures result >= 0
     example -4 -> 4
     example 4 -> 4
     example 0 -> 0
+    example -1 -> 1
     if n < 0 then
         return 0 - n
     else
@@ -12,9 +14,12 @@ func abs_int(n: Int) -> Int
 end func
 
 func gcd(a: Int, b: Int) -> Int
+    ensures result >= 0
     example 12, 8 -> 4
     example 7, 3 -> 1
     example 0, 9 -> 9
+    example -12, 8 -> 4
+    example 0, 0 -> 0
     var x: Int = abs_int(a)
     var y: Int = abs_int(b)
     while y != 0 do
@@ -26,11 +31,13 @@ func gcd(a: Int, b: Int) -> Int
 end func
 
 func lcm(a: Int, b: Int) -> Int
+    ensures result >= 0
     example 4, 6 -> 12
     example 3, 5 -> 15
     example 0, 5 -> 0
     example 12, 8 -> 24
     example -4, 6 -> 12
+    example 7, 1 -> 7
     if a == 0 or b == 0 then
         return 0
     end if
@@ -38,7 +45,37 @@ func lcm(a: Int, b: Int) -> Int
     return abs_int(a / g * b)
 end func
 
+/// CLI: `<a> <b>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["4", "6"] -> Ok("lcm=12")
+    example ["12", "8"] -> Ok("lcm=24")
+    example ["-4", "6"] -> Ok("lcm=12")
+    example ["0", "5"] -> Ok("lcm=0")
+    example [] -> Err("usage: <a> <b>")
+    example ["4"] -> Err("usage: <a> <b>")
+    example ["x", "6"] -> Err("a must be an integer")
+    example ["4", "y"] -> Err("b must be an integer")
+    if length(args) != 2 then
+        return Err("usage: <a> <b>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("a must be an integer")
+    | Some(a) ->
+        match parse_int(args[1]) with
+        | None -> return Err("b must be an integer")
+        | Some(b) -> return Ok("lcm=" + to_string(lcm(a, b)))
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    return "lcm(4,6)=" + to_string(lcm(4, 6)) + " lcm(12,8)=" + to_string(lcm(12, 8))
+    match run(["4", "6"]) with
+    | Ok(a) ->
+        match run(["12", "8"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

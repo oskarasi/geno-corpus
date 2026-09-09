@@ -9,14 +9,71 @@ func chunk_list(xs: List[Int], n: Int) -> List[List[Int]]
     example [], 2 -> []
     example [1, 2], 0 -> []
     example [1, 2], (-1) -> []
+    example [1, 2, 3, 4], 4 -> [[1, 2, 3, 4]]
     if n <= 0 then
         return []
     end if
     return List.chunk(xs, n)
 end func
 
+func ints_csv(xs: List[Int]) -> String
+    example [1, 2] -> "1,2"
+    example [] -> ""
+    example [7] -> "7"
+    var parts: List[String] = []
+    var i: Int = 0
+    while i < length(xs) do
+        parts = append(parts, to_string(xs[i]))
+        i = i + 1
+    end while
+    return join(parts, ",")
+end func
+
+func format_chunks(chunks: List[List[Int]]) -> String
+    example [[1, 2], [3]] -> "1,2|3"
+    example [] -> ""
+    example [[1]] -> "1"
+    var parts: List[String] = []
+    var i: Int = 0
+    while i < length(chunks) do
+        parts = append(parts, ints_csv(chunks[i]))
+        i = i + 1
+    end while
+    return join(parts, "|")
+end func
+
+/// CLI: `<n> <ints...>`
+func run(args: List[String]) -> Result[String, String]
+    example ["2", "1", "2", "3", "4", "5"] -> Ok("1,2|3,4|5")
+    example ["3", "1", "2", "3"] -> Ok("1,2,3")
+    example ["1", "1", "2"] -> Ok("1|2")
+    example [] -> Err("usage: <n> <ints...>")
+    example ["2"] -> Ok("")
+    example ["x", "1"] -> Err("n must be an integer")
+    example ["2", "a"] -> Err("values must be integers")
+    if length(args) < 1 then
+        return Err("usage: <n> <ints...>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("n must be an integer")
+    | Some(n) ->
+        var xs: List[Int] = []
+        var i: Int = 1
+        while i < length(args) do
+            match parse_int(args[i]) with
+            | None -> return Err("values must be integers")
+            | Some(v) -> xs = append(xs, v)
+            end match
+            i = i + 1
+        end while
+        return Ok(format_chunks(chunk_list(xs, n)))
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    let chunks: List[List[Int]] = chunk_list([1, 2, 3, 4, 5], 2)
-    return "chunk_count=" + to_string(length(chunks))
+    match run(["2", "1", "2", "3", "4", "5"]) with
+    | Ok(line) -> return "chunks=" + line
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

@@ -4,6 +4,7 @@ func count_of(xs: List[Int], target: Int) -> Int
     example [1, 2, 2, 3], 2 -> 2
     example [1, 1, 1], 1 -> 3
     example [], 5 -> 0
+    example [9, 9, 8], 9 -> 2
     var c: Int = 0
     var i: Int = 0
     while i < length(xs) do
@@ -18,6 +19,7 @@ end func
 func contains_int(xs: List[Int], x: Int) -> Bool
     example [1, 2], 2 -> true
     example [1, 2], 9 -> false
+    example [], 1 -> false
     var i: Int = 0
     while i < length(xs) do
         if xs[i] == x then
@@ -32,6 +34,7 @@ func unique_values(xs: List[Int]) -> List[Int]
     example [2, 1, 2, 3, 1] -> [2, 1, 3]
     example [] -> []
     example [5, 5] -> [5]
+    example [1, 2, 3] -> [1, 2, 3]
     var out: List[Int] = []
     var i: Int = 0
     while i < length(xs) do
@@ -48,6 +51,7 @@ func frequencies(xs: List[Int]) -> List[Int]
     example [1, 2, 2, 3, 1, 1] -> [3, 2, 1]
     example [] -> []
     example [5, 5, 5] -> [3]
+    example [9, 8, 9] -> [2, 1]
     let vals: List[Int] = unique_values(xs)
     var freqs: List[Int] = []
     var i: Int = 0
@@ -61,15 +65,41 @@ end func
 func describe(xs: List[Int]) -> String
     example [1, 2, 2] -> "values=[1, 2] freqs=[1, 2]"
     example [] -> "values=[] freqs=[]"
+    example [5, 5, 5] -> "values=[5] freqs=[3]"
     let vals: List[Int] = unique_values(xs)
     let freqs: List[Int] = frequencies(xs)
     return "values=" + to_string(vals) + " freqs=" + to_string(freqs)
 end func
 
+/// CLI: `<ints...>` frequency histogram.
+func run(args: List[String]) -> Result[String, String]
+    example ["1", "2", "2", "3", "1", "1"] -> Ok("values=[1, 2, 3] freqs=[3, 2, 1]")
+    example ["5", "5", "5"] -> Ok("values=[5] freqs=[3]")
+    example [] -> Err("usage: <ints...>")
+    example ["x"] -> Err("values must be integers")
+    if length(args) == 0 then
+        return Err("usage: <ints...>")
+    end if
+    var xs: List[Int] = []
+    var i: Int = 0
+    while i < length(args) do
+        match parse_int(args[i]) with
+        | None -> return Err("values must be integers")
+        | Some(v) -> xs = append(xs, v)
+        end match
+        i = i + 1
+    end while
+    return Ok(describe(xs))
+end func
+
 @untested("entry point")
 func main() -> String
-    let xs: List[Int] = [1, 2, 2, 3, 1, 1]
-    let vals: List[Int] = unique_values(xs)
-    let freqs: List[Int] = frequencies(xs)
-    return "nunique=" + to_string(length(vals)) + " first_freq=" + to_string(freqs[0])
+    match run(["1", "2", "2", "3", "1", "1"]) with
+    | Ok(a) ->
+        match run(["5", "5", "5"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

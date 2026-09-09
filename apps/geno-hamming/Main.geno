@@ -7,6 +7,7 @@ func hamming_distance(a: String, b: String) -> Result[Int, String]
     example "1011101", "1001001" -> Ok(2)
     example "abc", "abc" -> Ok(0)
     example "", "" -> Ok(0)
+    example "aaaa", "aaab" -> Ok(1)
     example "ab", "abc" -> Err("strings must be equal length")
     example "a", "" -> Err("strings must be equal length")
     if length(a) != length(b) then
@@ -23,10 +24,31 @@ func hamming_distance(a: String, b: String) -> Result[Int, String]
     return Ok(dist)
 end func
 
+/// CLI: `<a> <b>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["karolin", "kathrin"] -> Ok("distance=3")
+    example ["abc", "abc"] -> Ok("distance=0")
+    example ["1011101", "1001001"] -> Ok("distance=2")
+    example [] -> Err("usage: <a> <b>")
+    example ["only"] -> Err("usage: <a> <b>")
+    example ["ab", "abc"] -> Err("strings must be equal length")
+    if length(args) != 2 then
+        return Err("usage: <a> <b>")
+    end if
+    match hamming_distance(args[0], args[1]) with
+    | Err(e) -> return Err(e)
+    | Ok(d) -> return Ok("distance=" + to_string(d))
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    match hamming_distance("karolin", "kathrin") with
-    | Ok(d) -> return "karolin/kathrin=" + to_string(d)
-    | Err(e) -> return "error: " + e
+    match run(["karolin", "kathrin"]) with
+    | Ok(a) ->
+        match run(["1011101", "1001001"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
     end match
 end func

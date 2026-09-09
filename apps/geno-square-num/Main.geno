@@ -10,6 +10,7 @@ func is_square(n: Int) -> Bool
     example 8 -> false
     example 15 -> false
     example (-4) -> false
+    example 25 -> true
     if n < 0 then
         return false
     end if
@@ -30,6 +31,7 @@ func is_cube(n: Int) -> Bool
     example 9 -> false
     example 26 -> false
     example (-8) -> false
+    example 125 -> true
     if n < 0 then
         return false
     end if
@@ -40,7 +42,64 @@ func is_cube(n: Int) -> Bool
     return i * i * i == n
 end func
 
+/// CLI: `square <n>` | `cube <n>` | `both <n>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["square", "16"] -> Ok("true")
+    example ["cube", "8"] -> Ok("true")
+    example ["both", "64"] -> Ok("square=true cube=true")
+    example ["square", "2"] -> Ok("false")
+    example ["cube", "9"] -> Ok("false")
+    example [] -> Err("usage: square <n> | cube <n> | both <n>")
+    example ["square"] -> Err("usage: square <n> | cube <n> | both <n>")
+    example ["nope", "4"] -> Err("usage: square <n> | cube <n> | both <n>")
+    example ["square", "x"] -> Err("n must be an integer")
+    if length(args) != 2 then
+        return Err("usage: square <n> | cube <n> | both <n>")
+    end if
+    let cmd: String = args[0]
+    match parse_int(args[1]) with
+    | None -> return Err("n must be an integer")
+    | Some(n) ->
+        if cmd == "square" then
+            if is_square(n) then
+                return Ok("true")
+            else
+                return Ok("false")
+            end if
+        else if cmd == "cube" then
+            if is_cube(n) then
+                return Ok("true")
+            else
+                return Ok("false")
+            end if
+        else if cmd == "both" then
+            var sq: String = "false"
+            var cu: String = "false"
+            if is_square(n) then
+                sq = "true"
+            end if
+            if is_cube(n) then
+                cu = "true"
+            end if
+            return Ok("square=" + sq + " cube=" + cu)
+        else
+            return Err("usage: square <n> | cube <n> | both <n>")
+        end if
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    return "16sq=" + to_string(is_square(16)) + " 8cube=" + to_string(is_cube(8)) + " 2sq=" + to_string(is_square(2))
+    match run(["square", "16"]) with
+    | Ok(a) ->
+        match run(["cube", "8"]) with
+        | Ok(b) ->
+            match run(["both", "64"]) with
+            | Ok(c) -> return "16sq=" + a + " 8cube=" + b + " 64=" + c
+            | Err(msg) -> return "error: " + msg
+            end match
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

@@ -9,6 +9,7 @@ func escape_char(c: String) -> String
     example "\"" -> "&quot;"
     example "'" -> "&#39;"
     example "a" -> "a"
+    example " " -> " "
     if c == "&" then
         return "&amp;"
     else if c == "<" then
@@ -30,6 +31,7 @@ func html_escape(s: String) -> String
     example "x&y" -> "x&amp;y"
     example "\"hi\"" -> "&quot;hi&quot;"
     example "a>b'c" -> "a&gt;b&#39;c"
+    example "<b>&x</b>" -> "&lt;b&gt;&amp;x&lt;/b&gt;"
     var out: String = ""
     var i: Int = 0
     while i < length(s) do
@@ -39,7 +41,26 @@ func html_escape(s: String) -> String
     return out
 end func
 
+/// CLI: joins all args with spaces, then HTML-escapes.
+func run(args: List[String]) -> Result[String, String]
+    example ["a<b"] -> Ok("a&lt;b")
+    example ["x&y", "z"] -> Ok("x&amp;y z")
+    example ["<b>&\"x\"</b>"] -> Ok("&lt;b&gt;&amp;&quot;x&quot;&lt;/b&gt;")
+    example [] -> Err("usage: <text...>")
+    if length(args) == 0 then
+        return Err("usage: <text...>")
+    end if
+    return Ok(html_escape(join(args, " ")))
+end func
+
 @untested("entry point")
 func main() -> String
-    return html_escape("<b>&\"x\"</b>")
+    match run(["<b>&\"x\"</b>"]) with
+    | Ok(a) ->
+        match run(["a<b", "c>d"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

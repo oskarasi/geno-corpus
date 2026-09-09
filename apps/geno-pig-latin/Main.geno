@@ -1,5 +1,5 @@
 /// Simple Pig Latin: move leading consonant cluster to end and add "ay".
-/// Words starting with a vowel just get "ay" appended. Preserves case of first letter only loosely (lowercase transform).
+/// Words starting with a vowel just get "ay" appended.
 
 import String
 
@@ -7,6 +7,7 @@ func is_vowel(ch: String) -> Bool
     example "a" -> true
     example "E" -> true
     example "b" -> false
+    example "y" -> false
     let c: String = String.to_lower(ch)
     return c == "a" or c == "e" or c == "i" or c == "o" or c == "u"
 end func
@@ -17,6 +18,7 @@ func pig_latin_word(word: String) -> String
     example "strength" -> "engthstray"
     example "I" -> "Iay"
     example "" -> ""
+    example "orange" -> "orangeay"
     if length(word) == 0 then
         return ""
     end if
@@ -36,6 +38,7 @@ func pig_latin(text: String) -> String
     example "hello world" -> "ellohay orldway"
     example "apple" -> "appleay"
     example "" -> ""
+    example "I am happy" -> "Iay amay appyhay"
     let parts: List[String] = String.split(text, " ")
     var out: List[String] = []
     var i: Int = 0
@@ -46,7 +49,26 @@ func pig_latin(text: String) -> String
     return String.join(out, " ")
 end func
 
+/// CLI: joins all args as the text to transform.
+func run(args: List[String]) -> Result[String, String]
+    example ["hello", "world"] -> Ok("ellohay orldway")
+    example ["apple"] -> Ok("appleay")
+    example ["I", "am", "happy"] -> Ok("Iay amay appyhay")
+    example [] -> Err("usage: <text...>")
+    if length(args) == 0 then
+        return Err("usage: <text...>")
+    end if
+    return Ok(pig_latin(join(args, " ")))
+end func
+
 @untested("entry point")
 func main() -> String
-    return "pig=" + pig_latin("hello world")
+    match run(["hello", "world"]) with
+    | Ok(a) ->
+        match run(["apple"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

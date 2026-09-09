@@ -7,6 +7,7 @@ func reverse_string(text: String) -> String
     example "" -> ""
     example "a" -> "a"
     example "Geno" -> "oneG"
+    example "racecar" -> "racecar"
     var result: String = ""
     var i: Int = length(text) - 1
     while i >= 0 do
@@ -21,12 +22,69 @@ func reverse_list(xs: List[Int]) -> List[Int]
     example [] -> []
     example [7] -> [7]
     example [1, 2] -> [2, 1]
+    example [1, 2, 3, 4] -> [4, 3, 2, 1]
     return reverse(xs)
+end func
+
+func ints_csv(xs: List[Int]) -> String
+    example [1, 2, 3] -> "1,2,3"
+    example [] -> ""
+    example [7] -> "7"
+    var parts: List[String] = []
+    var i: Int = 0
+    while i < length(xs) do
+        parts = append(parts, to_string(xs[i]))
+        i = i + 1
+    end while
+    return join(parts, ",")
+end func
+
+/// CLI: `str <text...>` or `list <ints...>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["str", "Geno"] -> Ok("oneG")
+    example ["str", "hello", "world"] -> Ok("dlrow olleh")
+    example ["list", "1", "2", "3"] -> Ok("3,2,1")
+    example ["list", "7"] -> Ok("7")
+    example [] -> Err("usage: str <text...> | list <ints...>")
+    example ["str"] -> Err("usage: str <text...> | list <ints...>")
+    example ["list"] -> Err("usage: str <text...> | list <ints...>")
+    example ["nope", "1"] -> Err("usage: str <text...> | list <ints...>")
+    example ["list", "x"] -> Err("values must be integers")
+    if length(args) < 2 then
+        return Err("usage: str <text...> | list <ints...>")
+    end if
+    if args[0] == "str" then
+        var parts: List[String] = []
+        var i: Int = 1
+        while i < length(args) do
+            parts = append(parts, args[i])
+            i = i + 1
+        end while
+        return Ok(reverse_string(join(parts, " ")))
+    end if
+    if args[0] == "list" then
+        var xs: List[Int] = []
+        var j: Int = 1
+        while j < length(args) do
+            match parse_int(args[j]) with
+            | None -> return Err("values must be integers")
+            | Some(v) -> xs = append(xs, v)
+            end match
+            j = j + 1
+        end while
+        return Ok(ints_csv(reverse_list(xs)))
+    end if
+    return Err("usage: str <text...> | list <ints...>")
 end func
 
 @untested("entry point")
 func main() -> String
-    let s: String = reverse_string("Geno")
-    let xs: List[Int] = reverse_list([1, 2, 3, 4])
-    return "str=" + s + " list_len=" + to_string(length(xs)) + " head=" + to_string(xs[0])
+    match run(["str", "Geno"]) with
+    | Ok(a) ->
+        match run(["list", "1", "2", "3", "4"]) with
+        | Ok(b) -> return "str=" + a + " | list=" + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

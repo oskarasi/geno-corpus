@@ -1,6 +1,6 @@
 # geno-lcm
 
-LCM in [Geno](https://github.com/davidiach/geno-lang).
+Least common multiple via GCD (|a*b|/gcd(a,b)) in [Geno](https://github.com/davidiach/geno-lang).
 
 ## Install
 
@@ -16,10 +16,25 @@ geno test Main.geno
 
 ## Run
 
+Default sandbox demo (capability-free `main()`):
+
 ```bash
 geno run Main.geno
 ```
 
+Optional real CLI (needs `--unsafe` because default sandbox does not allow `--cap` without `--unsafe`/`--json`):
+
+```bash
+geno run --unsafe --cap env,print Main.geno -- 4 6
+geno run --unsafe --cap env,print Main.geno -- 12 8
+```
+
+Note: `run(args)` is capability-free; OS argv via `cli_args()` needs `--cap env`.
+
 ## API
 
-- `lcm(a, b) -> Int  (via Euclidean GCD)`
+- `abs_int(n: Int) -> Int`
+- `gcd(a: Int, b: Int) -> Int`
+- `lcm(a: Int, b: Int) -> Int`
+- `run(args: List[String]) -> Result[String, String] — `<a> <b>``
+- `main() -> String — demo via `run``

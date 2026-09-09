@@ -1,9 +1,11 @@
 /// Standard amortizing mortgage monthly payment. Rate 0 uses principal / (years*12).
 
 func pow_float(base: Float, exp: Int) -> Float
+    requires exp >= 0
     example 2.0, 3 -> 8.0
     example 1.5, 0 -> 1.0
     example 1.1, 2 -> 1.2100000000000002
+    example 10.0, 1 -> 10.0
     var result: Float = 1.0
     var i: Int = 0
     while i < exp do
@@ -16,6 +18,8 @@ end func
 func monthly_payment(principal: Float, annual_rate_percent: Float, years: Int) -> Float
     example 120000.0, 0.0, 10 -> 1000.0
     example 0.0, 5.0, 30 -> 0.0
+    example 200000.0, 6.0, 30 -> 1199.101050305514
+    example 100000.0, 0.0, 20 -> 416.6666666666667
     if years <= 0 then
         return 0.0
     end if
@@ -28,9 +32,43 @@ func monthly_payment(principal: Float, annual_rate_percent: Float, years: Int) -
     return principal * (r * factor) / (factor - 1.0)
 end func
 
+/// CLI: `<principal> <annual_rate_percent> <years>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["120000", "0", "10"] -> Ok("payment=1000.0")
+    example ["200000", "6", "30"] -> Ok("payment=1199.101050305514")
+    example ["0", "5", "30"] -> Ok("payment=0.0")
+    example [] -> Err("usage: <principal> <annual_rate_percent> <years>")
+    example ["120000", "0"] -> Err("usage: <principal> <annual_rate_percent> <years>")
+    example ["x", "0", "10"] -> Err("principal must be a number")
+    example ["120000", "y", "10"] -> Err("annual_rate_percent must be a number")
+    example ["120000", "0", "z"] -> Err("years must be an integer")
+    if length(args) != 3 then
+        return Err("usage: <principal> <annual_rate_percent> <years>")
+    end if
+    match parse_float(args[0]) with
+    | None -> return Err("principal must be a number")
+    | Some(p) ->
+        match parse_float(args[1]) with
+        | None -> return Err("annual_rate_percent must be a number")
+        | Some(r) ->
+            match parse_int(args[2]) with
+            | None -> return Err("years must be an integer")
+            | Some(y) ->
+                let pay: Float = monthly_payment(principal: p, annual_rate_percent: r, years: y)
+                return Ok("payment=" + to_string(pay))
+            end match
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    let p: Float = monthly_payment(principal: 200000.0, annual_rate_percent: 6.0, years: 30)
-    let z: Float = monthly_payment(principal: 120000.0, annual_rate_percent: 0.0, years: 10)
-    return "200k@6%/30y=" + to_string(p) + " 120k@0%/10y=" + to_string(z)
+    match run(["200000", "6", "30"]) with
+    | Ok(a) ->
+        match run(["120000", "0", "10"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

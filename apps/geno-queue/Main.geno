@@ -4,6 +4,7 @@ func enqueue(q: List[Int], x: Int) -> List[Int]
     example [], 1 -> [1]
     example [1], 2 -> [1, 2]
     example [1, 2], 3 -> [1, 2, 3]
+    example [0], -5 -> [0, -5]
     return append(q, x)
 end func
 
@@ -30,19 +31,70 @@ end func
 func is_empty(q: List[Int]) -> Bool
     example [] -> true
     example [1] -> false
+    example [1, 2] -> false
     return length(q) == 0
+end func
+
+func ints_csv(xs: List[Int]) -> String
+    example [1, 2, 3] -> "1,2,3"
+    example [] -> ""
+    example [7] -> "7"
+    var parts: List[String] = []
+    var i: Int = 0
+    while i < length(xs) do
+        parts = append(parts, to_string(xs[i]))
+        i = i + 1
+    end while
+    return join(parts, ",")
+end func
+
+/// CLI: `demo` enqueues 10,20 and shows front/rest; or `enq <ints...>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["demo"] -> Ok("front=10 rest=20")
+    example ["enq", "1", "2", "3"] -> Ok("queue=1,2,3 front=1")
+    example ["enq", "7"] -> Ok("queue=7 front=7")
+    example [] -> Err("usage: demo | enq <ints...>")
+    example ["enq"] -> Err("usage: demo | enq <ints...>")
+    example ["nope"] -> Err("usage: demo | enq <ints...>")
+    example ["enq", "x"] -> Err("values must be integers")
+    if length(args) == 1 and args[0] == "demo" then
+        let q1: List[Int] = enqueue([], 10)
+        let q2: List[Int] = enqueue(q1, 20)
+        match front(q2) with
+        | Err(e) -> return Err(e)
+        | Ok(f) ->
+            match dequeue(q2) with
+            | Err(e) -> return Err(e)
+            | Ok(rest) -> return Ok("front=" + to_string(f) + " rest=" + ints_csv(rest))
+            end match
+        end match
+    end if
+    if length(args) >= 2 and args[0] == "enq" then
+        var q: List[Int] = []
+        var i: Int = 1
+        while i < length(args) do
+            match parse_int(args[i]) with
+            | None -> return Err("values must be integers")
+            | Some(v) -> q = enqueue(q, v)
+            end match
+            i = i + 1
+        end while
+        match front(q) with
+        | Err(e) -> return Err(e)
+        | Ok(f) -> return Ok("queue=" + ints_csv(q) + " front=" + to_string(f))
+        end match
+    end if
+    return Err("usage: demo | enq <ints...>")
 end func
 
 @untested("entry point")
 func main() -> String
-    let q1: List[Int] = enqueue([], 10)
-    let q2: List[Int] = enqueue(q1, 20)
-    match front(q2) with
-    | Ok(f) ->
-        match dequeue(q2) with
-        | Ok(rest) -> return "front=" + to_string(f) + " rest_len=" + to_string(length(rest))
-        | Err(e) -> return "dequeue error: " + e
+    match run(["demo"]) with
+    | Ok(a) ->
+        match run(["enq", "1", "2", "3"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
         end match
-    | Err(e) -> return "front error: " + e
+    | Err(msg) -> return "error: " + msg
     end match
 end func

@@ -6,6 +6,7 @@ func is_letter(c: String) -> Bool
     example "a" -> true
     example "Z" -> true
     example "!" -> false
+    example "0" -> false
     let lower: String = to_lower(c)
     return lower >= "a" and lower <= "z"
 end func
@@ -13,6 +14,7 @@ end func
 func contains_char(xs: List[String], c: String) -> Bool
     example ["a"], "a" -> true
     example ["a"], "b" -> false
+    example [], "a" -> false
     var i: Int = 0
     while i < length(xs) do
         if xs[i] == c then
@@ -29,6 +31,7 @@ func is_pangram(text: String) -> Bool
     example "Hello World" -> false
     example "" -> false
     example "Pack my box with five dozen liquor jugs." -> true
+    example "sphinx of black quartz, judge my vow" -> true
     var seen: List[String] = []
     var i: Int = 0
     while i < length(text) do
@@ -44,9 +47,27 @@ func is_pangram(text: String) -> Bool
     return length(seen) == 26
 end func
 
+/// CLI: joins all args as the candidate text.
+func run(args: List[String]) -> Result[String, String]
+    example ["The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"] -> Ok("pangram=true")
+    example ["Hello", "World"] -> Ok("pangram=false")
+    example ["abcdefghijklmnopqrstuvwxyz"] -> Ok("pangram=true")
+    example [] -> Err("usage: <text...>")
+    if length(args) == 0 then
+        return Err("usage: <text...>")
+    end if
+    let text: String = join(args, " ")
+    return Ok("pangram=" + to_string(is_pangram(text)))
+end func
+
 @untested("entry point")
 func main() -> String
-    let a: Bool = is_pangram("The quick brown fox jumps over the lazy dog")
-    let b: Bool = is_pangram("Hello World")
-    return "pangram=" + to_string(a) + " hello=" + to_string(b)
+    match run(["The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"]) with
+    | Ok(a) ->
+        match run(["Hello", "World"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

@@ -7,6 +7,8 @@ func is_vowel(c: String) -> Bool
     example "E" -> true
     example "y" -> false
     example "b" -> false
+    example "U" -> true
+    example " " -> false
     let lower: String = to_lower(c)
     return lower == "a" or lower == "e" or lower == "i" or lower == "o" or lower == "u"
 end func
@@ -17,6 +19,7 @@ func count_vowels(text: String) -> Int
     example "rhythm" -> 0
     example "" -> 0
     example "Beautiful" -> 5
+    example "Geno" -> 2
     var count: Int = 0
     var i: Int = 0
     while i < length(text) do
@@ -28,7 +31,27 @@ func count_vowels(text: String) -> Int
     return count
 end func
 
+/// CLI: joins args with spaces, then counts vowels.
+func run(args: List[String]) -> Result[String, String]
+    example ["hello"] -> Ok("2")
+    example ["Beautiful"] -> Ok("5")
+    example ["rhythm"] -> Ok("0")
+    example ["AEIOU", "y"] -> Ok("5")
+    example [] -> Err("usage: <text...>")
+    if length(args) == 0 then
+        return Err("usage: <text...>")
+    end if
+    return Ok(to_string(count_vowels(join(args, " "))))
+end func
+
 @untested("entry point")
 func main() -> String
-    return "hello=" + to_string(count_vowels("hello")) + " Beautiful=" + to_string(count_vowels("Beautiful"))
+    match run(["hello"]) with
+    | Ok(a) ->
+        match run(["Beautiful"]) with
+        | Ok(b) -> return "hello=" + a + " Beautiful=" + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

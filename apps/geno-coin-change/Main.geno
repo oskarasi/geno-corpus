@@ -6,6 +6,7 @@ func change(cents: Int) -> Result[List[Int], String]
     example 30 -> Ok([1, 0, 1, 0])
     example 99 -> Ok([3, 2, 0, 4])
     example 10 -> Ok([0, 1, 0, 0])
+    example 25 -> Ok([1, 0, 0, 0])
     example -1 -> Err("cents must be non-negative")
     if cents < 0 then
         return Err("cents must be non-negative")
@@ -24,6 +25,7 @@ end func
 func describe(cents: Int) -> String
     example 41 -> "41 -> 1q 1d 1n 1p"
     example 0 -> "0 -> 0q 0d 0n 0p"
+    example 99 -> "99 -> 3q 2d 0n 4p"
     example -5 -> "-5 -> cents must be non-negative"
     match change(cents) with
     | Ok(coins) -> return to_string(cents) + " -> " + to_string(coins[0]) + "q " + to_string(coins[1]) + "d " + to_string(coins[2]) + "n " + to_string(coins[3]) + "p"
@@ -31,7 +33,36 @@ func describe(cents: Int) -> String
     end match
 end func
 
+/// CLI: `<cents>`
+func run(args: List[String]) -> Result[String, String]
+    example ["41"] -> Ok("41 -> 1q 1d 1n 1p")
+    example ["99"] -> Ok("99 -> 3q 2d 0n 4p")
+    example ["0"] -> Ok("0 -> 0q 0d 0n 0p")
+    example ["-1"] -> Err("cents must be non-negative")
+    example [] -> Err("usage: <cents>")
+    example ["x"] -> Err("cents must be an integer")
+    example ["1", "2"] -> Err("usage: <cents>")
+    if length(args) != 1 then
+        return Err("usage: <cents>")
+    end if
+    match parse_int(args[0]) with
+    | None -> return Err("cents must be an integer")
+    | Some(c) ->
+        match change(c) with
+        | Err(e) -> return Err(e)
+        | Ok(_) -> return Ok(describe(c))
+        end match
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    return describe(41) + " | " + describe(99)
+    match run(["41"]) with
+    | Ok(a) ->
+        match run(["99"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

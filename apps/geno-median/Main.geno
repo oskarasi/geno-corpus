@@ -5,6 +5,7 @@ func sort_ints(xs: List[Int]) -> List[Int]
     example [] -> []
     example [5] -> [5]
     example [2, 2, 1] -> [1, 2, 2]
+    example [9, 1, 5, 3] -> [1, 3, 5, 9]
     var arr: List[Int] = xs
     var n: Int = length(arr)
     var i: Int = 0
@@ -28,6 +29,7 @@ func median(xs: List[Int]) -> Result[Int, String]
     example [1, 2, 3, 4] -> Ok(2)
     example [7] -> Ok(7)
     example [5, 1] -> Ok(3)
+    example [1, 3, 2, 8, 5] -> Ok(3)
     example [] -> Err("empty list")
     if length(xs) == 0 then
         return Err("empty list")
@@ -43,10 +45,39 @@ func median(xs: List[Int]) -> Result[Int, String]
     end if
 end func
 
+/// CLI: `<ints...>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["1", "3", "2"] -> Ok("median=2")
+    example ["1", "2", "3", "4"] -> Ok("median=2")
+    example ["1", "3", "2", "8", "5"] -> Ok("median=3")
+    example [] -> Err("usage: <ints...>")
+    example ["x"] -> Err("values must be integers")
+    if length(args) == 0 then
+        return Err("usage: <ints...>")
+    end if
+    var xs: List[Int] = []
+    var i: Int = 0
+    while i < length(args) do
+        match parse_int(args[i]) with
+        | None -> return Err("values must be integers")
+        | Some(v) -> xs = append(xs, v)
+        end match
+        i = i + 1
+    end while
+    match median(xs) with
+    | Err(e) -> return Err(e)
+    | Ok(m) -> return Ok("median=" + to_string(m))
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    match median([1, 3, 2, 8, 5]) with
-    | Ok(m) -> return "median=" + to_string(m)
-    | Err(e) -> return "error: " + e
+    match run(["1", "3", "2", "8", "5"]) with
+    | Ok(a) ->
+        match run(["1", "2", "3", "4"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
     end match
 end func

@@ -7,12 +7,39 @@ func hypotenuse(a: Float, b: Float) -> Float
     example 5.0, 12.0 -> 13.0
     example 0.0, 0.0 -> 0.0
     example 6.0, 8.0 -> 10.0
+    example 8.0, 15.0 -> 17.0
     return Math.sqrt(a * a + b * b)
+end func
+
+/// CLI: `<a> <b>` legs as floats.
+func run(args: List[String]) -> Result[String, String]
+    example ["3", "4"] -> Ok("hyp=5.0")
+    example ["5", "12"] -> Ok("hyp=13.0")
+    example ["6", "8"] -> Ok("hyp=10.0")
+    example [] -> Err("usage: <a> <b>")
+    example ["3"] -> Err("usage: <a> <b>")
+    example ["x", "4"] -> Err("a and b must be numbers")
+    if length(args) != 2 then
+        return Err("usage: <a> <b>")
+    end if
+    match parse_float(args[0]) with
+    | None -> return Err("a and b must be numbers")
+    | Some(a) ->
+        match parse_float(args[1]) with
+        | None -> return Err("a and b must be numbers")
+        | Some(b) -> return Ok("hyp=" + to_string(hypotenuse(a, b)))
+        end match
+    end match
 end func
 
 @untested("entry point")
 func main() -> String
-    let h: Float = hypotenuse(3.0, 4.0)
-    let h2: Float = hypotenuse(5.0, 12.0)
-    return "3-4-5 -> " + to_string(h) + " 5-12-13 -> " + to_string(h2)
+    match run(["3", "4"]) with
+    | Ok(a) ->
+        match run(["5", "12"]) with
+        | Ok(b) -> return a + " | " + b
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func

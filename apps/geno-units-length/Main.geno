@@ -4,6 +4,7 @@ func meters_to_feet(meters: Float) -> Float
     example 1.0 -> 3.28084
     example 0.0 -> 0.0
     example 2.0 -> 6.56168
+    example 0.5 -> 1.64042
     return meters * 3.28084
 end func
 
@@ -14,9 +15,39 @@ func feet_to_meters(feet: Float) -> Float
     return feet / 3.28084
 end func
 
+/// CLI: `m2ft <m>` | `ft2m <ft>`.
+func run(args: List[String]) -> Result[String, String]
+    example ["m2ft", "1"] -> Ok("3.28084")
+    example ["ft2m", "3.28084"] -> Ok("1.0")
+    example ["m2ft", "2"] -> Ok("6.56168")
+    example [] -> Err("usage: m2ft <meters> | ft2m <feet>")
+    example ["m2ft"] -> Err("usage: m2ft <meters> | ft2m <feet>")
+    example ["nope", "1"] -> Err("usage: m2ft <meters> | ft2m <feet>")
+    example ["m2ft", "x"] -> Err("value must be a float")
+    if length(args) != 2 then
+        return Err("usage: m2ft <meters> | ft2m <feet>")
+    end if
+    match parse_float(args[1]) with
+    | None -> return Err("value must be a float")
+    | Some(v) ->
+        if args[0] == "m2ft" then
+            return Ok(to_string(meters_to_feet(v)))
+        else if args[0] == "ft2m" then
+            return Ok(to_string(feet_to_meters(v)))
+        else
+            return Err("usage: m2ft <meters> | ft2m <feet>")
+        end if
+    end match
+end func
+
 @untested("entry point")
 func main() -> String
-    let ft: Float = meters_to_feet(1.0)
-    let m: Float = feet_to_meters(3.28084)
-    return "1m=" + to_string(ft) + "ft 3.28084ft=" + to_string(m) + "m"
+    match run(["m2ft", "1"]) with
+    | Ok(a) ->
+        match run(["ft2m", "3.28084"]) with
+        | Ok(b) -> return "1m=" + a + "ft 3.28084ft=" + b + "m"
+        | Err(msg) -> return "error: " + msg
+        end match
+    | Err(msg) -> return "error: " + msg
+    end match
 end func
